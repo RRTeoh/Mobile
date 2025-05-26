@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 123, 218, 248), 
+        backgroundColor: Colors.lightBlue.shade100, 
         title: Row(
           children: [
             Padding(
@@ -92,13 +92,10 @@ class HomePage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,   // start from top
             end: Alignment.bottomCenter,  // end at bottom
-            colors: [
-               const Color.fromARGB(255, 123, 218, 248),   // top color
-               Colors.white,  // bottom color
-            ],
+            colors: [Colors.lightBlue.shade100, Colors.white],
             stops: [
               0.0, // sharp or not
-              0.7, // blue part
+              0.8, // blue part
             ],
           ),
         ),

@@ -18,19 +18,24 @@ class WorkoutPage extends StatelessWidget {
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFB3E5FC), Colors.white],
+                  colors: [Color(0xff8fd4e8), Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
+                  // stops: [
+                  //   0.0, // sharp or not
+                  //   0.9, // blue part
+                  // ],
+
                 ),
               ),
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(left:16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
+                      //const SizedBox(height: 20),
                       RichText(
                         text: const TextSpan(
                           children: [
