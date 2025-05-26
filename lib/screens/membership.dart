@@ -50,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.only(left: 20, top: 10),
                 child: ProfileAvatar(
                   imagePath: 'assets/images/myprofile/people.jpg',
                   name: 'Jackson Wang',

@@ -17,7 +17,7 @@ class MyPayment extends StatelessWidget {
           return Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 10),
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -35,22 +35,22 @@ class MyPayment extends StatelessWidget {
                   children: const [
                     Text(
                       '20 April 25 - 19 May 25',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 12),
                     ),
                     Icon(Icons.filter_list, color: Colors.grey),
                   ],
                 ),
               ),
-              const SizedBox(height: 20), // gap below the filter bar
+              const SizedBox(height: 10), // gap below the filter bar
             ],
           );
         }
 
         final payment = payments[index - 1]; 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           child: Container(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(5),
@@ -70,7 +70,7 @@ class MyPayment extends StatelessWidget {
                     Text(
                       payment.date,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Colors.grey,
                       ),
                     ),
@@ -78,7 +78,7 @@ class MyPayment extends StatelessWidget {
                     Text(
                       payment.time,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Colors.grey,
                       ),
                     ),
@@ -90,12 +90,12 @@ class MyPayment extends StatelessWidget {
                   children: [
                     Text(
                       payment.name,
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 12),
                     ),
                     Text(
                       payment.amount,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         color: Colors.red,
                       ),
                     ),
