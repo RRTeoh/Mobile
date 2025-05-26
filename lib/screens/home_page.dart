@@ -569,6 +569,7 @@ class HomePage extends StatelessWidget {
                 //list of sports you may like
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
+                  padding: EdgeInsets.only(left:20),
                   height:27,
                   width:60,
                   decoration: BoxDecoration(
@@ -588,7 +589,7 @@ class HomePage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
@@ -615,7 +616,7 @@ class HomePage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
@@ -642,7 +643,7 @@ class HomePage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
@@ -669,7 +670,7 @@ class HomePage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
@@ -696,7 +697,7 @@ class HomePage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
@@ -746,14 +747,16 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        margin:EdgeInsets.only(top:3),
+                        margin:EdgeInsets.only(top:5),
+                        padding: EdgeInsets.only(left: 10),
+                        alignment: Alignment.centerLeft,
                         child: Text(
                           courses[index].coursename,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
                             color: Colors.black,
-                            fontWeight: FontWeight.bold
+                            //fontWeight: FontWeight.bold
                          )
                        )
                       ),
