@@ -30,8 +30,8 @@ class _BottomAppState extends State<BottomApp> {
 
       // 🔘 FAB in the center
       floatingActionButton: Container(
-        height: 80,
-        width: 80,
+        height: 65,
+        width: 65,
         margin: const EdgeInsets.only(bottom: 5),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -54,7 +54,7 @@ class _BottomAppState extends State<BottomApp> {
         backgroundColor: myCurrentIndex == 0? const Color.fromARGB(255, 172, 255, 251) :Color.fromARGB(255, 51, 107, 136), 
         child: Icon(
           Icons.home_rounded,
-          size: 50,
+          size: 48,
           color: myCurrentIndex == 0? const Color.fromARGB(255, 12, 0, 143) : Colors.white,
         ),
       ),
@@ -63,19 +63,21 @@ class _BottomAppState extends State<BottomApp> {
 
       
       bottomNavigationBar: BottomAppBar(
+        height: 70,
         shape: const CircularNotchedRectangle(),
         notchMargin: 6.0,
         color:  const Color.fromARGB(255, 51, 107, 136),
         //child: SizedBox(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
+            
             children: [
               //SizedBox(width: 0),
               // Left side icons
               IconButton(
                 icon: Icon(
                   Icons.calendar_month_sharp,
-                  size: 40,
+                  size: 30,
                   color: myCurrentIndex == 1
                       ? const Color.fromARGB(255, 12, 0, 143)
                       : Colors.white,
@@ -86,11 +88,11 @@ class _BottomAppState extends State<BottomApp> {
                   });
                 },
               ),
-              SizedBox(width: 30),
+              SizedBox(width: 25),
               IconButton(
                 icon: Icon(
                   Icons.diversity_3_outlined,
-                  size: 40,
+                  size: 30,
                   color: myCurrentIndex == 2
                       ? const Color.fromARGB(255, 12, 0, 143)
                       : Colors.white,
@@ -102,13 +104,13 @@ class _BottomAppState extends State<BottomApp> {
                 },
               ),
 
-              const SizedBox(width: 100), // Space for FAB
+              const SizedBox(width: 90), // Space for FAB
 
               // Right side icons
               IconButton(
                 icon: Icon(
                   Icons.favorite_rounded,
-                  size: 40,
+                  size: 30,
                   color: myCurrentIndex == 3
                       ? const Color.fromARGB(255, 12, 0, 143)
                       : Colors.white,
@@ -123,7 +125,7 @@ class _BottomAppState extends State<BottomApp> {
               IconButton(
                 icon: Icon(
                   Icons.account_circle_rounded,
-                  size: 40,
+                  size: 30,
                   color: myCurrentIndex == 4
                       ? const Color.fromARGB(255, 12, 0, 143)
                       : Colors.white,

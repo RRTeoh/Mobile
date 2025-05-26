@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
         title: Row(
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 5),
+              padding: EdgeInsets.only(left: 0),
             ),
             //Container(
               //decoration: BoxDecoration(
@@ -34,10 +34,10 @@ class HomePage extends StatelessWidget {
               Icon(
                 Icons.filter_alt,
                 color:Colors.black,
-                size: 25
+                size: 20
                 ),
             //),
-            SizedBox(width: 8),
+            SizedBox(width: 5),
             //Container(
              // decoration: BoxDecoration(
                 //color: Colors.white,
@@ -48,13 +48,13 @@ class HomePage extends StatelessWidget {
               Icon(
                 Icons.notifications,
                 color: Colors.black,
-                size: 25
+                size: 20
                 ),
             //),
-            SizedBox(width: 10),
+            SizedBox(width: 5),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 100),
-              padding: EdgeInsets.symmetric(horizontal: 55, vertical: 1),
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 1),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(30),
@@ -98,7 +98,7 @@ class HomePage extends StatelessWidget {
             ],
             stops: [
               0.0, // sharp or not
-              0.6, // blue part
+              0.7, // blue part
             ],
           ),
         ),
@@ -106,30 +106,31 @@ class HomePage extends StatelessWidget {
           children: 
           [
             Padding(
-          padding: EdgeInsets.only(left: 30, top:10, bottom:20), // right:30),
-          child: Column(
+          padding: EdgeInsets.only(left: 20, top:0, bottom:20), // right:30),
+          child: 
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
                 "Today",
               style: TextStyle(
-                fontSize: 18, 
+                fontSize: 15, 
                 fontWeight: FontWeight.bold,
                 color: Colors.white),
             ),
-            SizedBox(height:5),
+            SizedBox(height:2),
             Text(
                 "May 14, 2025",
                 style: TextStyle(
-                  fontSize: 20, 
+                  fontSize: 18, 
                   fontWeight: FontWeight.bold,
                   color: const Color.fromARGB(255, 12, 0, 143)
                 ),
             ),
-            SizedBox(height:5),
+            SizedBox(height:10),
             Container(
               height: 200,
-              width: 350,
+              width: 320,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
@@ -139,11 +140,11 @@ class HomePage extends StatelessWidget {
                   Row(
                     children: [
                       //mon,tues,wed,thurs,fri,sat,sun
-                      SizedBox(width:19),
+                      SizedBox(width:12),
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -188,7 +189,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -231,7 +232,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -274,7 +275,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -319,7 +320,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 12, 0, 143),
                           borderRadius: BorderRadius.circular(75)
@@ -362,7 +363,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -405,7 +406,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top: 30),
                         height: 85,
-                        width: 40,
+                        width: 38,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 233, 233, 233),
                           borderRadius: BorderRadius.circular(75)
@@ -450,7 +451,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       //25%,calories,reminder
                       Container(
-                        margin:EdgeInsets.only(left: 20,top:15),
+                        margin:EdgeInsets.only(left: 10,top:15),
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
@@ -500,7 +501,7 @@ class HomePage extends StatelessWidget {
                       Container(
                         margin:EdgeInsets.only(top:15),
                         height:60,
-                        width:170,
+                        width:160,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 214,233,249),
                           borderRadius: BorderRadius.circular(15),
@@ -521,7 +522,7 @@ class HomePage extends StatelessWidget {
                             Row(
                               children: 
                               [
-                                SizedBox(width:15),
+                                SizedBox(width:10),
                                 Text(
                                   "12:00 p.m.",
                                   textAlign: TextAlign.left,
@@ -564,10 +565,11 @@ class HomePage extends StatelessWidget {
               child:
               Row(
               children: [
+                SizedBox(width:10),
                 //list of sports you may like
                 Container(
-                  margin:EdgeInsets.only(top:10),
-                  height:30,
+                  margin:EdgeInsets.only(top:10,bottom:10),
+                  height:25,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -580,9 +582,10 @@ class HomePage extends StatelessWidget {
                       )
                     ]
                   ),
-                  padding: EdgeInsets.all(7),
+                  padding: EdgeInsets.all(5),
                   child: Text(
                     "Archery",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -592,34 +595,8 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(width:10),
                 Container(
-                  margin:EdgeInsets.only(top:10),
-                  height:30,
-                  width:55,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        blurRadius: 5,
-                        offset: Offset(0,2)
-                      )
-                    ]
-                  ),
-                  padding: EdgeInsets.all(7),
-                  child: Text(
-                    "Curling",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
-                    )
-                  )
-                ),
-                SizedBox(width:10),
-                Container(
-                  margin:EdgeInsets.only(top:10),
-                  height:30,
+                  margin:EdgeInsets.only(top:10,bottom:10),
+                  height:25,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -632,9 +609,10 @@ class HomePage extends StatelessWidget {
                       )
                     ]
                   ),
-                  padding: EdgeInsets.all(7),
+                  padding: EdgeInsets.all(5),
                   child: Text(
-                    "Kabaddi",
+                    "Curling",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -644,8 +622,35 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(width:10),
                 Container(
-                  margin:EdgeInsets.only(top:10),
-                  height:30,
+                  margin:EdgeInsets.only(top:10,bottom:10),
+                  height:25,
+                  width:60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 5,
+                        offset: Offset(0,2)
+                      )
+                    ]
+                  ),
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    "Kabaddi",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black
+                    )
+                  )
+                ),
+                SizedBox(width:10),
+                Container(
+                  margin:EdgeInsets.only(top:10,bottom:10),
+                  height:25,
                   width:97,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -658,9 +663,10 @@ class HomePage extends StatelessWidget {
                       )
                     ]
                   ),
-                  padding: EdgeInsets.all(7),
+                  padding: EdgeInsets.all(5),
                   child: Text(
                     "Rock Climbing",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -670,8 +676,8 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(width:10),
                 Container(
-                  margin:EdgeInsets.only(top:10),
-                  height:30,
+                  margin:EdgeInsets.only(top:10,bottom:10),
+                  height:25,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -684,19 +690,22 @@ class HomePage extends StatelessWidget {
                       )
                     ]
                   ),
-                  padding: EdgeInsets.all(7),
+                  padding: EdgeInsets.all(5),
                   child: Text(
                     "Parkour",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.black
                     )
                   )
-                )
+                ),
+                SizedBox(width:10)
               ],
             ),
             ),
+            
             SizedBox(height:20),
             Text(
               "Courses",
