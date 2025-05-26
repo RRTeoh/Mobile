@@ -8,12 +8,16 @@ class SearchCourse extends StatefulWidget
 
   @override
   State<SearchCourse> createState() => _SearchCourseState();
+  
 }
 
 class _SearchCourseState extends State<SearchCourse>
 {
   final List<Schedulecourse> _allCourse = Schedulecourse.getAllSC();
   List<Schedulecourse> _foundCourse =[];
+  Set<int> addedCourseIndices = {};
+
+  String buttonText = "+ Add to my schedule";
 
   @override
 
@@ -69,7 +73,7 @@ class _SearchCourseState extends State<SearchCourse>
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left:20, right:20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -110,8 +114,14 @@ class _SearchCourseState extends State<SearchCourse>
                             )
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
+                        
+                      ],
+                   )
+                 ),
+                    const SizedBox(height: 20),
+                        Center(
+
+                          child: Text(
                           "May 2025",
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -119,8 +129,10 @@ class _SearchCourseState extends State<SearchCourse>
                             fontSize: 20
                           )
                         ),
-                        const SizedBox(height: 20),
-                        Center(
+                        ),
+                        //const SizedBox(height: 20),
+                        Padding(
+                          padding: EdgeInsets.all(19),
                           child:Row(
                           children: 
                           [
@@ -134,17 +146,19 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "10",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -155,17 +169,19 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "11",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -176,17 +192,19 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "12",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -197,17 +215,19 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "13",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -218,27 +238,21 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Container(
-                                  height: 28,
-                                  width: 28,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                      color: Colors.cyan,
-                                  ),
-                                  child:Center(
-                                    child: Text(
+                                //SizedBox(height: 5),
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "14",
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: Colors.black
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold
                                   ),
-                                    )
-                                )
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -249,17 +263,20 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                //SizedBox(height: 10),
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "15",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             ),
-                            SizedBox(width:20),
+                            SizedBox(width:17),
                             Column(
                               children: 
                               [
@@ -270,23 +287,21 @@ class _SearchCourseState extends State<SearchCourse>
                                     color: Colors.black
                                   ),
                                 ),
-                                SizedBox(height: 3),
-                                Text(
+                                Padding(
+                                  padding: EdgeInsets.only(top:10),
+                                  child: Text(
                                   "16",
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black
                                   ),
+                                  )
                                 )
                               ],
                             )
                           ],
                         )
                         )
-                      ],
-                   )
-                 ),
-                    
                   ],
                 ),
               ),
@@ -384,21 +399,212 @@ class _SearchCourseState extends State<SearchCourse>
                                       width: 30,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.cyan,
+                                      color: addedCourseIndices.contains(index) ?Colors.green: Colors.cyan,
                                     ),
                                     child: IconButton(
                                       padding: EdgeInsets.zero,
                                       icon: Icon(
-                                        Icons.add, 
+                                        addedCourseIndices.contains(index) ?Icons.check:Icons.add, 
                                         color: Colors.white,
                                         size: 20,
                                         ),
                                       onPressed: () {
+                                        Schedulecourse course = _foundCourse[index];
                                       // Handle add action
-                                      },
+                                      showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
+                            ),
+                            builder: (BuildContext context) {
+                              return SingleChildScrollView(
+                                child: Container(
+                                  height: 580,
+                                  padding: const EdgeInsets.all(20),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Stack(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          //const SizedBox(height: 40),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                course.title,
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold
+                                                )
+                                              ),
+                                              SizedBox(width:10),
+                                              Container(
+                                              margin:EdgeInsets.only(top:10,bottom:10),
+                                                height:25,
+                                                width:60,
+                                                  decoration: BoxDecoration(
+                                                  color: const Color.fromARGB(255, 218, 218, 218),
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  
+                                              ),
+                                              padding: EdgeInsets.all(5),
+                                                child: Text(
+                                                  course.classmode,
+                                                  textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.black
+                                                    )
+                                                )
+                                              ),
+                                            ],
+                                          ),
+                                                Container(
+                                                  height: 200,
+                                                  width: 300,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(15),
+                                                    image: 
+                                                    DecorationImage(
+                                                    image: AssetImage(course.imagePath),
+                                                    fit: BoxFit.cover
+                                                  )
+                                                  ),
+                                                ),
+                                                const SizedBox(height:15),
+                                                Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 23,
+                                                      backgroundImage: AssetImage(course.teacherimagepath),
+                                                    ),
+                                                    SizedBox(width:10),
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          "Trainer",
+                                                          textAlign: TextAlign.left,
+                                                          style:TextStyle(
+                                                            fontSize: 10,
+                                                            color:Colors.grey
+                                                          )
+                                                        ),
+                                                        Text(
+                                                          course.teachername,
+                                                          textAlign: TextAlign.left,
+                                                          style:TextStyle(
+                                                            fontSize: 15,
+                                                            color:Colors.black
+                                                          )
+                                                        ),
+                                                        RatingBar.builder(
+                                                        initialRating: course.rating.toDouble(),
+                                                        minRating: 1,
+                                                        direction: Axis.horizontal,
+                                                        itemSize: 10,
+                                                        itemBuilder: (context, _) => const Icon(
+                                                        Icons.star,
+                                                        color: Colors.yellow
+                                                        ),
+                                                        onRatingUpdate: (double value) { },
+                                                        ),
+                                                      ],
+                                                    )
+
+                                                  ]
+                                                ),
+                                                SizedBox(height:10),
+                                                Padding(
+                                                  padding: EdgeInsets.only(left:10),
+                                                  child:Column(
+                                                  children: 
+                                                  [
+                                                    Row(
+                                                    children:[Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      course.subtitle,
+                                                      style: TextStyle(fontSize: 10, color: Colors.black),
+                                                    ),
+                                                    ]
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    Row(
+                                                    children:[Icon(Icons.calendar_month, size: 14, color: Colors.red),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      course.date,
+                                                      style: TextStyle(fontSize: 10, color: Colors.black),
+                                                    ),
+                                                    ]
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    Row(
+                                                    children:[Icon(Icons.location_on, size: 14, color: Colors.blue),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      course.address,
+                                                      style: TextStyle(fontSize: 10, color: Colors.black),
+                                                    ),
+                                                    ]
+                                                    ),
+                                                    SizedBox(height:15),
+                                                    Text(
+                                                      course.description,
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.black
+                                                      )
+                                                    ),
+                                                    SizedBox(height:20),
+                                                    ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                      backgroundColor: addedCourseIndices.contains(index)
+                                                      ? Colors.greenAccent.shade200
+                                                      : const Color.fromARGB(255, 22, 45, 180),
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          addedCourseIndices.add(index); // mark this item as added
+                                                        });  
+                                                      },
+                                                      child: Text(
+                                                        addedCourseIndices.contains(index) ? "Added" : "+ Add to my schedule",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: addedCourseIndices.contains(index) ?Colors.black :Colors.white,
+                                                        ),
+                                                      ),
+                                                          ),
+          
+                                                  ],),
+                                                )
+                                              ],
+                                            ),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                                    )
+                                      
                                     ),
                                   ),
-                                  )
                                 ],
                               ),
                             ),
@@ -408,7 +614,6 @@ class _SearchCourseState extends State<SearchCourse>
                           style: TextStyle(fontSize: 22),
                         )
                        )
-      //Center(child: Text("Schedule Page Content")),
     );
   }
 }
