@@ -38,6 +38,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
+  intl: ^0.18.1
+  
+  percent_indicator: ^4.2.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -75,8 +79,12 @@ flutter:
    - assets/images/myprofile/barcode2.jpg
    - assets/images/myprofile/voucher1.jpg 
    - assets/images/myprofile/voucher2.jpg     
-   - assets/images/myprofile/voucher3.jpg        
-
+   - assets/images/myprofile/voucher3.jpg   
+   - assets/images/food/breakfast.jpg
+   - assets/images/food/lunch.jpg  
+   - assets/images/food/dinner.jpg  
+   - assets/images/food/snack.jpg       
+  
  
 
 
