@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'nutrition_widgets/calorie_summary_section.dart';
-// import 'nutrition_widgets/nutrition_bottom_sheet.dart';
+import 'package:asgm1/nutrition_widgets/calorie_summary_section.dart';
+import 'package:asgm1/nutrition_widgets/nutrition_bottom_sheet.dart';
 
 class NutritionPage extends StatefulWidget {
   const NutritionPage({super.key});
@@ -11,7 +11,7 @@ class NutritionPage extends StatefulWidget {
 
 class NutritionPageState extends State<NutritionPage> {
   DateTime selectedDate = DateTime.now();
-  // final GlobalKey<NutritionBottomSheetState> _bottomSheetKey = GlobalKey();
+  final GlobalKey<NutritionBottomSheetState> _bottomSheetKey = GlobalKey();
 
   void _goToPreviousDay() {
     setState(() {
@@ -36,23 +36,23 @@ class NutritionPageState extends State<NutritionPage> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      // child: Stack(
-      //   children: [
-      //     Column(
-      //       children: [
-      //         CalorieSummarySection(
-      //           selectedDate: selectedDate,
-      //           onPreviousDay: _goToPreviousDay,
-      //           onNextDay: _goToNextDay,
-      //           baseGoal: 2000,
-      //           foodCalories: 1600,
-      //           exerciseCalories: 400,
-      //         )
-      //       ],
-      //     ),
-      //     NutritionBottomSheet(key: _bottomSheetKey),
-      //   ],
-      // ),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              CalorieSummarySection(
+                selectedDate: selectedDate,
+                onPreviousDay: _goToPreviousDay,
+                onNextDay: _goToNextDay,
+                baseGoal: 2000,
+                foodCalories: 1600,
+                exerciseCalories: 400,
+              )
+            ],
+          ),
+          NutritionBottomSheet(key: _bottomSheetKey),
+        ],
+      ),
     );
   }
 }

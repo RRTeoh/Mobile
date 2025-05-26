@@ -70,7 +70,7 @@ class _TrackerPageState extends State<TrackingPage> {
 
         Column(
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 35),
             _buildSwitchBar(),
             Expanded(
               child: PageView(
@@ -111,7 +111,7 @@ class _TrackerPageState extends State<TrackingPage> {
     return GestureDetector(
       onTap: () => _onTabTapped(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xff004aad) : Colors.transparent,
           borderRadius: BorderRadius.horizontal(
@@ -124,7 +124,7 @@ class _TrackerPageState extends State<TrackingPage> {
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 18,
+            fontSize: 16,
           ),
         ),
       ),
