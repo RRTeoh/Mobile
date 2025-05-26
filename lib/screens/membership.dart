@@ -27,7 +27,10 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         title: const Text(
           "Membership",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -71,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -88,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   'My Rewards',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     color: selectedIndex == 0
                                         ? Colors.black
@@ -117,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   'Payment',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     color: selectedIndex == 1
                                         ? Colors.black

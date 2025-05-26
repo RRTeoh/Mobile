@@ -16,10 +16,10 @@ class Voucher1Page extends StatelessWidget {
               Image.asset(
                 'assets/images/myprofile/voucher1.jpg',
                 width: double.infinity,
-                height: 210,
+                height: 170,
                 fit: BoxFit.cover,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
               Padding(
                 padding: 
                 const EdgeInsets.symmetric(horizontal: 20),
@@ -41,7 +41,7 @@ class Voucher1Page extends StatelessWidget {
                   child: Text(
                     "Terms and conditions",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.black, // prevent red text
                       decoration: TextDecoration.none, // prevent underline
@@ -57,7 +57,7 @@ class Voucher1Page extends StatelessWidget {
                     Text("1. Applicable to all new members only.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ),
@@ -65,7 +65,7 @@ class Voucher1Page extends StatelessWidget {
                      Text("2. Valid for 7 days after activation.",
                           
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),
@@ -73,7 +73,7 @@ class Voucher1Page extends StatelessWidget {
                      Text("3. Cannot be combined with other offers",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ), 
@@ -81,7 +81,7 @@ class Voucher1Page extends StatelessWidget {
                      Text("4. Expired vouchers will not be reissued or extended.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ), 
@@ -89,7 +89,7 @@ class Voucher1Page extends StatelessWidget {
                      Text("5. Cannot be combined with other offers",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ), 
@@ -97,19 +97,19 @@ class Voucher1Page extends StatelessWidget {
                      Text("6. The voucher can be redeemed via the official gym app or at the front desk.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ), 
                   ],
                 )  
                 ),
-                const SizedBox(height: 150),
+                const SizedBox(height: 120),
                 //Redemm button
                 Center(
                   child: SizedBox(
                     width: 200,
-                    height: 50,
+                    height: 40,
                     child: ElevatedButton(
                       onPressed: null, // disables the button
                       child: const Text(

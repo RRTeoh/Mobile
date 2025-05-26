@@ -28,9 +28,9 @@ class _MembershipCardState extends State<MembershipCard> {
     return GestureDetector(
       onTap: _toggleImage,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
           child: Image.asset(
             _isFirstImage ? widget.imagePath1 : widget.imagePath2, //is true use: if false
             width: double.infinity,

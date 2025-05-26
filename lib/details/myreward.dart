@@ -32,7 +32,7 @@ class _MyRewards extends State<MyRewards> {
       itemCount: voucherImages.length,
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 15),
+          padding: const EdgeInsets.only(top: 15),
           child: GestureDetector(
             onTap: () {
               setState(() {
@@ -47,7 +47,7 @@ class _MyRewards extends State<MyRewards> {
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 voucherImages[index],
-                height: 160,
+                height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),

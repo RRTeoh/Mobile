@@ -16,10 +16,10 @@ class Voucher2Page extends StatelessWidget {
               Image.asset(
                 'assets/images/myprofile/voucher2.jpg',
                 width: double.infinity,
-                height: 210,
+                height: 170,
                 fit: BoxFit.cover,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
               Padding(
                 padding: 
                 const EdgeInsets.symmetric(horizontal: 20),
@@ -41,7 +41,7 @@ class Voucher2Page extends StatelessWidget {
                   child: Text(
                     "Terms and conditions",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.black, // prevent red text
                       decoration: TextDecoration.none, // prevent underline
@@ -57,7 +57,7 @@ class Voucher2Page extends StatelessWidget {
                     Text("1. The 7-Day Pass is available to new visitors or non-members only.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ),
@@ -65,7 +65,7 @@ class Voucher2Page extends StatelessWidget {
                      Text("2. Gym reserves the right to modify or cancel the voucher offer at any time without prior notice.",
                           
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),
@@ -73,7 +73,7 @@ class Voucher2Page extends StatelessWidget {
                      Text("3. The pass cannot be paused, extended, or reissued once activated.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ), 
@@ -81,7 +81,7 @@ class Voucher2Page extends StatelessWidget {
                      Text("4. The 7-Day Pass is non-transferable and may only be used by the individual who registered for it.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),
@@ -89,7 +89,7 @@ class Voucher2Page extends StatelessWidget {
                      Text("5. Advance booking is required for classes or personal training sessions.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ), 
@@ -97,7 +97,7 @@ class Voucher2Page extends StatelessWidget {
                      Text("6. Non-transferable and cannot be extended or reissued.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),
@@ -105,19 +105,19 @@ class Voucher2Page extends StatelessWidget {
                     Text("7. It cannot be combined with other promotions, discounts, or vouchers.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),  
                   ],
                  ),  
                 ),
-                const SizedBox(height: 100),
+                const SizedBox(height: 95),
                 //Redemm button
                 Center(
                   child: SizedBox(
                     width: 200,
-                    height: 50,
+                    height: 40,
                     child: ElevatedButton(
                       onPressed: null, // disables the button
                       child: const Text(

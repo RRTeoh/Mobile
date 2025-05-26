@@ -16,10 +16,10 @@ class Voucher3Page extends StatelessWidget {
               Image.asset(
                 'assets/images/myprofile/voucher3.jpg',
                 width: double.infinity,
-                height: 210,
+                height: 170,
                 fit: BoxFit.cover,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
               Padding(
                 padding: 
                 const EdgeInsets.symmetric(horizontal: 20),
@@ -57,7 +57,7 @@ class Voucher3Page extends StatelessWidget {
                     Text("1. Applicable to all new members only.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),
                     ),
@@ -65,7 +65,7 @@ class Voucher3Page extends StatelessWidget {
                      Text("2. Valid for 7 days after activation.",
                           
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),
@@ -73,7 +73,7 @@ class Voucher3Page extends StatelessWidget {
                      Text("3. Missed bookings without prior notice may result in the voucher being forfeited.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ), 
@@ -81,7 +81,7 @@ class Voucher3Page extends StatelessWidget {
                      Text("4. Cannot be combined with other offers",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),  
@@ -89,7 +89,7 @@ class Voucher3Page extends StatelessWidget {
                      Text("5. Can be redeemed at any store in Malaysia",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ), 
@@ -97,7 +97,7 @@ class Voucher3Page extends StatelessWidget {
                      Text("6. Only one birthday voucher is issued per member per year.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ), 
@@ -105,19 +105,19 @@ class Voucher3Page extends StatelessWidget {
                      Text("7. Expired vouchers will not be reissued or extended.",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 9,
                             color: Colors.grey,
                           ),              
                     ),                                                                                
                   ],
                 )  
                 ),
-                const SizedBox(height: 150),
+                const SizedBox(height: 100),
                 //Redemm button
                 Center(
                   child: SizedBox(
                     width: 200,
-                    height: 50,
+                    height: 40,
                     child: ElevatedButton(
                       onPressed: null, // disables the button
                       child: const Text(

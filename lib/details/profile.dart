@@ -20,27 +20,27 @@ class ProfileAvatar extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(10),
           child: CircleAvatar(
-            radius: 40, 
+            radius: 22, 
             backgroundImage: AssetImage(imagePath),
           ),
         ),  
-        const SizedBox(width: 10),
+        const SizedBox(width: 5),
         Padding(
-          padding: const EdgeInsets.only(top:20),
+          padding: const EdgeInsets.only(top:11),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 name,
                 style: const TextStyle(
-                fontSize: 20,                
+                fontSize: 15,                
                 ),
               ),
               Text(
                 streak, 
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 10,
                 )
               ) 
             ]
