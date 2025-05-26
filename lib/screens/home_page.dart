@@ -569,7 +569,7 @@ class HomePage extends StatelessWidget {
                 //list of sports you may like
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  height:25,
+                  height:27,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -596,7 +596,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(width:10),
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  height:25,
+                  height:27,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -623,7 +623,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(width:10),
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  height:25,
+                  height:27,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -650,7 +650,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(width:10),
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  height:25,
+                  height:27,
                   width:97,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -677,7 +677,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(width:10),
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  height:25,
+                  height:27,
                   width:60,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -810,6 +810,7 @@ class HomePage extends StatelessWidget {
                         child: Text(
                           promotion[index].promoname,
                           textAlign: TextAlign.center,
+                          
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.black,
