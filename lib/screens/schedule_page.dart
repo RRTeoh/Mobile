@@ -422,12 +422,13 @@ class _SearchCourseState extends State<SearchCourse>
                             builder: (BuildContext context) {
                               return SingleChildScrollView(
                                 child: Container(
-                                  height: 580,
-                                  padding: const EdgeInsets.all(20),
+                                  height: 500,
+                                  padding: const EdgeInsets.only(left:20),
                                   width: MediaQuery.of(context).size.width,
                                   child: Stack(
                                     children: [
                                       Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           //const SizedBox(height: 40),
                                           Row(
@@ -461,9 +462,11 @@ class _SearchCourseState extends State<SearchCourse>
                                               ),
                                             ],
                                           ),
-                                                Container(
+                                                Padding(
+                                                  padding: EdgeInsets.only(right:20),
+                                                  child:Container(
                                                   height: 200,
-                                                  width: 300,
+                                                  width: 350,
                                                   decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(15),
                                                     image: 
@@ -472,6 +475,7 @@ class _SearchCourseState extends State<SearchCourse>
                                                     fit: BoxFit.cover
                                                   )
                                                   ),
+                                                ),
                                                 ),
                                                 const SizedBox(height:15),
                                                 Row(
@@ -551,15 +555,19 @@ class _SearchCourseState extends State<SearchCourse>
                                                     ),
                                                     ]
                                                     ),
-                                                    SizedBox(height:15),
-                                                    Text(
+                                                    SizedBox(height:10),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(right:20),
+                                                      child:Text(
                                                       course.description,
+                                                      textAlign: TextAlign.justify,
                                                       style: TextStyle(
-                                                        fontSize: 10,
+                                                        fontSize: 8,
                                                         color: Colors.black
                                                       )
+                                                    )
                                                     ),
-                                                    SizedBox(height:20),
+                                                    SizedBox(height:10),
                                                     ElevatedButton(
                                                       style: ElevatedButton.styleFrom(
                                                       backgroundColor: addedCourseIndices.contains(index)
@@ -573,8 +581,10 @@ class _SearchCourseState extends State<SearchCourse>
                                                       },
                                                       child: Text(
                                                         addedCourseIndices.contains(index) ? "Added" : "+ Add to my schedule",
+                                                        
                                                         style: TextStyle(
                                                           fontSize: 16,
+                                                          
                                                           color: addedCourseIndices.contains(index) ?Colors.black :Colors.white,
                                                         ),
                                                       ),
