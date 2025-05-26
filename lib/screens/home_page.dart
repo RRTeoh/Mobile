@@ -32,12 +32,12 @@ class HomePage extends StatelessWidget {
               //padding: EdgeInsets.all(5),
               //child: 
               Icon(
-                Icons.filter_alt,
+                Icons.list,
                 color:Colors.black,
-                size: 20
+                size: 22,
                 ),
             //),
-            SizedBox(width: 5),
+            SizedBox(width: 8),
             //Container(
              // decoration: BoxDecoration(
                 //color: Colors.white,
@@ -48,35 +48,35 @@ class HomePage extends StatelessWidget {
               Icon(
                 Icons.notifications,
                 color: Colors.black,
-                size: 20
+                size: 22,
                 ),
             //),
-            SizedBox(width: 5),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 1),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                    size: 30
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    "Search",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 20
-                    )
-                  )
-                ],
-              )
-            ),
+            SizedBox(width: 210),
+            // Container(
+            //   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            //   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 1),
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.circular(30),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Icon(
+            //         Icons.search,
+            //         color: Colors.grey,
+            //         size: 30
+            //       ),
+            //       SizedBox(width: 5),
+            //       Text(
+            //         "Search",
+            //         style: TextStyle(
+            //           color: Colors.grey,
+            //           fontSize: 20
+            //         )
+            //       )
+            //     ],
+            //   )
+            // ),
             SizedBox(width: 10),
             CircleAvatar(
                 radius: 23,
@@ -116,7 +116,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15, 
                 fontWeight: FontWeight.bold,
-                color: Colors.white),
+                color: Colors.black),
             ),
             SizedBox(height:2),
             Text(
@@ -569,7 +569,6 @@ class HomePage extends StatelessWidget {
                 //list of sports you may like
                 Container(
                   margin:EdgeInsets.only(top:10,bottom:10),
-                  padding: EdgeInsets.only(left:20),
                   height:27,
                   width:60,
                   decoration: BoxDecoration(
@@ -810,14 +809,15 @@ class HomePage extends StatelessWidget {
                       ),
                       Container(
                         margin:EdgeInsets.only(top:5, left:5, right:5),
+                        padding: EdgeInsets.only(left: 10),
+                        alignment: Alignment.centerLeft,
                         child: Text(
                           promotion[index].promoname,
-                          textAlign: TextAlign.center,
-                          
+                          textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.black,
-                            fontWeight: FontWeight.bold
+                            //fontWeight: FontWeight.bold
                          )
                        )
                       ),
