@@ -85,7 +85,10 @@ flutter:
    - assets/images/food/lunch.jpg  
    - assets/images/food/dinner.jpg  
    - assets/images/food/snack.jpg 
-   - assets/images/myprofile/qrcode.png       
+   - assets/images/myprofile/qrcode.png
+   - assets/images/footsteps.png
+   - assets/images/heartbeat.png
+   - assets/images/calorieschart.png     
       
   
  
