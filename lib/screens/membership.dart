@@ -34,7 +34,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Icon(Icons.list, color: Colors.black),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -52,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Padding(
                 padding: EdgeInsets.only(left: 20, top: 10),
                 child: ProfileAvatar(
-                  imagePath: 'assets/images/myprofile/people.jpg',
+                  imagePath: 'assets/images/Profile.png',
                   name: 'Jackson Wang',
                   streak: '145 🔥',
                 ),
@@ -106,6 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
+                                const SizedBox(height: 10),
                               ],
                             ),
                           ),
@@ -135,6 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
+                                const SizedBox(height: 10),
                               ],
                             ),
                           ),

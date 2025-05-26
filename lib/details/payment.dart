@@ -9,7 +9,7 @@ class MyPayment extends StatelessWidget {
     List<PaymentDetails> payments = PaymentDetails.getallDetails();
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 5),
       itemCount: payments.length + 1, // +1 for the filter bar
       itemBuilder: (context, index) {
         if (index == 0) {

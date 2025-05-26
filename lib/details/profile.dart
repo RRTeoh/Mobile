@@ -33,14 +33,14 @@ class ProfileAvatar extends StatelessWidget {
               Text(
                 name,
                 style: const TextStyle(
-                fontSize: 15,                
+                fontSize: 17,                
                 ),
               ),
               Text(
                 streak, 
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 12,
                 )
               ) 
             ]
