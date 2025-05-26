@@ -749,6 +749,7 @@ class HomePage extends StatelessWidget {
                         margin:EdgeInsets.only(top:3),
                         child: Text(
                           courses[index].coursename,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.black,
@@ -805,11 +806,12 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        margin:EdgeInsets.only(top:3),
+                        margin:EdgeInsets.only(top:5, left:5, right:5),
                         child: Text(
                           promotion[index].promoname,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 13,
                             color: Colors.black,
                             fontWeight: FontWeight.bold
                          )

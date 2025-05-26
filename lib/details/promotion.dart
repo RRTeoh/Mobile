@@ -18,21 +18,21 @@ class Promotion{
     promotion.add(
       Promotion(
         promoimage:'assets/images/promotion/premium.jpg',
-        promoname: 'Premium for 7 Days Free!',
+        promoname: 'Premium 7-Days',
         )
     );
 
     promotion.add(
       Promotion(
         promoimage:'assets/images/promotion/member.png',
-        promoname: 'Upgrade your gym membership card now!',
+        promoname: 'Membership Upgrade',
         )
     );
 
     promotion.add(
       Promotion(
         promoimage:'assets/images/promotion/50%.jpg',
-        promoname: 'Enjoy 50% off for 3 days!',
+        promoname: '50% off Promotion',
         )
     );
 
