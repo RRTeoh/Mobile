@@ -17,6 +17,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -28,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Icon(Icons.filter_list, color: Colors.black),  
+        leading: const Icon(Icons.filter_list, color: Colors.black),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -40,11 +43,11 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: 100),
+            SizedBox(height: screenHeight * 0.12),
             const Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 20),
+                padding: EdgeInsets.only(left: 10),
                 child: ProfileAvatar(
                   imagePath: 'assets/images/myprofile/people.jpg',
                   name: 'Jackson Wang',
@@ -52,12 +55,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            //const SizedBox(height: 5),
             const MembershipCard(
               imagePath1: 'assets/images/myprofile/membercard.jpg',
               imagePath2: 'assets/images/myprofile/barcode2.jpg',
             ),
-            const SizedBox(height: 20),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -71,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     const SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -83,58 +85,64 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             child: Column(
                               children: [
-                               Text(
-                                'My Rewards',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedIndex == 0 ? Colors.black : Colors.grey, //is is 0 set to black, else set to grey
+                                Text(
+                                  'My Rewards',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: selectedIndex == 0
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
                                 ),
-                              ), 
-                            const SizedBox(height: 5),
-                            Container(
-                              height: 2,
-                              width: 130,
-                              color: selectedIndex == 0? Colors.black : Colors.grey,
-                              ), 
-                            ],
-                          ),  
-                        ),
-                        const SizedBox(width: 60), 
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = 1;
-                            });
-                          },
-                          
-                          child: Column(
-                            children: [
-                              Text(
-                                'Payment',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedIndex == 1 ? Colors.black : Colors.grey,
+                                const SizedBox(height: 5),
+                                Container(
+                                  height: 2,
+                                  width: screenWidth * 0.35,
+                                  color: selectedIndex == 0
+                                      ? Colors.black
+                                      : Colors.grey,
                                 ),
-                              ), 
-                              const SizedBox(height: 5),
-                              Container(
-                                height: 2,
-                                width: 130,
-                                color: selectedIndex == 1? Colors.black : Colors.grey,
-                                ), 
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = 1;
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Payment',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: selectedIndex == 1
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  height: 2,
+                                  width: screenWidth * 0.35,
+                                  color: selectedIndex == 1
+                                      ? Colors.black
+                                      : Colors.grey,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    //Display content based on selected tab
+                    // Display content based on selected tab
                     Expanded(
                       child: selectedIndex == 0
-                          ? const MyRewards() //if the index is 0, then myrewards page is true, show this page
-                          : const MyPayment(), // else index is 1, then payment page is show
+                          ? const MyRewards()
+                          : const MyPayment(),
                     ),
                   ],
                 ),

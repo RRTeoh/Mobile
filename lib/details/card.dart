@@ -34,7 +34,7 @@ class _MembershipCardState extends State<MembershipCard> {
           child: Image.asset(
             _isFirstImage ? widget.imagePath1 : widget.imagePath2, //is true use: if false
             width: double.infinity,
-            height: 220,
+            height: 170,
             fit: BoxFit.cover,
           ),
         ),
