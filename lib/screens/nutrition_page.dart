@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'widgets/calorie_summary_section.dart';
-// import 'widgets/nutrition_bottom_sheet.dart';
+// import 'nutrition_widgets/calorie_summary_section.dart';
+// import 'nutrition_widgets/nutrition_bottom_sheet.dart';
 
 class NutritionPage extends StatefulWidget {
   const NutritionPage({super.key});
