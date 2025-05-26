@@ -34,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: Icon(Icons.list, color: Colors.black),
       ),
       body: Container(
         decoration: BoxDecoration(
