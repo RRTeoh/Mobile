@@ -70,6 +70,14 @@ flutter:
    - assets/images/promotion/member.png
    - assets/images/promotion/premium.jpg
    - assets/images/25%.png
+   - assets/images/myprofile/people.jpg
+   - assets/images/myprofile/membercard.jpg
+   - assets/images/myprofile/barcode2.jpg
+   - assets/images/myprofile/voucher1.jpg 
+   - assets/images/myprofile/voucher2.jpg     
+   - assets/images/myprofile/voucher3.jpg        
+
+ 
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
