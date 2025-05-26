@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/schedulecourse.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class SearchCourse extends StatefulWidget
 {
@@ -45,7 +46,7 @@ class _SearchCourseState extends State<SearchCourse>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(300), // Custom height
+        preferredSize: Size.fromHeight(250), // Custom height
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -58,6 +59,10 @@ class _SearchCourseState extends State<SearchCourse>
                   const Color.fromARGB(255, 123, 218, 248),
                   Colors.white,
                 ],
+                //stops: [
+                 // 0.0, // sharp or not
+                 // 0.9, // blue part
+                //],
               ),
               borderRadius: BorderRadius.circular(20),
             ),
@@ -68,24 +73,25 @@ class _SearchCourseState extends State<SearchCourse>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(height:5),
                     Row(
                       children: [
-                        Icon(Icons.filter_alt, color: Colors.black, size: 25),
+                        Icon(Icons.filter_alt, color: Colors.black, size: 20),
                         SizedBox(width: 8),
-                        Icon(Icons.notifications, color: Colors.black, size: 25),
-                        SizedBox(width: 100),
+                        Icon(Icons.notifications, color: Colors.black, size: 20),
+                        SizedBox(width: 115),
                         Text(
-                          "Gym Schedules",
+                          "Gym Schedule",
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 12, 0, 143)
                           )
                         )
                       ],
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: Column(
@@ -138,18 +144,21 @@ class _SearchCourseState extends State<SearchCourse>
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
+                                            color: Color.fromARGB(255, 12, 0, 143),
                                           ),
                                         ),
                                         SizedBox(height: 4),
-                                        Text(
+                                        Container(
+                                          padding: EdgeInsets.only(left:15),
+                                          child:Text(
                                         //'1hr',
                                           _foundCourse[index].duration,
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey,
                                           ),
-                                        ),
+                                        ), 
+                                        )
                                       ],
                                    ),
                                   SizedBox(width: 16),
@@ -181,32 +190,44 @@ class _SearchCourseState extends State<SearchCourse>
                                             ],
                                         ),
                                         SizedBox(height: 4),
-                                        Row(
-                                          children: List.generate(5, (index) {
-                                            if (index < 4) {
-                                              return Icon(Icons.star, size: 16, color: Colors.amber);
-                                              } else {
-                                              return Icon(Icons.star_half, size: 16, color: Colors.amber);
-                                            }
-                                          }),
-                                        )
+                                        RatingBar.builder(
+                                          initialRating: _foundCourse[index].rating.toDouble(),
+                                          minRating: 1,
+                                          direction: Axis.horizontal,
+                                          itemSize: 20,
+                                          itemBuilder: (context, _) => const Icon(
+                                            Icons.star,
+                                            color: Colors.yellow
+                                            ),
+                                          onRatingUpdate: (double value) { },
+                                        ),
                                       ],
                                     ),
                                   ),
 
                                   // Right side (+ button)
-                                  Container(
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 50), // Pushes the whole circle down
+                                      child:Container(
+                                      height: 30,
+                                      width: 30,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.cyan,
                                     ),
                                     child: IconButton(
-                                      icon: Icon(Icons.add, color: Colors.white),
+                                      padding: EdgeInsets.zero,
+                                      icon: Icon(
+                                        Icons.add, 
+                                        color: Colors.white,
+                                        size: 20,
+                                        ),
                                       onPressed: () {
                                       // Handle add action
                                       },
                                     ),
                                   ),
+                                  )
                                 ],
                               ),
                             ),
