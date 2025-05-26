@@ -93,7 +93,7 @@ class _SearchCourseState extends State<SearchCourse>
                     ),
                     SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(5),
                       child: Column(
                         children: [
                          TextField(
@@ -111,7 +111,178 @@ class _SearchCourseState extends State<SearchCourse>
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
+                        Text(
+                          "May 2025",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20
+                          )
+                        ),
+                        const SizedBox(height: 20),
+                        Center(
+                          child:Row(
+                          children: 
+                          [
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Mon",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "10",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Tue",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "11",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Wed",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "12",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Thu",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "13",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Fri",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Container(
+                                  height: 28,
+                                  width: 28,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                      color: Colors.cyan,
+                                  ),
+                                  child:Center(
+                                    child: Text(
+                                  "14",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                    )
+                                )
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Sat",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "15",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(width:20),
+                            Column(
+                              children: 
+                              [
+                                Text(
+                                  "Sun",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "16",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        )
+                        )
                       ],
                    )
                  ),

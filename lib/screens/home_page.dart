@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/course.dart';
 import 'package:asgm1/details/promotion.dart';
-import 'package:asgm1/details/date.dart';
+//import 'package:asgm1/details/date.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  List<Course> courses = [];
-  List<Promotion> promotion = [];
-  List<Date> dates = [];
+  final List<Course> courses = [];
+  final List<Promotion> promotion = [];
+  //final List<Date> dates = [];
 
   @override
   Widget build(BuildContext context) {
-    courses = Course.getAllCourse();
-    promotion = Promotion.getAllPromo();
-    dates = Date.getAllDate();
+    final courses = Course.getAllCourse();
+    final promotion = Promotion.getAllPromo();
+    //final dates = Date.getAllDate();
 
     return Scaffold(
       appBar: AppBar(
@@ -723,7 +723,7 @@ class HomePage extends StatelessWidget {
               itemCount: courses.length,
               itemBuilder: (context, index) {
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: 8),
+                margin: EdgeInsets.only(right: 8),
                   height: 175,
                   width: 150,
                   decoration:BoxDecoration(
@@ -785,7 +785,7 @@ class HomePage extends StatelessWidget {
               itemCount: promotion.length,
               itemBuilder: (context, index) {
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: 8),
+                margin: EdgeInsets.only(right: 8),
                   height: 175,
                   width: 150,
                   decoration:BoxDecoration(
