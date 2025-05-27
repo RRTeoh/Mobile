@@ -72,6 +72,7 @@ class _TrackerPageState extends State<TrackingPage> {
           children: [
             const SizedBox(height: 35),
             _buildSwitchBar(),
+            const SizedBox(height: 10),
             Expanded(
               child: PageView(
                 controller: _pageController,

@@ -237,7 +237,7 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
 
     return Column(
       children: [
-        const SizedBox(height: 10),
+
         Text(
           isToday ? 'Today' : formattedDate,
           style: const TextStyle(fontSize: 20),
