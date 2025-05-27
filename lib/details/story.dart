@@ -29,10 +29,10 @@ class StoryRead extends StatelessWidget {
             gradient: gradient,
           ),
           child: CircleAvatar(
-            radius: 29,
+            radius: 30,
             backgroundColor: Colors.white,
             child: CircleAvatar(
-              radius: 28,
+              radius: 29,
               backgroundImage: AssetImage(imagePath),
             ),
           ),
@@ -79,10 +79,10 @@ class StoryNonRead extends StatelessWidget {
                 ),
               ),
               child: CircleAvatar(
-                radius: 29,
+                radius: 30,
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
-                  radius: 28,
+                  radius: 29,
                   backgroundImage: AssetImage(imagePath),
                 ),
               ),
