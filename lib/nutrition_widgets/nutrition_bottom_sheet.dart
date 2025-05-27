@@ -29,7 +29,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
   static const Duration _animationDuration = Duration(milliseconds: 300);
   static const double _collapsedHeightRatio = 0.45;
   static const double _expandedHeightRatio = 0.74;
-  static const EdgeInsets _containerPadding = EdgeInsets.fromLTRB(20, 10, 20, 0);
+  static const EdgeInsets _containerPadding = EdgeInsets.fromLTRB(20, 10, 20, 50);
   static const double _statsSpacing = 15.0;
 
   // Meal type mapping (to avoid duplicate strings)
@@ -84,9 +84,9 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
   }
   
   // Getting food data for a given meal type
-  List<FoodItem> _getFoodItemsForMeal(String mealType) {
-    return _mealFoodData[mealType] ?? <FoodItem>[];
-  }
+  // List<FoodItem> _getFoodItemsForMeal(String mealType) {
+  //   return _mealFoodData[mealType] ?? <FoodItem>[];
+  // }
   
   // Calculate total calories
   int _getTotalCalories() {

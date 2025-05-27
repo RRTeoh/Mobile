@@ -87,9 +87,8 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
   late Animation<double> _toastAnimation;
 
   // Style constants
-  static const EdgeInsets _containerPadding = EdgeInsets.all(12);
-  static const EdgeInsets _titlePadding = EdgeInsets.only(bottom: 8);
-  static const EdgeInsets _rowPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 4);
+  static const EdgeInsets _containerPadding = EdgeInsets.all(10);
+  static const EdgeInsets _rowPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 4);
   static const EdgeInsets _buttonPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 4);
 
   static const Color _primaryColor = Color(0xff41b8d5);
@@ -360,7 +359,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(230, 82, 81, 81),
                 boxShadow: [
@@ -375,7 +374,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
                 message,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -448,9 +447,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
 
   // Build header
   Widget _buildHeader() {
-    return Padding(
-      padding: _titlePadding,
-      child: Row(
+    return Row(
         children: [
           Text(
             '${widget.mealType} Foods',
@@ -467,14 +464,13 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
         ],
-      ),
-    );
+      );
   }
 
   // Build food list
   Widget _buildFoodList() {
     return Container(
-      constraints: const BoxConstraints(minHeight: 40),
+      constraints: const BoxConstraints(minHeight: 30),
       child: _foodItems.isEmpty && _editingIndex != -2
           ? _buildEmptyState()
           : _buildFoodItems(),
@@ -612,19 +608,22 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     TextInputType? keyboardType,
     required VoidCallback onChanged,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      style: const TextStyle(fontSize: 14),
-      onChanged: (_) => onChanged(),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: _buildInputBorder(hasError),
-        enabledBorder: _buildInputBorder(hasError),
-        focusedBorder: _buildInputBorder(hasError, focused: true),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        isDense: true,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4), // 设置外边距
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        style: const TextStyle(fontSize: 14),
+        onChanged: (_) => onChanged(),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.grey),
+          border: _buildInputBorder(hasError),
+          enabledBorder: _buildInputBorder(hasError),
+          focusedBorder: _buildInputBorder(hasError, focused: true),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          isDense: true,
+        ),
       ),
     );
   }
@@ -641,7 +640,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     }
 
     return OutlineInputBorder(
-      borderSide: BorderSide(color: borderColor, width: 2.0),
+      borderSide: BorderSide(color: borderColor, width: 1.5),
     );
   }
 
@@ -663,7 +662,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
   // Build divider
   Widget _buildDivider() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12, top: 2),
+      margin: const EdgeInsets.only(bottom: 8, top: 1),
       height: 2,
       color: Colors.grey.shade400,
     );
@@ -698,8 +697,8 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     required Color backgroundColor,
   }) {
     return SizedBox(
-      width: 100,
-      height: 30,
+      width: 90,
+      height: 24,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 18),
