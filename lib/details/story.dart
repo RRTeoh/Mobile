@@ -29,10 +29,10 @@ class StoryRead extends StatelessWidget {
             gradient: gradient,
           ),
           child: CircleAvatar(
-            radius: 38,
+            radius: 29,
             backgroundColor: Colors.white,
             child: CircleAvatar(
-              radius: 37,
+              radius: 28,
               backgroundImage: AssetImage(imagePath),
             ),
           ),
@@ -40,7 +40,7 @@ class StoryRead extends StatelessWidget {
         SizedBox(height: 5),
         Text(
           username,
-          style: TextStyle(fontSize: 12),
+          style: TextStyle(fontSize: 10),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           textAlign: TextAlign.center,
@@ -79,10 +79,10 @@ class StoryNonRead extends StatelessWidget {
                 ),
               ),
               child: CircleAvatar(
-                radius: 38,
+                radius: 29,
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
-                  radius: 37,
+                  radius: 28,
                   backgroundImage: AssetImage(imagePath),
                 ),
               ),
@@ -102,7 +102,7 @@ class StoryNonRead extends StatelessWidget {
         SizedBox(height: 5),
         Text(
           username,
-          style: TextStyle(fontSize: 12),
+          style: TextStyle(fontSize: 10),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           textAlign: TextAlign.center,
@@ -115,28 +115,46 @@ class StoryNonRead extends StatelessWidget {
 Widget storySection() {
   return Container(
     color: Colors.lightBlue[100],
-    padding: EdgeInsets.symmetric(vertical: 15),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
-        StoryNonRead(
-          imagePath: 'assets/images/pic1.jpg',
-          username: 'Jackson Wang',
-          showPlus: true,
-        ),
-        StoryNonRead(
-          imagePath: 'assets/images/pic2.jpg',
-          username: 't-rex123',
-        ),
-        StoryRead(
-          imagePath: 'assets/images/pic3.jpg',
-          username: 'Ashley_520',
-        ),
-        StoryRead(
-          imagePath: 'assets/images/pic4.jpg',
-          username: 'Sina886',
-        ),
-      ],
+    padding: EdgeInsets.symmetric(vertical: 12),
+    height: 110,
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: const [
+          SizedBox(width: 10),
+          StoryNonRead(
+            imagePath: 'assets/images/pic1.jpg',
+            username: 'Jackson Wang',
+            showPlus: true,
+          ),
+          SizedBox(width: 15),
+          StoryNonRead(
+            imagePath: 'assets/images/pic2.jpg',
+            username: 't-rex123',
+          ),
+          SizedBox(width: 15),
+          StoryNonRead(
+            imagePath: 'assets/images/pic3.jpg',
+            username: 'Ashley_520',
+          ),
+          SizedBox(width: 15),
+          StoryRead(
+            imagePath: 'assets/images/pic4.jpg',
+            username: 'Sina886',
+          ),
+          SizedBox(width: 15),
+          StoryRead(
+            imagePath: 'assets/images/pic5.jpg',
+            username: 'Anthony',
+          ),
+          SizedBox(width: 15),
+          StoryRead(
+            imagePath: 'assets/images/pic6.jpg',
+            username: 'Ryu_Ken',
+          ),
+          SizedBox(width: 10),
+        ],
+      ),
     ),
   );
 }

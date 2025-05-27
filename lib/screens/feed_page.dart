@@ -9,18 +9,18 @@ class FeedPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlue[100],
-        toolbarHeight: 80,
+        toolbarHeight: 50,
         elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Icon(Icons.tune, size: 30), 
+                Icon(Icons.tune, size: 25), 
                 SizedBox(width: 15),
                 Stack(
                   children: [
-                    Icon(Icons.notifications_none, size: 30), 
+                    Icon(Icons.notifications_none, size: 25), 
                     Positioned(
                       right: 0,
                       top: 0,
@@ -41,7 +41,7 @@ class FeedPage extends StatelessWidget {
             Text(
               "Feeds",
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 23,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue[900],
               ),
@@ -49,11 +49,11 @@ class FeedPage extends StatelessWidget {
 
             Row(
               children: [
-                Icon(Icons.add_box_outlined, size: 30),
+                Icon(Icons.add_box_outlined, size: 23),
                 SizedBox(width: 15),
                 Stack(
                   children: [
-                    Icon(Icons.chat_bubble_outline, size: 30),
+                    Icon(Icons.chat_bubble_outline, size: 23),
                     Positioned(
                       right: 0,
                       top: 0,
@@ -81,7 +81,7 @@ class FeedPage extends StatelessWidget {
             // Stories Section
             storySection(),
 
-            SizedBox(height: 10),
+            SizedBox(height: 5),
 
             // Posts
             Posts(
