@@ -147,6 +147,7 @@ class _MealSectionState extends State<MealSection>
   // Status Management
   bool _hasDataCached = false;
   bool _isUpdatingWidget = false;
+  bool _shouldCancelEdit = false;
 
   // Animation Constants
   static const Duration _animationDuration = Duration(milliseconds: 300);
@@ -235,7 +236,20 @@ class _MealSectionState extends State<MealSection>
       if (widget.isExpanded) {
         _animationController.forward();
       } else {
+        // Send a signal to cancel editing when the card is retracted
+        setState(() {
+          _shouldCancelEdit = true;
+        });
         _animationController.reverse();
+        
+        // Reset flag at next frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _shouldCancelEdit = false;
+            });
+          }
+        });
       }
     }
   }
@@ -345,6 +359,11 @@ class _MealSectionState extends State<MealSection>
       mealType: widget.config.title,
       initialFoodItems: widget.foodItems,
       onFoodItemsUpdate: _handleFoodItemsUpdate,
+      shouldCancelEdit: _shouldCancelEdit, // Pass the unedit flag
+      onEditStateChanged: () {
+        // Handling of editorial state changes (if additional logic is required)
+        _scheduleDataChangeCheck();
+      },
     );
   }
 }

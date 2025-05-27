@@ -29,7 +29,7 @@ class NutritionPageState extends State<NutritionPage> {
     setState(() {
       selectedDate = DateTime.now();
     });
-    // _bottomSheetKey.currentState?.collapse();
+    _bottomSheetKey.currentState?.collapse();
   }
 
   @override

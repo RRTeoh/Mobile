@@ -51,6 +51,8 @@ class MealForm extends StatefulWidget {
   final String mealType;
   final List<FoodItem> initialFoodItems;
   final Function(List<FoodItem>) onFoodItemsUpdate;
+  final bool shouldCancelEdit; // Should the edit flag be removed
+  final VoidCallback? onEditStateChanged; // Edit state change callbacks
   
   const MealForm({
     super.key,
@@ -60,6 +62,8 @@ class MealForm extends StatefulWidget {
     required this.mealType,
     required this.initialFoodItems,
     required this.onFoodItemsUpdate,
+    this.shouldCancelEdit = false,
+    this.onEditStateChanged,
   });
 
   @override
@@ -112,6 +116,13 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant MealForm oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    // Handling of cancellation of editing signals
+    if (widget.shouldCancelEdit && !oldWidget.shouldCancelEdit) {
+      if (_editingIndex != -1) {
+        _cancelEdit();
+      }
+    }
 
     // Update local data when parent-provided data changes
     if (!_listsEqual(widget.initialFoodItems, oldWidget.initialFoodItems)) {
@@ -168,6 +179,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
       _editCaloriesController.text = _foodItems[index].calories.toString();
       _clearErrors();
     });
+    widget.onEditStateChanged?.call(); // Notification of edit status changes
   }
 
   // Start adding a new item
@@ -176,6 +188,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
       _editingIndex = -2;
       _clearErrors();
     });
+    widget.onEditStateChanged?.call(); // Notification of edit status changes
   }
 
   // Clear validation errors
@@ -262,6 +275,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     _clearErrors();
     _editFoodController.clear();
     _editCaloriesController.clear();
+    widget.onEditStateChanged?.call(); // Notification of edit status changes
   }
 
   // Cancel editing
@@ -609,7 +623,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     required VoidCallback onChanged,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4), // 设置外边距
+      margin: const EdgeInsets.symmetric(vertical: 4),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
