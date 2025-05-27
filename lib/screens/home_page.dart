@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     final promotion = Promotion.getAllPromo();
     //final dates = Date.getAllDate();
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    //final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
