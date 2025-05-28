@@ -202,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
               height: double.infinity,
               color: Colors.transparent,
             )
-          )
+          ),
         ],
       ),
     );
