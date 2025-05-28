@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/paymentdetails.dart';
 
-class MyPayment extends StatelessWidget {
+class MyPayment extends StatefulWidget {
   const MyPayment({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    List<PaymentDetails> payments = PaymentDetails.getallDetails();
+  State<MyPayment> createState() => _MyPaymentState();
+}
 
+class _MyPaymentState extends State<MyPayment> {
+  List<PaymentDetails> payments = PaymentDetails.getallDetails();
+  String selectedFilter = '20 April 25 - 19 May 25'; // Default display
+
+  void _handleFilterSelection(String filter) {
+    setState(() {
+      selectedFilter = filter;
+
+      // Optional: apply filtering logic here based on selected filter
+      // payments = PaymentDetails.getFilteredDetails(filter);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.only(top: 5),
-      itemCount: payments.length + 1, // +1 for the filter bar
+      itemCount: payments.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          // Show filter bar with space below
           return Column(
             children: [
               Container(
@@ -32,21 +46,38 @@ class MyPayment extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
-                      '20 April 25 - 19 May 25',
-                      style: TextStyle(fontSize: 12),
+                      selectedFilter,
+                      style: const TextStyle(fontSize: 12),
                     ),
-                    Icon(Icons.filter_list, color: Colors.grey),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.filter_list, color: Colors.grey),
+                      offset: const Offset(0, -10), // push it upward (adjust as needed)
+                      onSelected: _handleFilterSelection,
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          'Today',
+                          'Yesterday',
+                          'Last 7 Days',
+                          'Last 30 Days'
+                        ].map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(choice),
+                          );
+                        }).toList();
+                      },
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 10), // gap below the filter bar
+              const SizedBox(height: 10),
             ],
           );
         }
 
-        final payment = payments[index - 1]; 
+        final payment = payments[index - 1];
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           child: Container(

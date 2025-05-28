@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
             : const Text(
                 "Membership",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xff8fd4e8), Colors.white],
+                colors: [Colors.lightBlue.shade100, Colors.white],
               ),
             ),
             child: Column(
