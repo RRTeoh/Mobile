@@ -4,6 +4,8 @@ import 'package:asgm1/details/post.dart';
 import 'package:asgm1/screens/chat_page.dart'; 
 
 class FeedPage extends StatelessWidget {
+  const FeedPage({super.key});
+
   
   @override
   Widget build(BuildContext context) {

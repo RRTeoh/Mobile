@@ -47,6 +47,20 @@ class _PostsState extends State<Posts> {
       }
     });
   }
+Widget _buildOptionTile(IconData icon, String title) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(5),
+      border: Border.all(color: Colors.grey.shade300),
+    ),
+    child: ListTile(
+      dense: true,
+      leading: Icon(icon, size: 22, color: Colors.black),
+      title: Text(title, style: TextStyle(fontSize: 14)),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +90,47 @@ class _PostsState extends State<Posts> {
                 ],
               ),
               Spacer(),
-              Icon(Icons.more_horiz,size: 25),
+              IconButton(
+                icon: Icon(Icons.more_horiz,size: 25),
+                onPressed:() {
+                  showModalBottomSheet(
+                    context: context,
+                      builder: (context) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.vertical(top:Radius.circular(20)),
+                          child:Container(
+                            color: Colors.grey[100],
+                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                           children: [
+                            Container(
+                              width: 40,
+                              height: 5,
+                              margin: EdgeInsets.only(bottom:15),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            
+                            _buildOptionTile(Icons.bookmark_outline, 'Save'),
+                            SizedBox(height: 10),
+                            _buildOptionTile(Icons.star_outline, 'Add to Favourites'),
+                            SizedBox(height: 10),
+                            _buildOptionTile(Icons.person_outline, 'About this account'),
+                            SizedBox(height: 10),
+                            _buildOptionTile(Icons.hide_source, 'Hide'),
+                            SizedBox(height: 10),
+                          ], 
+                          )
+                          ),
+                        );
+                      },
+                  );
+                },
+              ),
+              
             ],
           ),
 

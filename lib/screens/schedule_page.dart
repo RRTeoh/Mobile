@@ -35,7 +35,7 @@ class _SearchCourseState extends State<SearchCourse> {
             left: 0,
             right: 0,
             child: SafeArea(
-              child: Container(
+              child: SizedBox(
                 height: kToolbarHeight, 
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
