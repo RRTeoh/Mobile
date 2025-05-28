@@ -41,7 +41,9 @@ class FeedPage extends StatelessWidget {
               ],
             ),
 
-            Text(
+            Padding(
+              padding: const EdgeInsets.only(left:40),
+              child: Text(
                 "Feeds",
                 style: TextStyle(
                   fontSize: 20,
@@ -49,6 +51,8 @@ class FeedPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
+            ),
+            
 
 
             Row(
@@ -85,6 +89,7 @@ class FeedPage extends StatelessWidget {
           ],
         ),
       ),
+      
       body: Container(
         color: Colors.white,
         child: ListView(
