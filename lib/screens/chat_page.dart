@@ -20,12 +20,12 @@ class ChatPage extends StatelessWidget {
         title: Text(
           'Chats',
           style: TextStyle(
-            color: Colors.blue[900],
+            color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: 20,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.blue[900]),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -36,7 +36,7 @@ class ChatPage extends StatelessWidget {
               child: TextField(
                 style: TextStyle(fontSize: 12),
                 decoration: InputDecoration(
-                  hintText: 'search',
+                  hintText: 'Search',
                   prefixIcon: Icon(Icons.search, size: 19),
                   filled: true,
                   fillColor: Colors.white,
