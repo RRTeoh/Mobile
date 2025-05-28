@@ -52,7 +52,7 @@ class _BottomAppState extends State<BottomApp> {
           });
         },
         shape: CircleBorder(), 
-        backgroundColor: myCurrentIndex == 0? const Color.fromARGB(255, 172, 255, 251) :Color(0xFF004AAD), 
+        backgroundColor: const Color.fromARGB(255, 172, 255, 251), 
         child: Icon(
           Icons.home_rounded,
           size: 48,
