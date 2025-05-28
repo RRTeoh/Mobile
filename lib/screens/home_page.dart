@@ -584,7 +584,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       padding: EdgeInsets.all(5),
                       child: Text(
-                        "Archery",
+                        "Yoga",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
@@ -611,7 +611,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       padding: EdgeInsets.all(5),
                       child: Text(
-                        "Curling",
+                        "Cycling",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
@@ -624,7 +624,7 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       margin:EdgeInsets.only(top:10,bottom:10),
                       height:27,
-                      width:60,
+                      width:97,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
@@ -638,7 +638,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       padding: EdgeInsets.all(5),
                       child: Text(
-                        "Kabaddi",
+                        "Weightlifting",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
@@ -692,7 +692,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       padding: EdgeInsets.all(5),
                       child: Text(
-                        "Parkour",
+                        "Boxing",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,

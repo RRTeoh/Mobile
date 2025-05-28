@@ -40,13 +40,14 @@ class FeedPage extends StatelessWidget {
             ),
 
             Text(
-              "Feeds",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+                "Feeds",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-            ),
+
 
             Row(
               children: [

@@ -18,7 +18,7 @@ class Course{
     courses.add(
       Course(
         courseimage:'assets/images/courses/Yoga.png',
-        coursename: 'Yoga',
+        coursename: 'Mind-Body',
         )
     );
 
@@ -32,21 +32,21 @@ class Course{
     courses.add(
       Course(
         courseimage:'assets/images/courses/Home-Gym.jpg',
-        coursename: 'Gym',
+        coursename: 'Strength',
         )
     );
 
     courses.add(
       Course(
         courseimage:'assets/images/courses/Pilates.jpg',
-        coursename: 'Pilates',
+        coursename: 'Adventure',
         )
     );
 
     courses.add(
       Course(
         courseimage:'assets/images/courses/HIIT.jpg',
-        coursename: 'HIIT',
+        coursename: 'Combat',
         )
     );
 
