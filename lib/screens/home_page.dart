@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:asgm1/details/course.dart';
 import 'package:asgm1/details/promotion.dart';
 import 'package:asgm1/settings.dart';
+import 'package:asgm1/screens/Promo1.dart';
 
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
@@ -14,6 +15,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Course> courses = [];
   final List<Promotion> promotion = [];
+  int promotionIndex = 1;
+  final List<Widget> pages = [
+    Promo1(),
+    //Promo2(),
+    //Promo3(),
+  ];
+  
   //final List<Date> dates = [];
   bool isSettingsOpen = false;
 
@@ -492,7 +500,7 @@ class _HomePageState extends State<HomePage> {
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                                    //fontWeight: FontWeight.bold,
                                     color: Colors.black
                                   )
                                 ),
@@ -776,7 +784,13 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: promotion.length,
                   itemBuilder: (context, index) {
-                  return Container(
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        pages[promotionIndex];
+                      });
+                    },
+                   child:Container(
                     margin: EdgeInsets.only(right: 8),
                       height: 175,
                       width: 150,
@@ -786,6 +800,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Column(
                         children: [
+                          
                           Container(
                             margin:EdgeInsets.only(top:10),
                             width: 130,
@@ -815,7 +830,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ]
                       )
-                    );
+                      
+                    )
+                  );
                   },
                   ),
                 ),
