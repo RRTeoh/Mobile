@@ -9,7 +9,7 @@ class FeedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[100],
+        backgroundColor: Color(0xff8fd4e8),
         toolbarHeight: 50,
         elevation: 0,
         title: Row(

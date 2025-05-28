@@ -26,7 +26,7 @@ class _SearchCourseState extends State<SearchCourse> {
           // Background Gradient
           Container(
             height: 247,
-            color: Colors.lightBlue.shade100,
+            color: Color(0xff8fd4e8),
           ),
 
           // AppBar manually placed inside Stack
@@ -78,7 +78,7 @@ class _SearchCourseState extends State<SearchCourse> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.lightBlue.shade100, Colors.white],
+                colors: [Color(0xff8fd4e8), Colors.white],
               ),
             ),
               child: Column(

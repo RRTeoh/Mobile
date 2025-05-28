@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,   // start from top
                 end: Alignment.bottomCenter,  // end at bottom
-                colors: [Colors.lightBlue.shade100, Colors.white],
+                colors: [Color(0xff8fd4e8), Colors.white],
                 stops: [
                   0.0, // sharp or not
                   0.8, // blue part

@@ -114,7 +114,7 @@ class StoryNonRead extends StatelessWidget {
 
 Widget storySection() {
   return Container(
-    color: Colors.lightBlue[100],
+    color: Color(0xff8fd4e8),
     padding: EdgeInsets.symmetric(vertical: 12),
     height: 110,
     child: SingleChildScrollView(
