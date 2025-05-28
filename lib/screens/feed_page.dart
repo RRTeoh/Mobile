@@ -17,8 +17,8 @@ class FeedPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.tune, size: 25),
-                SizedBox(width: 15),
+                //Icon(Icons.list, size: 25),
+                //SizedBox(width: 15),
                 Stack(
                   children: [
                     Icon(Icons.notifications_none, size: 25),
@@ -42,9 +42,9 @@ class FeedPage extends StatelessWidget {
             Text(
               "Feeds",
               style: TextStyle(
-                fontSize: 23,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue[900],
+                color: Colors.black,
               ),
             ),
 
