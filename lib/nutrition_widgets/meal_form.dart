@@ -536,14 +536,14 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
         children: [
           // Food name
           Expanded(
-            flex: 45,
+            flex: 40,
             child: Text(
               item.name.isNotEmpty ? item.name : 'Unnamed',
               style: const TextStyle(fontSize: 14),
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Expanded(flex: 5, child: SizedBox()),
+          const Expanded(flex: 3, child: SizedBox()),
           // Calories
           Expanded(
             flex: 16,
@@ -561,7 +561,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
               ],
             ),
           ),
-          const Expanded(flex: 5, child: SizedBox()),
+          const Expanded(flex: 3, child: SizedBox()),
           // Action buttons
           _buildActionIcon(Icons.edit, () => _startEditing(index)),
           const SizedBox(width: 4),

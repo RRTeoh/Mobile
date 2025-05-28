@@ -5,7 +5,17 @@ import 'meal_form.dart';
 
 // Nutritional information bottom panel, provide meal data management and statistical display function, support expand/collapse animation
 class NutritionBottomSheet extends StatefulWidget {
-  const NutritionBottomSheet({super.key});
+  // 添加构造函数参数
+  final int baseGoal;
+  final int exerciseCalories;
+  final ValueChanged<int>? onFoodCaloriesUpdate;
+
+  const NutritionBottomSheet({
+    super.key,
+    this.baseGoal = 2000,
+    this.exerciseCalories = 400,
+    this.onFoodCaloriesUpdate,
+  });
   
   @override
   State<NutritionBottomSheet> createState() => NutritionBottomSheetState();
@@ -74,6 +84,10 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       _updateFormDataStatus(mealIndex, foodItems.isNotEmpty);
     }
     
+    // 通知父组件食物卡路里更新
+    final totalCalories = _getTotalCalories();
+    widget.onFoodCaloriesUpdate?.call(totalCalories);
+    
     // Reserved data persistence interface
     // _saveMealDataToDatabase(mealType, foodItems);
   }
@@ -131,6 +145,8 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       _mealFoodData.updateAll((key, value) => <FoodItem>[]);
       _formHasData.clear();
     });
+    // 通知父组件卡路里清零
+    widget.onFoodCaloriesUpdate?.call(0);
   }
   
   // Obtaining an overview of meal type data (for commissioning or statistical display)
@@ -188,10 +204,9 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       padding: _containerPadding,
       children: [
         TopStatsRow(
-          baseGoal: 2000,
-          foodCalories: 1600,
-          // foodCalories: _getTotalCalories(),
-          exerciseCalories: 400,
+          baseGoal: widget.baseGoal,
+          foodCalories: _getTotalCalories(),
+          exerciseCalories: widget.exerciseCalories,
         ),
         const SizedBox(height: _statsSpacing),
         MealSectionList(

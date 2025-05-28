@@ -23,6 +23,10 @@ class CalorieData {
   
   bool get isNetIntakeExceeded => netIntakeCalories > baseGoal;
   
+  // 修改：只要食物卡路里大于0就应该显示动画
+  bool get hasValidFood => foodCalories > 0;
+  
+  // 新增：净摄入值是否有效（大于0）
   bool get hasValidNetIntake => netIntakeCalories > 0;
 
   @override
@@ -198,13 +202,16 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
   Future<void> _startAnimationSequence(CalorieData data) async {
     _resetAllAnimations();
     
-    if (!data.hasValidNetIntake) return;
+    // 修改：只要有食物就显示动画
+    if (!data.hasValidFood) return;
     
-    // Simultaneous activation of food and net intake animation
-    await Future.wait([
-      _foodController.forward(),
-      _netIntakeController.forward(),
-    ]);
+    // 修改：食物动画始终执行，净摄入动画只在有效时执行
+    List<Future> animations = [_foodController.forward()];
+    if (data.hasValidNetIntake) {
+      animations.add(_netIntakeController.forward());
+    }
+    
+    await Future.wait(animations);
     
     // Starts red transition and disappearance animation after a delay
     await Future.delayed(AnimationConfig.delayBeforeRed);
@@ -254,7 +261,7 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
             SizedBox(
               height: 140,
               width: 140,
-              child: data.hasValidNetIntake 
+              child: data.hasValidFood  // 修改：检查是否有有效的食物数据
                   ? _AnimatedCircleWidget(
                       data: data,
                       netIntakeColor: netIntakeColor,
@@ -453,8 +460,8 @@ class _AnimatedCircleWidget extends StatelessWidget {
             // Food Animation Layer
             ..._buildFoodAnimationLayers(),
             
-            // Net Intake Layer
-            if (data.netIntakeProgress > 0)
+            // Net Intake Layer - 修改：只在净摄入有效时显示
+            if (data.hasValidNetIntake && data.netIntakeProgress > 0)
               _CircularIndicator(
                 percent: netIntakeAnimation.value,
                 progressColor: netIntakeColor,
