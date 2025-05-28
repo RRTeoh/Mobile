@@ -51,8 +51,8 @@ class _BottomAppState extends State<BottomApp> {
             myCurrentIndex = 0;
           });
         },
-        shape: CircleBorder(),
-        backgroundColor: myCurrentIndex == 0? const Color.fromARGB(255, 172, 255, 251) :Color.fromARGB(255, 51, 107, 136), 
+        shape: CircleBorder(), 
+        backgroundColor: myCurrentIndex == 0? const Color.fromARGB(255, 172, 255, 251) :Color(0xFF004AAD), 
         child: Icon(
           Icons.home_rounded,
           size: 48,
@@ -67,7 +67,7 @@ class _BottomAppState extends State<BottomApp> {
         height: 70,
         shape: const CircularNotchedRectangle(),
         notchMargin: 6.0,
-        color:  const Color.fromARGB(255, 51, 107, 136),
+        color:  Color(0xFF004AAD),
         //child: SizedBox(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
