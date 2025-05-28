@@ -9,6 +9,7 @@ class ChatPage extends StatelessWidget {
     {'name': 'Ryu_Ken', 'message': 'Miss u', 'time': '20 minutes ago', 'image': 'assets/images/pic6.jpg'},
   ];
 
+ // const ChatPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
