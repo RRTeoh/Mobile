@@ -26,85 +26,41 @@ class _HomePageState extends State<HomePage> {
     //final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue.shade100, 
-    leading: isSettingsOpen
-        ? null // No leading widget when settings are open
-        : IconButton(
-            icon: const Icon(Icons.list, color: Colors.black),
-            onPressed: () {
-              setState(() {
-                isSettingsOpen = true;
-              });
-            },
-          ),        
-        title: Row(
-          children: [
-            // Padding(
-            //   padding: EdgeInsets.only(left: 0),
-            // ),
-            //Container(
-              //decoration: BoxDecoration(
-                //color: Colors.white,
-                //shape: BoxShape.circle,
-              //),
-              //padding: EdgeInsets.all(5),
-              //child: 
-              // Icon(
-              //   Icons.list,
-              //   color:Colors.black,
-              //   size: 22,
-              //   ),
-            //),
-            //SizedBox(width: 0),
-            //Container(
-             // decoration: BoxDecoration(
-                //color: Colors.white,
-                //shape: BoxShape.circle,
-              //),
-              //padding: EdgeInsets.all(5),
-              //child: 
-              Icon(
-                Icons.notifications,
-                color: Colors.black,
-                size: 22,
-                ),
-            //),
-            //SizedBox(width: 210),
-            // Container(
-            //   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            //   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 1),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     borderRadius: BorderRadius.circular(30),
-            //   ),
-            //   child: Row(
-            //     children: [
-            //       Icon(
-            //         Icons.search,
-            //         color: Colors.grey,
-            //         size: 30
-            //       ),
-            //       SizedBox(width: 5),
-            //       Text(
-            //         "Search",
-            //         style: TextStyle(
-            //           color: Colors.grey,
-            //           fontSize: 20
-            //         )
-            //       )
-            //     ],
-            //   )
-            // ),
-            //SizedBox(width: 16),
-            Spacer(),
-            CircleAvatar(
-                radius: 23,
-                backgroundImage: AssetImage("assets/images/Profile.png"),
-                
+        backgroundColor: Colors.transparent, 
+
+    // Title: list icon when settings are closed
+    title: isSettingsOpen
+        ? null
+        : Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.list, color: Colors.black),
+                onPressed: () {
+                  setState(() {
+                    isSettingsOpen = true;
+                  });
+                },
               ),
-          ],
-        )
+              const SizedBox(width: 8),
+              const Icon(Icons.notifications, color: Colors.black, size: 22),
+              SizedBox(width:180),
+            //   CircleAvatar(
+            //   radius: 23,
+            //   backgroundImage: AssetImage("assets/images/Profile.png"),
+            // ),
+            ],
+          ),
+          actions:[
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: CircleAvatar(
+              radius: 23,
+              backgroundImage: AssetImage("assets/images/Profile.png"),
+            ),
+          ),
+          ]
       ),
       
       body: Stack(
