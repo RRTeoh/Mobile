@@ -52,7 +52,7 @@ class _BottomAppState extends State<BottomApp> {
           });
         },
         shape: CircleBorder(), 
-        backgroundColor: const Color.fromARGB(255, 172, 255, 251), 
+        backgroundColor: const Color.fromARGB(255, 14, 115, 148), 
         child: Icon(
           Icons.home_rounded,
           size: 48,
@@ -67,7 +67,7 @@ class _BottomAppState extends State<BottomApp> {
         height: 70,
         shape: const CircularNotchedRectangle(),
         notchMargin: 6.0,
-        color:  Color(0xFF004AAD),
+        color:  Color(0xff8fd4e8),
         //child: SizedBox(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
