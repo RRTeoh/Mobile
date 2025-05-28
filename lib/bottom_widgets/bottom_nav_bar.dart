@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/screens/feed_page.dart';
-import 'package:asgm1/screens/profile_page.dart';
 import 'package:asgm1/screens/tracking_page.dart';
 import 'package:asgm1/screens/home_page.dart';
 import 'package:asgm1/screens/schedule_page.dart';
+import 'package:asgm1/screens/membership.dart';
 
 class NavBar extends StatefulWidget 
 {

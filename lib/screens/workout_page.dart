@@ -9,7 +9,7 @@ class WorkoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -17,16 +17,16 @@ class WorkoutPage extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xff8fd4e8), Colors.white],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  // stops: [
-                  //   0.0, // sharp or not
-                  //   0.9, // blue part
-                  // ],
+                // gradient: LinearGradient(
+                //   colors: [Color(0xff8fd4e8), Colors.white],
+                //   begin: Alignment.topCenter,
+                //   end: Alignment.bottomCenter,
+                //   // stops: [
+                //   //   0.0, // sharp or not
+                //   //   0.9, // blue part
+                //   // ],
 
-                ),
+                // ),
               ),
               child: SafeArea(
                 bottom: false,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/schedulecourse.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:asgm1/settings.dart';
 
 class SearchCourse extends StatefulWidget
 {
@@ -16,6 +17,7 @@ class _SearchCourseState extends State<SearchCourse>
   final List<Schedulecourse> _allCourse = Schedulecourse.getAllSC();
   List<Schedulecourse> _foundCourse =[];
   Set<int> addedCourseIndices = {};
+  bool isSettingsOpen = false;
 
   String buttonText = "+ Add to my schedule";
 
@@ -48,12 +50,42 @@ class _SearchCourseState extends State<SearchCourse>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(250), // Custom height
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          
+          title: isSettingsOpen
+        ? null
+        :Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.list, color: Colors.black),
+                          onPressed: () {
+                            setState(() {
+                              isSettingsOpen = true;
+                            });
+                          },
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.notifications, color: Colors.black, size: 20),
+                        SizedBox(width: 80),
+                        Text(
+                          "Gym Schedule",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 12, 0, 143)
+                          )
+                        )
+                      ],
+                    ),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -70,32 +102,30 @@ class _SearchCourseState extends State<SearchCourse>
               ),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: SafeArea(
-              bottom: false,
               child: Padding(
                 padding: const EdgeInsets.only(left:20, right:20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height:5),
-                    Row(
-                      children: [
-                        Icon(Icons.filter_alt, color: Colors.black, size: 20),
-                        SizedBox(width: 8),
-                        Icon(Icons.notifications, color: Colors.black, size: 20),
-                        SizedBox(width: 115),
-                        Text(
-                          "Gym Schedule",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 12, 0, 143)
-                          )
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 10),
+                    // Row(
+                    //   children: [
+                    //     Icon(Icons.filter_alt, color: Colors.black, size: 20),
+                    //     SizedBox(width: 8),
+                    //     Icon(Icons.notifications, color: Colors.black, size: 20),
+                    //     SizedBox(width: 115),
+                    //     Text(
+                    //       "Gym Schedule",
+                    //       textAlign: TextAlign.right,
+                    //       style: TextStyle(
+                    //         fontSize: 22,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: const Color.fromARGB(255, 12, 0, 143)
+                    //       )
+                    //     )
+                    //   ],
+                    // ),
+                    SizedBox(height: 100),
                     Padding(
                       padding: const EdgeInsets.all(5),
                       child: Column(
@@ -118,199 +148,203 @@ class _SearchCourseState extends State<SearchCourse>
                       ],
                    )
                  ),
-                    const SizedBox(height: 20),
-                        Center(
+                    //const SizedBox(height: 20),
+                        // Center(
 
-                          child: Text(
-                          "May 2025",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20
-                          )
-                        ),
-                        ),
-                        //const SizedBox(height: 20),
-                        Padding(
-                          padding: EdgeInsets.all(19),
-                          child:Row(
-                          children: 
-                          [
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Mon",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "10",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Tue",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "11",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Wed",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "12",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Thu",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "13",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Fri",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                //SizedBox(height: 5),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "14",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Sat",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                //SizedBox(height: 10),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "15",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            ),
-                            SizedBox(width:17),
-                            Column(
-                              children: 
-                              [
-                                Text(
-                                  "Sun",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top:10),
-                                  child: Text(
-                                  "16",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  )
-                                )
-                              ],
-                            )
-                          ],
-                        )
-                        )
+                        //   child: Text(
+                        //   "May 2025",
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     color: Colors.black,
+                        //     fontSize: 20
+                        //   )
+                        // ),
+                        // ),
+                        // //const SizedBox(height: 20),
+                        // Padding(
+                        //   padding: EdgeInsets.all(19),
+                        //   child:Row(
+                        //   children: 
+                        //   [
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Mon",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "10",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Tue",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "11",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Wed",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "12",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Thu",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "13",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Fri",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         //SizedBox(height: 5),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "14",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black,
+                        //             fontWeight: FontWeight.bold
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Sat",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         //SizedBox(height: 10),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "15",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     ),
+                        //     SizedBox(width:17),
+                        //     Column(
+                        //       children: 
+                        //       [
+                        //         Text(
+                        //           "Sun",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //         ),
+                        //         Padding(
+                        //           padding: EdgeInsets.only(top:10),
+                        //           child: Text(
+                        //           "16",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             color: Colors.black
+                        //           ),
+                        //           )
+                        //         )
+                        //       ],
+                        //     )
+                        //   ],
+                        // )
+                        // )
                   ],
                 ),
               ),
             ),
           ),
         ),
-      ),
-      body: Expanded(
-                        child: _foundCourse.isNotEmpty
+      //),
+      body: Column(
+        children: [
+            Expanded(
+              child: Stack(
+                        children:[
+                           _foundCourse.isNotEmpty
                         ? ListView.builder(
                           itemCount: _foundCourse.length,
                           itemBuilder: (context, index) => Card(
@@ -622,8 +656,13 @@ class _SearchCourseState extends State<SearchCourse>
                         ): const Text(
                           "No results found. Please try with different search",
                           style: TextStyle(fontSize: 22),
+                        
                         )
+                        ]
                        )
+      )
+        ]
+      )
     );
   }
 }

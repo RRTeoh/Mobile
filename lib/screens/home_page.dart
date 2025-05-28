@@ -481,11 +481,14 @@ class _HomePageState extends State<HomePage> {
                               color: const Color.fromARGB(255, 214,233,249),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Column(
+                            child: Padding(
+                              padding: EdgeInsets.only(left:10),
+                              child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children:[
                                 SizedBox(height:5),
                                 Text(
-                                  "Upcoming Schedule:",
+                                  "Tomorrow",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 12,
@@ -493,17 +496,27 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.black
                                   )
                                 ),
-                                SizedBox(height:10),
                                 Row(
                                   children: 
                                   [
-                                    SizedBox(width:10),
-                                    Text(
-                                      "12:00 p.m.",
+                                    Container(
+                                      height:30,
+                                      width:5,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(255, 194, 194, 194),
+                                        borderRadius: BorderRadius.circular(10)
+                                      ),
+                                    ),
+                                    SizedBox(width:5),
+                                    Column (
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                      "12:00 p.m. - 1:00 p.m.",
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10,
+                                        //fontWeight: FontWeight.bold,
                                         color: Colors.black
                                       )
                                     ),
@@ -513,13 +526,17 @@ class _HomePageState extends State<HomePage> {
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w600,
                                         color: Colors.black
                                       )
                                     )
+                                      ],
+                                    )
+                                    
                                   ],
                                 )
                               ]
+                            )
                             )
                           ),
                         ],
