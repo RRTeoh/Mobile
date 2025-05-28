@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 class ChatPage extends StatelessWidget {
   final List<Map<String, String>> chatList = [
-    {'name': 't-rex123', 'message': 'Noted.', 'time': '3 minutes ago', 'image': 'assets/images/pic2.jpg'},
-    {'name': 'Ashley_520', 'message': 'Meet u later!', 'time': '6 minutes ago', 'image': 'assets/images/pic3.jpg'},
+    {'name': 't-rex123', 'message': 'Noted.', 'time': '3 minutes ago', 'image': 'assets/images/pic2.jpg','unread':'true'},
+    {'name': 'Ashley_520', 'message': 'Meet u later!', 'time': '6 minutes ago', 'image': 'assets/images/pic3.jpg','unread':'true'},
     {'name': 'Sina886', 'message': 'okay', 'time': '10 minutes ago', 'image': 'assets/images/pic4.jpg'},
     {'name': 'Anthony', 'message': 'Ciao', 'time': '15 minutes ago', 'image': 'assets/images/pic5.jpg'},
     {'name': 'Ryu_Ken', 'message': 'Miss u', 'time': '20 minutes ago', 'image': 'assets/images/pic6.jpg'},
   ];
 
- // const ChatPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,27 +55,67 @@ class ChatPage extends StatelessWidget {
                 itemCount: chatList.length,
                 itemBuilder: (context, index) {
                   final chat = chatList[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                      leading: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: AssetImage(chat['image']!),
+                  return Column(
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        leading: CircleAvatar(
+                          radius: 25,
+                          backgroundImage: AssetImage(chat['image']!),
+                        ),
+                        title: Text(
+                          chat['name']!,
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        subtitle: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                chat['message']!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: chat['unread'] == 'true' ? FontWeight.bold : FontWeight.normal,
+                                  ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (chat['unread'] == 'true') 
+                                Baseline(
+                                  baseline: 0,
+                                  baselineType: TextBaseline.alphabetic,
+                                  child:Container(
+                                    width: 6,
+                                    height: 6,
+                                    margin: EdgeInsets.only(right: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                  
+                                
+                                Text(
+                                  chat['time']!,
+                                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      title: Text(
-                        chat['name']!,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      Divider(
+                        indent: 70,
+                        endIndent: 10,
+                        height: 1,
+                        thickness: 0.6,
+                        color: Colors.grey[300],
                       ),
-                      subtitle: Text(
-                        chat['message']!,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      trailing: Text(
-                        chat['time']!,
-                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                      ),
-                    ),
+                    ],
                   );
                 },
               ),
