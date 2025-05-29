@@ -23,10 +23,10 @@ class CalorieData {
   
   bool get isNetIntakeExceeded => netIntakeCalories > baseGoal;
   
-  // 修改：只要食物卡路里大于0就应该显示动画
+  // As long as the food calories are greater than 0 it should show an animation
   bool get hasValidFood => foodCalories > 0;
   
-  // 新增：净摄入值是否有效（大于0）
+  // Validity of net intake value (greater than 0)
   bool get hasValidNetIntake => netIntakeCalories > 0;
 
   @override
@@ -202,10 +202,10 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
   Future<void> _startAnimationSequence(CalorieData data) async {
     _resetAllAnimations();
     
-    // 修改：只要有食物就显示动画
+    // Animation as long as there's food
     if (!data.hasValidFood) return;
     
-    // 修改：食物动画始终执行，净摄入动画只在有效时执行
+    // The food animation is always executed, the net intake animation is only executed when it is valid
     List<Future> animations = [_foodController.forward()];
     if (data.hasValidNetIntake) {
       animations.add(_netIntakeController.forward());
@@ -261,7 +261,7 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
             SizedBox(
               height: 140,
               width: 140,
-              child: data.hasValidFood  // 修改：检查是否有有效的食物数据
+              child: data.hasValidFood  // Checking for valid food data
                   ? _AnimatedCircleWidget(
                       data: data,
                       netIntakeColor: netIntakeColor,
@@ -460,7 +460,7 @@ class _AnimatedCircleWidget extends StatelessWidget {
             // Food Animation Layer
             ..._buildFoodAnimationLayers(),
             
-            // Net Intake Layer - 修改：只在净摄入有效时显示
+            // Net Intake Layer - Displayed only when net intake is valid
             if (data.hasValidNetIntake && data.netIntakeProgress > 0)
               _CircularIndicator(
                 percent: netIntakeAnimation.value,

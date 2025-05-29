@@ -13,10 +13,10 @@ class NutritionPageState extends State<NutritionPage> {
   DateTime selectedDate = DateTime.now();
   final GlobalKey<NutritionBottomSheetState> _bottomSheetKey = GlobalKey();
   
-  // 共享的营养数据状态
-  int _baseGoal = 2000;
-  int _foodCalories = 0; // 从bottom sheet获取实际数据
-  int _exerciseCalories = 400;
+  // Shared Nutrition Data Status
+  final int _baseGoal = 2000;
+  int _foodCalories = 0; // Get the actual data from the bottom sheet
+  final int _exerciseCalories = 100;
 
   void _goToPreviousDay() {
     setState(() {
@@ -37,7 +37,7 @@ class NutritionPageState extends State<NutritionPage> {
     _bottomSheetKey.currentState?.collapse();
   }
 
-  // 更新食物卡路里的回调方法
+  // Updating the callback method for food calories
   void _updateFoodCalories(int calories) {
     if (_foodCalories != calories) {
       setState(() {
@@ -46,19 +46,19 @@ class NutritionPageState extends State<NutritionPage> {
     }
   }
 
-  // 更新基础目标的方法（如果需要动态修改）
-  void _updateBaseGoal(int goal) {
-    setState(() {
-      _baseGoal = goal;
-    });
-  }
+  // // Methods for updating the base target (if dynamic modifications are required)
+  // void _updateBaseGoal(int goal) {
+  //   setState(() {
+  //     _baseGoal = goal;
+  //   });
+  // }
 
-  // 更新运动卡路里的方法（如果需要动态修改）
-  void _updateExerciseCalories(int calories) {
-    setState(() {
-      _exerciseCalories = calories;
-    });
-  }
+  // // Method of updating exercise calories (if dynamic modifications are required)
+  // void _updateExerciseCalories(int calories) {
+  //   setState(() {
+  //     _exerciseCalories = calories;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

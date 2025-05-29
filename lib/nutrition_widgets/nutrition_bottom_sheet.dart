@@ -5,7 +5,6 @@ import 'meal_form.dart';
 
 // Nutritional information bottom panel, provide meal data management and statistical display function, support expand/collapse animation
 class NutritionBottomSheet extends StatefulWidget {
-  // 添加构造函数参数
   final int baseGoal;
   final int exerciseCalories;
   final ValueChanged<int>? onFoodCaloriesUpdate;
@@ -84,7 +83,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       _updateFormDataStatus(mealIndex, foodItems.isNotEmpty);
     }
     
-    // 通知父组件食物卡路里更新
+    // Notify parent component of food calorie updates
     final totalCalories = _getTotalCalories();
     widget.onFoodCaloriesUpdate?.call(totalCalories);
     
@@ -145,7 +144,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       _mealFoodData.updateAll((key, value) => <FoodItem>[]);
       _formHasData.clear();
     });
-    // 通知父组件卡路里清零
+    // Notify parent component of calorie clearing
     widget.onFoodCaloriesUpdate?.call(0);
   }
   
