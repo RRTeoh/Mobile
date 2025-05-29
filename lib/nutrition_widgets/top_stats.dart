@@ -79,20 +79,43 @@ class TopStatCard extends StatelessWidget {
   // Style Constants
   static const EdgeInsets _containerPadding = EdgeInsets.fromLTRB(0, 0, 3, 0);
   static const BorderRadius _borderRadius = BorderRadius.all(Radius.circular(12));
-  static const double _iconSize = 24.0;
   static const double _spacing = 6.0;
-  
-  // Text Style Constants
-  static const TextStyle _titleStyle = TextStyle(
-    fontSize: 10,
-    color: Colors.grey,
-  );
-  
-  static const TextStyle _valueStyle = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-    color: Color(0xff333333),
-  );
+
+  double getIconSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 32;
+    } else if (screenHeight > 750) {
+      return 28;
+    } else {
+      return 24;
+    }
+  }
+
+  double getTitleFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 12;
+    } else if (screenHeight > 750) {
+      return 11;
+    } else {
+      return 10;
+    }
+  }
+
+  double getValueFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 14;
+    } else if (screenHeight > 750) {
+      return 13;
+    } else {
+      return 12;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,17 +131,27 @@ class TopStatCard extends StatelessWidget {
           Icon(
             stat.icon,
             color: stat.color,
-            size: _iconSize,
+            size: getIconSize(context),
           ),
           const SizedBox(width: _spacing),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(stat.title, style: _titleStyle),
+              Text(
+                stat.title, 
+                style: TextStyle(
+                  fontSize: getTitleFontSize(context),
+                  color: Colors.grey,
+                )
+              ),
               Text(
                 '${stat.value} kcal',
-                style: _valueStyle,
+                style: TextStyle(
+                  fontSize: getValueFontSize(context),
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff333333),
+                ),
               ),
             ],
           ),

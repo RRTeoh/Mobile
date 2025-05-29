@@ -426,6 +426,78 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     }
   }
 
+ double getHeaderFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 18;
+    } else if (screenHeight > 750) {
+       return 17;
+    } else {
+       return 16;
+    }
+  }
+
+  double getEmptyFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 22;
+    } else if (screenHeight > 750) {
+       return 20;
+    } else {
+       return 18;
+    }
+  }
+
+  double getBottonWidth(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 100;
+    } else if (screenHeight > 750) {
+       return 95;
+    } else {
+       return 90;
+    }
+  }
+
+  double getBottonHeight(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 28;
+    } else if (screenHeight > 750) {
+       return 26;
+    } else {
+       return 24;
+    }
+  }
+
+  double getBottonSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 20;
+    } else if (screenHeight > 750) {
+       return 19;
+    } else {
+       return 18;
+    }
+  }
+
+  double getBottonFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 16;
+    } else if (screenHeight > 750) {
+       return 15;
+    } else {
+       return 14;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -465,8 +537,8 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
         children: [
           Text(
             '${widget.mealType} Foods',
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: getHeaderFontSize(context),
               fontWeight: FontWeight.w600,
               color: _primaryColor,
             ),
@@ -493,14 +565,14 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
 
   // Build empty state
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 6),
         child: Text(
           'No food yet.',
           style: TextStyle(
             color: Colors.grey,
-            fontSize: 18,
+            fontSize: getEmptyFontSize(context),
             fontStyle: FontStyle.italic,
           ),
         ),
@@ -711,8 +783,8 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     required Color backgroundColor,
   }) {
     return SizedBox(
-      width: 90,
-      height: 24,
+      width: getBottonWidth(context),
+      height: getBottonHeight(context),
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 18),
@@ -727,7 +799,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     return ElevatedButton.styleFrom(
       backgroundColor: backgroundColor,
       foregroundColor: Colors.white,
-      textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      textStyle: TextStyle(fontSize: getBottonFontSize(context), fontWeight: FontWeight.w500),
       padding: _buttonPadding,
       minimumSize: Size.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,

@@ -17,6 +17,42 @@ class _TrackerPageState extends State<TrackingPage> {
   // NutritionPage Controller
   final GlobalKey<NutritionPageState> _nutritionKey = GlobalKey();
 
+  EdgeInsets getSwitchBarMargin(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return const EdgeInsets.only(top: 45, bottom: 10);
+    } else if (screenHeight > 750) {
+      return const EdgeInsets.only(top: 40, bottom: 10);
+    } else {
+      return const EdgeInsets.only(top: 35, bottom: 10);
+    }
+  }
+
+  EdgeInsets getSwitchBarPadding(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return const EdgeInsets.symmetric(horizontal: 30);
+    } else if (screenHeight > 750) {
+      return const EdgeInsets.symmetric(horizontal: 28);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 24);
+    }
+  }
+
+  double getSwitchBarFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 18;
+    } else if (screenHeight > 750) {
+      return 17;
+    } else {
+      return 16;
+    }
+  }
+
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -70,9 +106,7 @@ class _TrackerPageState extends State<TrackingPage> {
 
         Column(
           children: [
-            const SizedBox(height: 35),
-            _buildSwitchBar(),
-            const SizedBox(height: 10),
+            _buildSwitchBar(context),
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -90,8 +124,9 @@ class _TrackerPageState extends State<TrackingPage> {
     );
   }
 
-  Widget _buildSwitchBar() {
+  Widget _buildSwitchBar(BuildContext context) {
     return Container(
+      margin: getSwitchBarMargin(context),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -112,7 +147,7 @@ class _TrackerPageState extends State<TrackingPage> {
     return GestureDetector(
       onTap: () => _onTabTapped(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: getSwitchBarPadding(context),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xff004aad) : Colors.transparent,
           borderRadius: BorderRadius.horizontal(
@@ -125,7 +160,7 @@ class _TrackerPageState extends State<TrackingPage> {
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 16,
+            fontSize: getSwitchBarFontSize(context),
           ),
         ),
       ),

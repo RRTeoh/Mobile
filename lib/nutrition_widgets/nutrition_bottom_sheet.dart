@@ -36,13 +36,35 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
 
   // Animation and Layout Constants
   static const Duration _animationDuration = Duration(milliseconds: 300);
-  static const double _collapsedHeightRatio = 0.45;
-  static const double _expandedHeightRatio = 0.74;
   static const EdgeInsets _containerPadding = EdgeInsets.fromLTRB(20, 10, 20, 50);
   static const double _statsSpacing = 15.0;
 
   // Meal type mapping (to avoid duplicate strings)
   static const List<String> _mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+
+  double _getCollapsedHeight(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    
+    if (screenHeight > 850) {
+      return screenHeight * 0.55;
+    } else if (screenHeight > 750) {
+      return screenHeight * 0.50;
+    } else {
+      return screenHeight * 0.45;
+    }
+  }
+  
+  double _getExpandedHeight(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    
+    if (screenHeight > 850) {
+      return screenHeight * 0.80;
+    } else if (screenHeight > 750) {
+      return screenHeight * 0.77;
+    } else {
+      return screenHeight * 0.74;
+    }
+  }
 
   // Toggle meal area expansion status
   void _toggleExpand(int index) {
@@ -165,8 +187,9 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final currentHeightRatio = _isExpanded ? _expandedHeightRatio : _collapsedHeightRatio;
+    final currentHeight = _isExpanded 
+        ? _getExpandedHeight(context)
+        : _getCollapsedHeight(context);
     
     return Positioned(
       bottom: 0,
@@ -175,7 +198,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       child: AnimatedContainer(
         duration: _animationDuration,
         curve: Curves.easeInOut,
-        height: screenHeight * currentHeightRatio,
+        height: currentHeight,
         decoration: _buildContainerDecoration(),
         child: _buildContent(),
       ),

@@ -56,8 +56,29 @@ class AnimationConfig {
 
 // UI Constants
 class UIConstants {
-  static const double circleRadius = 65.0;
-  static const double lineWidth = 10.0;
+  static double getCircleRadius(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 800) {
+      return 80.0;
+    } else if (screenHeight > 700) {
+      return 75.0;
+    } else {
+      return 65.0;
+    }
+  }
+  static double getLineWidrh(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 800) {
+      return 12.0;
+    } else if (screenHeight > 700) {
+      return 11.0;
+    } else {
+      return 10.0;
+    }
+  }
+
   static const Color blueColor = Color(0xff41b8d5);
   static const Color redColor = Color.fromARGB(255, 255, 85, 0);
   static const Color yellowColor = Color.fromARGB(255, 255, 186, 59);
@@ -105,6 +126,30 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
   
   // Data Cache
   CalorieData? _cachedData;
+
+  double getDateFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 24;
+    } else if (screenHeight > 750) {
+      return 22;
+    } else {
+      return 20;
+    }
+  }
+
+  EdgeInsets getCalorieCirclePadding(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return const EdgeInsets.fromLTRB(35,7,35,0);
+    } else if (screenHeight > 750) {
+      return const EdgeInsets.fromLTRB(30,5,30,0);
+    } else {
+      return const EdgeInsets.fromLTRB(25,3,25,0);
+    }
+  }
 
   @override
   void initState() {
@@ -244,47 +289,46 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
 
     return Column(
       children: [
-
         Text(
           isToday ? 'Today' : formattedDate,
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: getDateFontSize(context)),
         ),
-        const SizedBox(height: 3),
+        
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _ArrowButton(
               icon: Icons.chevron_left,
               onPressed: widget.onPreviousDay,
-              padding: const EdgeInsets.only(right: 25),
             ),
-            SizedBox(
-              height: 140,
-              width: 140,
-              child: data.hasValidFood  // Checking for valid food data
-                  ? _AnimatedCircleWidget(
-                      data: data,
-                      netIntakeColor: netIntakeColor,
-                      foodAnimation: _foodAnimation,
-                      netIntakeAnimation: _netIntakeAnimation,
-                      redTransitionAnimation: _redTransitionAnimation,
-                      disappearAnimation: _disappearAnimation,
-                      redTransitionController: _redTransitionController,
-                      disappearController: _disappearController,
-                      controllers: [
-                        _foodController,
-                        _netIntakeController,
-                        _redTransitionController,
-                        _disappearController,
-                      ],
-                    )
-                  : _StaticCircleWidget(data: data),
+            Padding(
+              padding: getCalorieCirclePadding(context),
+              child: SizedBox(
+                child: data.hasValidFood  // Checking for valid food data
+                    ? _AnimatedCircleWidget(
+                        data: data,
+                        netIntakeColor: netIntakeColor,
+                        foodAnimation: _foodAnimation,
+                        netIntakeAnimation: _netIntakeAnimation,
+                        redTransitionAnimation: _redTransitionAnimation,
+                        disappearAnimation: _disappearAnimation,
+                        redTransitionController: _redTransitionController,
+                        disappearController: _disappearController,
+                        controllers: [
+                          _foodController,
+                          _netIntakeController,
+                          _redTransitionController,
+                          _disappearController,
+                        ],
+                      )
+                    : _StaticCircleWidget(data: data),
+              ),
             ),
+            
             _ArrowButton(
               icon: Icons.chevron_right,
               onPressed: isToday ? null : widget.onNextDay,
               opacity: isToday ? 0.0 : 1.0,
-              padding: const EdgeInsets.only(left: 25),
             ),
           ],
         ),
@@ -334,12 +378,15 @@ class _CircularIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final circleRadius = UIConstants.getCircleRadius(context);
+    final lineWidth = UIConstants.getLineWidrh(context);
+
     return Stack(
       alignment: Alignment.center,
       children: [
         // Outer Border
         CircularPercentIndicator(
-          radius: UIConstants.circleRadius + 1,
+          radius: circleRadius + 1,
           lineWidth: 1,
           percent: 1.0,
           backgroundColor: Colors.transparent,
@@ -348,7 +395,7 @@ class _CircularIndicator extends StatelessWidget {
         ),
         // Inner Border
         CircularPercentIndicator(
-          radius: UIConstants.circleRadius - UIConstants.lineWidth,
+          radius: circleRadius - lineWidth,
           lineWidth: 1,
           percent: 1.0,
           backgroundColor: Colors.transparent,
@@ -357,8 +404,8 @@ class _CircularIndicator extends StatelessWidget {
         ),
         // Main Progress Indicators
         CircularPercentIndicator(
-          radius: UIConstants.circleRadius,
-          lineWidth: UIConstants.lineWidth,
+          radius: circleRadius,
+          lineWidth: lineWidth,
           percent: percent,
           circularStrokeCap: CircularStrokeCap.round,
           backgroundColor: Colors.transparent,
@@ -376,6 +423,18 @@ class _CenterContent extends StatelessWidget {
 
   const _CenterContent({required this.netIntakeCalories});
 
+  double getCalorieDataFontSize(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    if (screenHeight > 850) {
+      return 32;
+    } else if (screenHeight > 750) {
+      return 30;
+    } else {
+      return 26;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -383,8 +442,8 @@ class _CenterContent extends StatelessWidget {
       children: [
         Text(
           '$netIntakeCalories',
-          style: const TextStyle(
-            fontSize: 26,
+          style: TextStyle(
+            fontSize: getCalorieDataFontSize(context),
             fontWeight: FontWeight.bold,
             color: UIConstants.textColor,
           ),
