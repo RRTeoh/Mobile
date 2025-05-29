@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class Exercise {
   final String name;
   final String imagePath;
+  final int exercises;
+  final int minutes;
   bool isSelected;
 
   Exercise({
     required this.name,
     required this.imagePath,
+    required this.exercises,
+    required this.minutes,
     this.isSelected = false,
   });
 }
@@ -23,11 +27,18 @@ class _AddExercisePageState extends State<AddExercisePage> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Exercise> _allExercises = [
-    Exercise(name: 'Forward Lunge', imagePath: 'assets/images/forward_lunge.png'),
-    Exercise(name: 'Burpee', imagePath: 'assets/images/burpee.png'),
-    Exercise(name: 'Plank', imagePath: 'assets/images/plank.png'),
-    Exercise(name: 'Air Squat', imagePath: 'assets/images/air_squat.png'),
-    Exercise(name: 'Butterfly Situp', imagePath: 'assets/images/butterfly_situp.png'),
+    Exercise(name: 'Push-ups', imagePath: 'assets/images/yoga.png', exercises: 30, minutes: 10),
+    Exercise(name: 'Sit-ups', imagePath: 'assets/images/pilates.png', exercises: 50, minutes: 12),
+    Exercise(name: 'Jumping Jacks', imagePath: 'assets/images/full_body.png', exercises: 40, minutes: 15),
+    Exercise(name: 'Plank', imagePath: 'assets/images/plank.png', exercises: 1, minutes: 3),
+    Exercise(name: 'Squats', imagePath: 'assets/images/air_squat.png', exercises: 25, minutes: 7),
+    Exercise(name: 'Lunges', imagePath: 'assets/images/forward_lunge.png', exercises: 20, minutes: 8),
+    Exercise(name: 'Mountain Climbers', imagePath: 'assets/images/mountain_climber.png', exercises: 40, minutes: 5),
+    Exercise(name: 'High Knees', imagePath: 'assets/images/high_knees.png', exercises: 50, minutes: 6),
+    Exercise(name: 'Run', imagePath: 'assets/images/run.png', exercises: 1, minutes: 30),
+    Exercise(name: 'Swim', imagePath: 'assets/images/swim.png', exercises: 1, minutes: 40),
+    Exercise(name: 'Rowing', imagePath: 'assets/images/row.png', exercises: 1, minutes: 20),
+    Exercise(name: 'Cycling', imagePath: 'assets/images/cycling.png', exercises: 1, minutes: 35),
   ];
 
   List<Exercise> _filteredExercises = [];
@@ -55,144 +66,135 @@ class _AddExercisePageState extends State<AddExercisePage> {
 
   void _onAddSelected() {
     final selected = _allExercises.where((ex) => ex.isSelected).toList();
-
     if (selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select at least one exercise')),
       );
       return;
     }
-
     Navigator.pop(context, selected);
   }
 
   @override
   Widget build(BuildContext context) {
-    final cardColor = const Color(0xFF85C1F9);
-    final selectedColor = Colors.blue.shade700;
-    final unselectedColor = Colors.grey.shade300;
+    const primaryBlue = Color(0xFF0A84FF);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F4FF), // Light background matching screenshot
-      appBar: AppBar(
-        title: const Text('Add Exercise'),
-        backgroundColor: cardColor,
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      extendBody: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFB8E3FF), Color(0xFFEAF6FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search exercises',
-                prefixIcon: const Icon(Icons.search, color: Colors.blueGrey),
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // AppBar style to match Analytics
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, size: 22, color: Colors.black),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'Add Workout',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
 
-          // Exercise list
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _filteredExercises.length,
-              itemBuilder: (context, index) {
-                final exercise = _filteredExercises[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.shade100.withOpacity(0.4),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search workout...',
+                    prefixIcon: const Icon(Icons.search, color: Colors.blueGrey),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        exercise.imagePath,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.image_not_supported, color: Colors.grey),
-                      ),
-                    ),
-                    title: Text(
-                      exercise.name,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    trailing: GestureDetector(
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Exercise List
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _filteredExercises.length,
+                  itemBuilder: (context, index) {
+                    final ex = _filteredExercises[index];
+                    return GestureDetector(
                       onTap: () {
                         setState(() {
-                          exercise.isSelected = !exercise.isSelected;
+                          ex.isSelected = !ex.isSelected;
                         });
                       },
                       child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: exercise.isSelected ? selectedColor : unselectedColor,
-                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.shade100.withOpacity(0.4),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        padding: const EdgeInsets.all(6),
-                        child: Icon(
-                          exercise.isSelected ? Icons.check : Icons.circle_outlined,
-                          color: exercise.isSelected ? Colors.white : Colors.grey.shade700,
-                          size: 22,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                ex.name,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                ex.imagePath,
+                                width: 90,
+                                height: 70,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.image_not_supported,
+                                  size: 60,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        exercise.isSelected = !exercise.isSelected;
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Add Selected button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cardColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  elevation: 4,
-                  shadowColor: cardColor.withOpacity(0.6),
-                ),
-                onPressed: _onAddSelected,
-                child: const Text(
-                  'Add Selected',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    );
+                  },
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
