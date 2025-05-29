@@ -67,7 +67,18 @@ class _SearchCourseState extends State<SearchCourse> {
       body: Stack(
         children: [
           // Background Gradient Area
-          Container(height: 247, color: Color(0xff8fd4e8)),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,   // start from top
+                end: Alignment.bottomCenter,  // end at bottom
+                colors: [Color(0xff8fd4e8), Colors.white],
+                stops: [
+                  0.0, // sharp or not
+                  0.6, // blue part
+                ],
+              ),
+            ),),
 
           // Custom AppBar
           Positioned(
@@ -102,8 +113,9 @@ class _SearchCourseState extends State<SearchCourse> {
                       ),
                     ),
                   ],
+                  )
                 ),
-              ),
+              //),
             ),
           ),
 
@@ -115,11 +127,10 @@ class _SearchCourseState extends State<SearchCourse> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xff8fd4e8), Colors.white],
-                ),
+                // gradient: LinearGradient(
+                //   begin: Alignment.topCenter,
+                //   end: Alignment.bottomCenter,
+                  color: Colors.transparent,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -220,6 +231,333 @@ class _SearchCourseState extends State<SearchCourse> {
           ),
 
           // Settings Drawer Panel
+          
+
+          //if(!isSettingsOpen)// Course List Area
+          Positioned(
+            top: 247,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _foundCourse.isNotEmpty
+                          ? ListView.builder(
+                            itemCount: _foundCourse.length,
+                            itemBuilder: (context, index) => Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: [
+                                  // Left Side
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _foundCourse[index].time,
+                                              //'10:00',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 12, 0, 143),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Container(
+                                            padding: EdgeInsets.only(left:15),
+                                            child:Text(
+                                          //'1hr',
+                                            _foundCourse[index].duration,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey,
+                                            ),
+                                          ), 
+                                          )
+                                        ],
+                                    ),
+                                    SizedBox(width: 16),
+
+                                    // Middle
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            //'BODY BALANCE',
+                                            _foundCourse[index].title,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                //'10:00 am - 11:00 am',
+                                                _foundCourse[index].subtitle,
+                                                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                                              ),
+                                              ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          RatingBar.builder(
+                                            initialRating: _foundCourse[index].rating.toDouble(),
+                                            minRating: 1,
+                                            direction: Axis.horizontal,
+                                            itemSize: 20,
+                                            itemBuilder: (context, _) => const Icon(
+                                              Icons.star,
+                                              color: Colors.yellow
+                                              ),
+                                            onRatingUpdate: (double value) { },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // Right side (+ button)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 50), // Pushes the whole circle down
+                                        child:Container(
+                                        height: 30,
+                                        width: 30,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: addedCourseIndices.contains(index) ?Colors.green: Colors.cyan,
+                                      ),
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(
+                                          addedCourseIndices.contains(index) ?Icons.check:Icons.add, 
+                                          color: Colors.white,
+                                          size: 20,
+                                          ),
+                                        onPressed: () {
+                                          Schedulecourse course = _foundCourse[index];
+                                        // Handle add action
+                                        showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (BuildContext context) {
+                                return SingleChildScrollView(
+                                  child: Container(
+                                    height: 500,
+                                    padding: const EdgeInsets.only(left:20),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Stack(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            //const SizedBox(height: 40),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  course.title,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold
+                                                  )
+                                                ),
+                                                SizedBox(width:10),
+                                                Container(
+                                                margin:EdgeInsets.only(top:10,bottom:10),
+                                                  height:25,
+                                                  width:60,
+                                                    decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(255, 218, 218, 218),
+                                                    borderRadius: BorderRadius.circular(15),
+                                                    
+                                                ),
+                                                padding: EdgeInsets.all(5),
+                                                  child: Text(
+                                                    course.classmode,
+                                                    textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.black
+                                                      )
+                                                  )
+                                                ),
+                                              ],
+                                            ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(right:20),
+                                                    child:Container(
+                                                    height: 200,
+                                                    width: 350,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(15),
+                                                      image: 
+                                                      DecorationImage(
+                                                      image: AssetImage(course.imagePath),
+                                                      fit: BoxFit.cover
+                                                    )
+                                                    ),
+                                                  ),
+                                                  ),
+                                                  const SizedBox(height:15),
+                                                  Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 23,
+                                                        backgroundImage: AssetImage(course.teacherimagepath),
+                                                      ),
+                                                      SizedBox(width:10),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            "Trainer",
+                                                            textAlign: TextAlign.left,
+                                                            style:TextStyle(
+                                                              fontSize: 10,
+                                                              color:Colors.grey
+                                                            )
+                                                          ),
+                                                          Text(
+                                                            course.teachername,
+                                                            textAlign: TextAlign.left,
+                                                            style:TextStyle(
+                                                              fontSize: 15,
+                                                              color:Colors.black
+                                                            )
+                                                          ),
+                                                          RatingBar.builder(
+                                                          initialRating: course.rating.toDouble(),
+                                                          minRating: 1,
+                                                          direction: Axis.horizontal,
+                                                          itemSize: 10,
+                                                          itemBuilder: (context, _) => const Icon(
+                                                          Icons.star,
+                                                          color: Colors.yellow
+                                                          ),
+                                                          onRatingUpdate: (double value) { },
+                                                          ),
+                                                        ],
+                                                      )
+
+                                                    ]
+                                                  ),
+                                                  SizedBox(height:10),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(left:10),
+                                                    child:Column(
+                                                    children: 
+                                                    [
+                                                      Row(
+                                                      children:[Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                                      SizedBox(width: 5),
+                                                      Text(
+                                                        course.subtitle,
+                                                        style: TextStyle(fontSize: 10, color: Colors.black),
+                                                      ),
+                                                      ]
+                                                      ),
+                                                      SizedBox(height: 5),
+                                                      Row(
+                                                      children:[Icon(Icons.calendar_month, size: 14, color: Colors.red),
+                                                      SizedBox(width: 5),
+                                                      Text(
+                                                        course.date,
+                                                        style: TextStyle(fontSize: 10, color: Colors.black),
+                                                      ),
+                                                      ]
+                                                      ),
+                                                      SizedBox(height: 5),
+                                                      Row(
+                                                      children:[Icon(Icons.location_on, size: 14, color: Colors.blue),
+                                                      SizedBox(width: 5),
+                                                      Text(
+                                                        course.address,
+                                                        style: TextStyle(fontSize: 10, color: Colors.black),
+                                                      ),
+                                                      ]
+                                                      ),
+                                                      SizedBox(height:10),
+                                                      Padding(
+                                                        padding: EdgeInsets.only(right:20),
+                                                        child:Text(
+                                                        course.description,
+                                                        textAlign: TextAlign.justify,
+                                                        style: TextStyle(
+                                                          fontSize: 8,
+                                                          color: Colors.black
+                                                        )
+                                                      )
+                                                      ),
+                                                      SizedBox(height:10),
+                                                      ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                        backgroundColor: addedCourseIndices.contains(index)
+                                                        ? Colors.greenAccent.shade200
+                                                        : const Color.fromARGB(255, 22, 45, 180),
+                                                        ),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            addedCourseIndices.add(index); // mark this item as added
+                                                          });  
+                                                        },
+                                                        child: Text(
+                                                          addedCourseIndices.contains(index) ? "Added" : "+ Add to my schedule",
+                                                          
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            
+                                                            color: addedCourseIndices.contains(index) ?Colors.black :Colors.white,
+                                                          ),
+                                                        ),
+                                                            ),
+            
+                                                    ],),
+                                                  )
+                                                ],
+                                              ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                                      )
+                                        
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ): const Text(
+                            "No results found. Please try with different search",
+                            style: TextStyle(fontSize: 22),
+                          
+                          )
+            ),
+          ),
+
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
@@ -256,82 +594,7 @@ class _SearchCourseState extends State<SearchCourse> {
               ),
             ),
           
-          //if(!isSettingsOpen)// Course List Area
-          Positioned(
-            top: 247,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _foundCourse.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: _foundCourse.length,
-                      padding: const EdgeInsets.only(top: 10, bottom: 60),
-                      itemBuilder: (context, index) {
-                        final course = _foundCourse[index];
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          elevation: 3,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            title: Text(course.title,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 4),
-                                Text(course.subtitle),
-                                SizedBox(height: 4),
-                                RatingBarIndicator(
-                                  rating: course.rating.toDouble(),
-                                  itemBuilder: (context, index) => Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  itemCount: 5,
-                                  itemSize: 18.0,
-                                  direction: Axis.horizontal,
-                                ),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                addedCourseIndices.contains(index)
-                                    ? Icons.check_circle
-                                    : Icons.add_circle_outline,
-                                color: addedCourseIndices.contains(index)
-                                    ? Colors.green
-                                    : Colors.blue,
-                              ),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20),
-                                    ),
-                                  ),
-                                  builder: (context) => _buildCourseDetails(
-                                      context, course, index),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : Center(
-                      child: Text(
-                        "No results found. Please try a different search.",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-            ),
-          ),
+          
 
         ],
       ),
