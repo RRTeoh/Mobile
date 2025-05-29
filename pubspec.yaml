@@ -97,7 +97,18 @@ flutter:
    - assets/images/pic6.jpg
    - assets/images/post_pic1.jpg
    - assets/images/post_pic2.jpg    
-      
+   - assets/images/exercise/pushup.png   
+   - assets/images/exercise/situp.png
+   - assets/images/exercise/jumpingjacks.png
+   - assets/images/exercise/plank.png
+   - assets/images/exercise/squats.png
+   - assets/images/exercise/lunges.png
+   - assets/images/exercise/mountainclimbers.png
+   - assets/images/exercise/highknees.png
+   - assets/images/exercise/run.png
+   - assets/images/exercise/swim.png
+   - assets/images/exercise/rowing.png
+   - assets/images/exercise/cycling.png
   
  
 

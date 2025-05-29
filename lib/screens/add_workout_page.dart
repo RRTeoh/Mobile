@@ -27,18 +27,18 @@ class _AddExercisePageState extends State<AddExercisePage> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Exercise> _allExercises = [
-    Exercise(name: 'Push-ups', imagePath: 'assets/images/yoga.png', exercises: 30, minutes: 10),
-    Exercise(name: 'Sit-ups', imagePath: 'assets/images/pilates.png', exercises: 50, minutes: 12),
-    Exercise(name: 'Jumping Jacks', imagePath: 'assets/images/full_body.png', exercises: 40, minutes: 15),
-    Exercise(name: 'Plank', imagePath: 'assets/images/plank.png', exercises: 1, minutes: 3),
-    Exercise(name: 'Squats', imagePath: 'assets/images/air_squat.png', exercises: 25, minutes: 7),
-    Exercise(name: 'Lunges', imagePath: 'assets/images/forward_lunge.png', exercises: 20, minutes: 8),
-    Exercise(name: 'Mountain Climbers', imagePath: 'assets/images/mountain_climber.png', exercises: 40, minutes: 5),
-    Exercise(name: 'High Knees', imagePath: 'assets/images/high_knees.png', exercises: 50, minutes: 6),
-    Exercise(name: 'Run', imagePath: 'assets/images/run.png', exercises: 1, minutes: 30),
-    Exercise(name: 'Swim', imagePath: 'assets/images/swim.png', exercises: 1, minutes: 40),
-    Exercise(name: 'Rowing', imagePath: 'assets/images/row.png', exercises: 1, minutes: 20),
-    Exercise(name: 'Cycling', imagePath: 'assets/images/cycling.png', exercises: 1, minutes: 35),
+    Exercise(name: 'Push-ups', imagePath: 'assets/images/exercise/pushup.png', exercises: 30, minutes: 10),
+    Exercise(name: 'Sit-ups', imagePath: 'assets/images/exercise/situp.png', exercises: 50, minutes: 12),
+    Exercise(name: 'Jumping Jacks', imagePath: 'assets/images/exercise/jumpingjacks.png', exercises: 40, minutes: 15),
+    Exercise(name: 'Plank', imagePath: 'assets/images/exercise/plank.png', exercises: 1, minutes: 3),
+    Exercise(name: 'Squats', imagePath: 'assets/images/exercise/squats.png', exercises: 25, minutes: 7),
+    Exercise(name: 'Lunges', imagePath: 'assets/images/exercise/lunges.png', exercises: 20, minutes: 8),
+    Exercise(name: 'Mountain Climbers', imagePath: 'assets/images/exercise/mountainclimbers.png', exercises: 40, minutes: 5),
+    Exercise(name: 'High Knees', imagePath: 'assets/images/exercise/highknees.png', exercises: 50, minutes: 6),
+    Exercise(name: 'Run', imagePath: 'assets/images/exercise/run.png', exercises: 1, minutes: 30),
+    Exercise(name: 'Swim', imagePath: 'assets/images/exercise/swim.png', exercises: 1, minutes: 40),
+    Exercise(name: 'Rowing', imagePath: 'assets/images/exercise/rowing.png', exercises: 1, minutes: 20),
+    Exercise(name: 'Cycling', imagePath: 'assets/images/exercise/cycling.png', exercises: 1, minutes: 35),
   ];
 
   List<Exercise> _filteredExercises = [];
