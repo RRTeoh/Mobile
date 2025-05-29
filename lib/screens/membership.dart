@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.lightBlue.shade100, Colors.white],
+                colors: [Color(0xff8fd4e8), Colors.white],
               ),
             ),
             child: Column(
