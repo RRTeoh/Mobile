@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:asgm1/details/add_card.dart';
 import 'package:asgm1/details/stat_card.dart';
 import 'package:asgm1/details/workout_card.dart';
+import 'package:asgm1/screens/calories_burned_page.dart';
 
 class WorkoutPage extends StatelessWidget {
   const WorkoutPage({super.key});
@@ -103,37 +104,46 @@ class WorkoutPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFB3E5FC), Colors.white],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CaloriesBurnedPage()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFB3E5FC), Colors.white],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Calories Burned 🔥", style: TextStyle(fontWeight: FontWeight.bold)),
-                              Icon(Icons.chevron_right, size: 18, color: Colors.grey),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              "assets/images/calorieschart.png",
-                              height: 180,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Calories Burned 🔥", style: TextStyle(fontWeight: FontWeight.bold)),
+                                Icon(Icons.chevron_right, size: 18, color: Colors.grey),
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 12),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                "assets/images/calorieschart.png",
+                                height: 180,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
