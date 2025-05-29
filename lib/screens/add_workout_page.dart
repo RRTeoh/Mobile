@@ -84,7 +84,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFB8E3FF), Color(0xFFEAF6FF)],
+            colors: [Color(0xFF8FD4E8), Color(0xFFEAF6FF)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

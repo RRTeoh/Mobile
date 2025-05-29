@@ -128,7 +128,7 @@ class WorkoutPage extends StatelessWidget {
                             const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Calories Burned 🔥", style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text("Analytics", style: TextStyle(fontWeight: FontWeight.bold)),
                                 Icon(Icons.chevron_right, size: 18, color: Colors.grey),
                               ],
                             ),

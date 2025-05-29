@@ -7,7 +7,7 @@ class CaloriesBurnedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const primaryBlue = Color(0xFF0A84FF);
     const backgroundGradient = LinearGradient(
-      colors: [Color(0xFFB8E3FF), Color(0xFFEAF6FF)],
+      colors: [Color(0xFF8FD4E8), Color(0xFFEAF6FF)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
@@ -65,51 +65,40 @@ class CaloriesBurnedPage extends StatelessWidget {
                 showArrow: true,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'assets/images/last_12_weeks_chart.png',
-                    fit: BoxFit.cover,
-                    height: 160,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _sectionCard(
-                title: 'Weekly Intensity',
-                showArrow: true,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'assets/images/weekly_intensity_chart.png',
-                    fit: BoxFit.cover,
-                    height: 160,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _sectionCard(
-                title: 'Calories Burned',
-                showArrow: false,
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/calories_card.png',
-                      width: 100,
+                  child: AspectRatio(
+                    aspectRatio: 9 / 7, 
+                    child: Image.asset(
+                      'assets/images/analyticschart.png',
                       fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
-                    const SizedBox(width: 12),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Calories Burned 🔥',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              _sectionCard(
+                title: '', 
+                showArrow: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Calories Burned 🔥',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9, 
+                        child: Image.asset(
+                          'assets/images/calorieschart.png',
+                          width: double.infinity,
+                          fit: BoxFit.cover,
                         ),
-                        Text(
-                          '467 Cal',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -141,15 +130,16 @@ class CaloriesBurnedPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              if (showArrow)
-                const Icon(Icons.chevron_right, color: Color(0xFF0A84FF)),
-            ],
-          ),
-          const SizedBox(height: 12),
+          if (title.isNotEmpty)
+            Row(
+              children: [
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Spacer(),
+                if (showArrow)
+                  const Icon(Icons.chevron_right, color: Color(0xFF0A84FF)),
+              ],
+            ),
+          if (title.isNotEmpty) const SizedBox(height: 12),
           child,
         ],
       ),
