@@ -3,6 +3,7 @@ import 'package:asgm1/details/card.dart';
 import 'package:asgm1/details/profile.dart';
 import 'package:asgm1/details/myreward.dart';
 import 'package:asgm1/details/payment.dart';
+import 'package:asgm1/screens/editprofile.dart';
 import 'package:asgm1/settings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,11 +16,14 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int selectedIndex = 0;
   bool isSettingsOpen = false;
+  String _firstName = 'Jackson';
+  String _secondName = 'Wang';
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -61,15 +65,48 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: Column(
               children: [
-                SizedBox(height: screenHeight * 0.12),
-                const Align(
+                SizedBox(height: screenHeight * 0.10),
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 20, top: 10),
-                    child: ProfileAvatar(
-                      imagePath: 'assets/images/Profile.png',
-                      name: 'Jackson Wang',
-                      streak: '145 🔥',
+                    padding: const EdgeInsets.only(left: 20, top: 10),
+                    child: Stack(
+                      children: [
+                        ProfileAvatar(
+                          imagePath: 'assets/images/Profile.png',
+                          name: '$_firstName $_secondName',
+                          streak: '145 🔥',
+                        ),
+                        Positioned(
+                          top: 2,
+                          left: 40,
+                          child: GestureDetector(
+                            onTap: () async {
+                              print("Edit profile tapped");
+                                final updatedProfile = await Navigator.push<Map<String, String>>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProfile(
+                                      initialFirstName: _firstName,
+                                      initialSecondName: _secondName,
+                                    ),
+                                  ),
+                                );
+                                if (updatedProfile != null) {
+                                  setState(() {
+                                    _firstName = updatedProfile['firstName'] ?? _firstName;
+                                    _secondName = updatedProfile['secondName'] ?? _secondName;
+                                  });
+                                }
+                            },
+                            child: CircleAvatar(
+                              radius: 10,
+                              backgroundColor: Colors.white,
+                              child: const Icon(Icons.edit, size: 14, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
