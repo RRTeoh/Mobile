@@ -601,59 +601,59 @@ class _SearchCourseState extends State<SearchCourse> {
     );
   }
 
-  Widget _buildCourseDetails(
-      BuildContext context, Schedulecourse course, int index) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      height: 500,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(course.title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          SizedBox(height: 10),
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(course.imagePath),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          SizedBox(height: 10),
-          Text("Trainer: ${course.teachername}",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          SizedBox(height: 5),
-          Text("Duration: ${course.duration}"),
-          Text("Time: ${course.subtitle}"),
-          Text("Date: ${course.date}"),
-          Text("Location: ${course.address}"),
-          SizedBox(height: 10),
-          Text(course.description, textAlign: TextAlign.justify),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                addedCourseIndices.add(index);
-              });
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: addedCourseIndices.contains(index)
-                  ? Colors.greenAccent
-                  : Colors.blueAccent,
-            ),
-            child: Text(
-              addedCourseIndices.contains(index)
-                  ? "Added"
-                  : "+ Add to my schedule",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   Widget _buildCourseDetails(
+//       BuildContext context, Schedulecourse course, int index) {
+//     return Container(
+//       padding: const EdgeInsets.all(20),
+//       height: 500,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text(course.title,
+//               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+//           SizedBox(height: 10),
+//           Container(
+//             height: 180,
+//             decoration: BoxDecoration(
+//               image: DecorationImage(
+//                 image: AssetImage(course.imagePath),
+//                 fit: BoxFit.cover,
+//               ),
+//               borderRadius: BorderRadius.circular(12),
+//             ),
+//           ),
+//           SizedBox(height: 10),
+//           Text("Trainer: ${course.teachername}",
+//               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+//           SizedBox(height: 5),
+//           Text("Duration: ${course.duration}"),
+//           Text("Time: ${course.subtitle}"),
+//           Text("Date: ${course.date}"),
+//           Text("Location: ${course.address}"),
+//           SizedBox(height: 10),
+//           Text(course.description, textAlign: TextAlign.justify),
+//           SizedBox(height: 20),
+//           ElevatedButton(
+//             onPressed: () {
+//               setState(() {
+//                 addedCourseIndices.add(index);
+//               });
+//               Navigator.pop(context);
+//             },
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: addedCourseIndices.contains(index)
+//                   ? Colors.greenAccent
+//                   : Colors.blueAccent,
+//             ),
+//             child: Text(
+//               addedCourseIndices.contains(index)
+//                   ? "Added"
+//                   : "+ Add to my schedule",
+//               style: TextStyle(color: Colors.white),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+ }

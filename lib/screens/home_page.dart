@@ -37,29 +37,29 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent, 
+        elevation: 0,
 
     // Title: list icon when settings are closed
-    title: isSettingsOpen
+    leading: isSettingsOpen
         ? null
-        : Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.list, color: Colors.black),
-                onPressed: () {
-                  setState(() {
-                    isSettingsOpen = true;
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.notifications, color: Colors.black, size: 22),
-              SizedBox(width:180),
+        : IconButton(
+              icon: const Icon(Icons.list, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  isSettingsOpen = true;
+                });
+              },
+            ),
+      title: isSettingsOpen
+        ? null 
+        : Icon(Icons.notifications, color: Colors.black, size: 22),
+              //SizedBox(width:180),
             //   CircleAvatar(
             //   radius: 23,
             //   backgroundImage: AssetImage("assets/images/Profile.png"),
             // ),
-            ],
-          ),
+            //],
+          //),
           actions:[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),

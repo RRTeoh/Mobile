@@ -110,7 +110,17 @@ flutter:
    - assets/images/exercise/rowing.png
    - assets/images/exercise/cycling.png
    - assets/images/analyticschart.png
-  
+   - assets/images/courses/BodyBalance.jpg
+   - assets/images/courses/BodyCombat.jpg
+   - assets/images/courses/Boxing.jpg
+   - assets/images/trainers/Trainer1.jpg
+   - assets/images/trainers/Trainer2.jpg
+   - assets/images/trainers/Trainer3.jpg
+   - assets/images/trainers/Trainer4.jpg
+   - assets/images/trainers/Trainer5.jpg
+   - assets/images/trainers/Trainer6.jpg
+   - assets/images/trainers/Trainer7.jpg
+
  
 
 
