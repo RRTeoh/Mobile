@@ -15,12 +15,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Course> courses = [];
   final List<Promotion> promotion = [];
-  int promotionIndex = 1;
-  final List<Widget> pages = [
-    Promo1(),
-    //Promo2(),
-    //Promo3(),
-  ];
+  // int promotionIndex = 1;
+  // final List<Widget> pages = [
+  //   //Promo1(),
+  //   //Promo2(),
+  //   //Promo3(),
+  // ];
   
   //final List<Date> dates = [];
   bool isSettingsOpen = false;
@@ -786,9 +786,9 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        pages[promotionIndex];
-                      });
+                      // setState(() {
+                      //   pages[promotionIndex];
+                      // });
                     },
                    child:Container(
                     margin: EdgeInsets.only(right: 8),
