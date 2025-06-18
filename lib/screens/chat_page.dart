@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
+import 'private_chat.dart';
 
 class ChatPage extends StatelessWidget {
-  final List<Map<String, String>> chatList = [
-    {'name': 't-rex123', 'message': 'Noted.', 'time': '3 minutes ago', 'image': 'assets/images/pic2.jpg','unread':'true'},
-    {'name': 'Ashley_520', 'message': 'Meet u later!', 'time': '6 minutes ago', 'image': 'assets/images/pic3.jpg','unread':'true'},
-    {'name': 'Sina886', 'message': 'okay', 'time': '10 minutes ago', 'image': 'assets/images/pic4.jpg'},
-    {'name': 'Anthony', 'message': 'Ciao', 'time': '15 minutes ago', 'image': 'assets/images/pic5.jpg'},
-    {'name': 'Ryu_Ken', 'message': 'Miss u', 'time': '20 minutes ago', 'image': 'assets/images/pic6.jpg'},
+  final List<Map<String, dynamic>> chatList = [
+    {
+      'name': 't-rex123',
+      'message': 'Noted.',
+      'time': '3 minutes ago',
+      'image': 'assets/images/pic2.jpg',
+      'unread': 'true',
+      'messages': [
+        {'text': 'Hey! I just depart now.', 'isMe': true},
+        {'text': 'Noted.', 'isMe': false},
+      ],
+    },
+    {
+      'name': 'Ashley_520',
+      'message': 'Okay, meet u later!',
+      'time': '6 minutes ago',
+      'image': 'assets/images/pic3.jpg',
+      'unread': 'true',
+      'messages': [
+        {'text': 'Meet u 5pm @ TF Mall.', 'isMe': true},
+        {'text': 'Okay, meet u later!', 'isMe': false},
+      ],
+    },
+    {
+      'name': 'Sina886',
+      'message': 'okay',
+      'time': '10 minutes ago',
+      'image': 'assets/images/pic4.jpg',
+      'messages': [
+        {'text': 'I’m heading out now.', 'isMe': false},
+        {'text': 'okay', 'isMe': true},
+      ],
+    },
+    {
+      'name': 'Anthony',
+      'message': 'Ciao',
+      'time': '15 minutes ago',
+      'image': 'assets/images/pic5.jpg',
+      'messages': [
+        {'text': 'Ciao', 'isMe': false},
+      ],
+    },
+    {
+      'name': 'Ryu_Ken',
+      'message': 'Miss u',
+      'time': '20 minutes ago',
+      'image': 'assets/images/pic6.jpg',
+      'messages': [
+        {'text': 'Miss u', 'isMe': false},
+      ],
+    },
   ];
 
   @override
@@ -75,19 +121,18 @@ class ChatPage extends StatelessWidget {
                                 chat['message']!,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: chat['unread'] == 'true' ? FontWeight.bold : FontWeight.normal,
-                                  ),
+                                  fontWeight: chat['unread'] == 'true'
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (chat['unread'] == 'true') 
-                                Baseline(
-                                  baseline: 0,
-                                  baselineType: TextBaseline.alphabetic,
-                                  child:Container(
+                                if (chat['unread'] == 'true')
+                                  Container(
                                     width: 6,
                                     height: 6,
                                     margin: EdgeInsets.only(right: 6),
@@ -96,9 +141,6 @@ class ChatPage extends StatelessWidget {
                                       shape: BoxShape.circle,
                                     ),
                                   ),
-                                ),
-                                  
-                                
                                 Text(
                                   chat['time']!,
                                   style: TextStyle(fontSize: 11, color: Colors.grey[600]),
@@ -107,6 +149,18 @@ class ChatPage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PrivateChatPage(
+                                name: chat['name'],
+                                image: chat['image'],
+                                messages: chat['messages'],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       Divider(
                         indent: 70,
