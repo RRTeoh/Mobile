@@ -6,9 +6,9 @@ class Posts extends StatefulWidget {
   final String postImage;
   final String caption;
   final String timeAgo;
-  final int likes;
-  final int comments;
+  final int initialLikes;
   final int shares;
+  final List<Map<String, String>> initialComments;
 
   const Posts({
     required this.username,
@@ -16,9 +16,9 @@ class Posts extends StatefulWidget {
     required this.postImage,
     required this.caption,
     required this.timeAgo,
-    required this.likes,
-    required this.comments,
+    required this.initialLikes,
     required this.shares,
+    required this.initialComments,
     super.key,
   });
 
@@ -29,11 +29,14 @@ class Posts extends StatefulWidget {
 class _PostsState extends State<Posts> {
   late int likeCount;
   bool isLiked = false;
+  final TextEditingController _commentController = TextEditingController();
+  List<Map<String, String>> commentList = [];
 
   @override
   void initState() {
     super.initState();
-    likeCount = widget.likes;
+    likeCount = widget.initialLikes;
+    commentList = [...widget.initialComments];
   }
 
   void toggleLike() {
@@ -43,101 +46,112 @@ class _PostsState extends State<Posts> {
     });
   }
 
+  void _submitComment() {
+    String comment = _commentController.text.trim();
+    if (comment.isEmpty) return;
+    setState(() {
+      commentList.add({
+        "user": widget.username,
+        "comment": comment,
+        "avatar": widget.userImage,
+        "time": widget.timeAgo
+      });
+      _commentController.clear();
+    });
+  }
+
   void _showCommentPanel() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            minChildSize: 0.4,
-            maxChildSize: 0.95,
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.9,
             expand: false,
-            builder: (context, scrollController) {
+            builder: (_, scrollController) {
               return Column(
                 children: [
-                  // Handle bar and title
                   Container(
                     width: 40,
                     height: 5,
-                    margin: EdgeInsets.symmetric(vertical: 10),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.grey[400],
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  Text("Comments", style: TextStyle(fontWeight: FontWeight.bold)),
-                  
-                  // Comment list
+                  const Text("Comments", style: TextStyle(fontWeight: FontWeight.bold)),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,
-                      itemCount: 5,
+                      itemCount: commentList.length,
                       itemBuilder: (context, index) {
-                        return Dismissible(
-                          key: Key('comment_$index'),
-                          direction: DismissDirection.endToStart,
-                          background: slideActions(),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: AssetImage(widget.userImage),
-                            ),
-                            title: RichText(
-                              text: TextSpan(
-                                style: TextStyle(color: Colors.black),
+                        final item = commentList[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: AssetImage(item["avatar"] ?? widget.userImage),
+                          ),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
                                 children: [
-                                  TextSpan(
-                                    text: "user_$index ",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  Text(
+                                    item['user'] ?? '',
+                                    style: const TextStyle(fontWeight: FontWeight.bold,fontSize:12,),
                                   ),
-                                  TextSpan(text: "This is a sample comment."),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    item['time'] ?? '',
+                                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                                  )
                                 ],
                               ),
-                            ),
-                            subtitle: Row(
-                              children: [
-                                Text("Reply", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                SizedBox(width: 10),
-                                Text("Message", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                              ],
-                            ),
-                            trailing: Icon(Icons.favorite_border, size: 18),
+                              const SizedBox(height: 2),
+                              Text(item['comment'] ?? '', style: const TextStyle(fontSize: 12)),
+                            ],
                           ),
                         );
                       },
                     ),
                   ),
-
-                  // Comment input only (no emoji bar)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     child: Row(
                       children: [
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: TextField(
-                              decoration: InputDecoration(
+                              controller: _commentController,
+                              decoration: const InputDecoration(
                                 hintText: "Add a comment...",
                                 border: InputBorder.none,
                                 isCollapsed: true,
                               ),
-                              style: TextStyle(fontSize: 13),
+                              style: const TextStyle(fontSize: 13),
+                              onSubmitted: (_) => _submitComment(),
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Icon(Icons.send, size: 22, color: Colors.blue),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: _submitComment,
+                          child: const Icon(Icons.send, size: 22, color: Colors.blue),
+                        ),
                       ],
                     ),
                   ),
@@ -147,30 +161,6 @@ class _PostsState extends State<Posts> {
           ),
         );
       },
-    );
-  }
-
-  Widget slideActions() {
-    return Container(
-      alignment: Alignment.centerRight,
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      color: Colors.redAccent,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: EdgeInsets.all(6),
-            decoration: BoxDecoration(color: Colors.grey[800], shape: BoxShape.circle),
-            child: Icon(Icons.edit, color: Colors.white, size: 16),
-          ),
-          SizedBox(width: 10),
-          Container(
-            padding: EdgeInsets.all(6),
-            decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-            child: Icon(Icons.delete, color: Colors.white, size: 16),
-          ),
-        ],
-      ),
     );
   }
 
@@ -184,7 +174,7 @@ class _PostsState extends State<Posts> {
       child: ListTile(
         dense: true,
         leading: Icon(icon, size: 22, color: Colors.black),
-        title: Text(title, style: TextStyle(fontSize: 14)),
+        title: Text(title, style: const TextStyle(fontSize: 14)),
       ),
     );
   }
@@ -196,27 +186,29 @@ class _PostsState extends State<Posts> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top bar
           Row(
             children: [
-              CircleAvatar(radius: 20, backgroundImage: AssetImage(widget.userImage)),
-              SizedBox(width: 8),
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: AssetImage(widget.userImage),
+              ),
+              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.username, style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(widget.timeAgo, style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  Text(widget.username, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(widget.timeAgo, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               IconButton(
-                icon: Icon(Icons.more_horiz),
+                icon: const Icon(Icons.more_horiz, size: 25),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) {
                       return ClipRRect(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                         child: Container(
                           color: Colors.grey[100],
                           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -226,19 +218,20 @@ class _PostsState extends State<Posts> {
                               Container(
                                 width: 40,
                                 height: 5,
-                                margin: EdgeInsets.only(bottom: 15),
+                                margin: const EdgeInsets.only(bottom: 15),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[400],
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               _buildOptionTile(Icons.bookmark_outline, 'Save'),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               _buildOptionTile(Icons.star_outline, 'Add to Favourites'),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               _buildOptionTile(Icons.person_outline, 'About this account'),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               _buildOptionTile(Icons.hide_source, 'Hide'),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -249,23 +242,19 @@ class _PostsState extends State<Posts> {
               ),
             ],
           ),
-
-          SizedBox(height: 10),
-
-          Text(widget.caption, style: TextStyle(fontSize: 12.5)),
-          SizedBox(height: 10),
-
-          SizedBox(
-            height: 185,
-            width: double.infinity,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: Image.asset(widget.postImage, fit: BoxFit.cover),
+          const SizedBox(height: 10),
+          Text(widget.caption, style: const TextStyle(fontSize: 12.5)),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.asset(
+              widget.postImage,
+              height: 185,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-
-          SizedBox(height: 6),
-
+          const SizedBox(height: 6),
           Row(
             children: [
               GestureDetector(
@@ -276,47 +265,20 @@ class _PostsState extends State<Posts> {
                   size: 18,
                 ),
               ),
-              SizedBox(width: 4),
-              Text('$likeCount', style: TextStyle(fontSize: 13)),
-              SizedBox(width: 16),
+              const SizedBox(width: 4),
+              Text('$likeCount', style: const TextStyle(fontSize: 13)),
+              const SizedBox(width: 16),
               GestureDetector(
                 onTap: _showCommentPanel,
-                child: Icon(Icons.comment_outlined, size: 18),
+                child: const Icon(Icons.comment_outlined, size: 18),
               ),
-              SizedBox(width: 4),
-              Text('${widget.comments}', style: TextStyle(fontSize: 13)),
-              SizedBox(width: 16),
-              Icon(Icons.share_outlined, size: 18),
-              SizedBox(width: 4),
-              Text('${widget.shares}', style: TextStyle(fontSize: 11)),
+              const SizedBox(width: 4),
+              Text('${commentList.length}', style: const TextStyle(fontSize: 13)),
+              const SizedBox(width: 16),
+              const Icon(Icons.share_outlined, size: 18),
+              const SizedBox(width: 4),
+              Text('${widget.shares}', style: const TextStyle(fontSize: 11)),
             ],
-          ),
-
-          SizedBox(height: 10),
-
-          Container(
-            height: 36,
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 12),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "comment on ${widget.username}'s post",
-                      hintStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.only(bottom: 14),
-                    ),
-                  ),
-                ),
-                Icon(Icons.send, size: 18),
-              ],
-            ),
           ),
         ],
       ),

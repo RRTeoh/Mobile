@@ -102,8 +102,11 @@ class FeedPage extends StatelessWidget {
               postImage: 'assets/images/post_pic1.jpg',
               caption: 'Every drop of sweat brings me closer to my goals.\nProgress takes time.',
               timeAgo: '5 minutes ago',
-              likes: 8,
-              comments: 5,
+              initialLikes: 8,
+              initialComments: [
+                {"user": "t-rex123", "comment": "Keep going!", "avatar": "assets/images/pic2.jpg", "time": "10m"},
+                {"user": "Ashley_520", "comment": "You inspire me!", "avatar": "assets/images/pic3.jpg", "time": "8m"},
+              ],
               shares: 2,
             ),
             Posts(
@@ -112,8 +115,12 @@ class FeedPage extends StatelessWidget {
               postImage: 'assets/images/post_pic2.jpg',
               caption: 'Fuel your body with good food and strong intentions!',
               timeAgo: '12 minutes ago',
-              likes: 12,
-              comments: 11,
+              initialLikes: 12,
+              initialComments:[
+              {"user": "Sina886", "comment": "Burning!!", "avatar": "assets/images/pic4.jpg", "time": "5m"},
+              {"user": "Jackson Wang", "comment": "Love it", "avatar": "assets/images/pic1.jpg", "time": "4m"},
+              {"user": "Ryu_Ken", "comment": "Rock it", "avatar": "assets/images/pic6.jpg", "time": "just now"},
+              ],
               shares: 1,
             ),
           ],

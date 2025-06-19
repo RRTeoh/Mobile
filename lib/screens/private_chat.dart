@@ -31,15 +31,18 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       setState(() {
-        _messages.add({'text': text, 'isMe': true});
+        _messages.add({
+          'text': text,
+          'isMe': true,
+          'time': 'now', // Or you can use a formatted time string
+        });
       });
       _controller.clear();
 
-      // Delay to wait for the UI update, then scroll
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent + 60,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       });
@@ -54,14 +57,14 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
         titleSpacing: 0,
         backgroundColor: Colors.white,
         elevation: 0.5,
-        leading: BackButton(color: Colors.black),
+        leading: const BackButton(color: Colors.black),
         title: Row(
           children: [
             CircleAvatar(radius: 18, backgroundImage: AssetImage(widget.image)),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               widget.name,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -72,46 +75,56 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
       ),
       body: Column(
         children: [
-          // Chat messages
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final msg = _messages[index];
                 final isMe = msg['isMe'] as bool;
-                return Align(
-                  alignment:
-                      isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    margin: EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: isMe ? Colors.blue[100] : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(16),
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (msg['time'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          msg['time'],
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    Align(
+                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: isMe ? Colors.blue[100] : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          msg['text'],
+                          style: const TextStyle(fontSize: 13.5),
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      msg['text'],
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
+                  ],
                 );
               },
             ),
           ),
-
-          // Message input and send button
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
             child: Row(
               children: [
-                // Input box
                 Expanded(
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(25),
@@ -119,30 +132,27 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                     child: TextField(
                       controller: _controller,
                       maxLines: null,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Message...',
                         border: InputBorder.none,
                         isCollapsed: true,
                       ),
-                      style: TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: 13),
                       onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                 ),
-
-                SizedBox(width: 8),
-
-                // Send button
+                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: _sendMessage,
                   child: Container(
                     width: 39,
                     height: 39,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.blue,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.send, color: Colors.white, size: 20),
+                    child: const Icon(Icons.send, color: Colors.white, size: 20),
                   ),
                 ),
               ],

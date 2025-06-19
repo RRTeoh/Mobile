@@ -10,7 +10,7 @@ class ChatPage extends StatelessWidget {
       'image': 'assets/images/pic2.jpg',
       'unread': 'true',
       'messages': [
-        {'text': 'Hey! I just depart now.', 'isMe': true},
+        {'text': 'Hey! I just depart now.', 'isMe': true, "time": "3.00PM"},
         {'text': 'Noted.', 'isMe': false},
       ],
     },
@@ -21,7 +21,7 @@ class ChatPage extends StatelessWidget {
       'image': 'assets/images/pic3.jpg',
       'unread': 'true',
       'messages': [
-        {'text': 'Meet u 5pm @ TF Mall.', 'isMe': true},
+        {'text': 'Meet u 5pm @ TF Mall.', 'isMe': true, "time": "2.50PM"},
         {'text': 'Okay, meet u later!', 'isMe': false},
       ],
     },
@@ -31,7 +31,7 @@ class ChatPage extends StatelessWidget {
       'time': '10 minutes ago',
       'image': 'assets/images/pic4.jpg',
       'messages': [
-        {'text': 'I’m heading out now.', 'isMe': false},
+        {'text': 'I’m heading out now.', 'isMe': false, "time": "2.48PM"},
         {'text': 'okay', 'isMe': true},
       ],
     },
@@ -41,7 +41,7 @@ class ChatPage extends StatelessWidget {
       'time': '15 minutes ago',
       'image': 'assets/images/pic5.jpg',
       'messages': [
-        {'text': 'Ciao', 'isMe': false},
+        {'text': 'Ciao', 'isMe': false, "time": "2.30PM"},
       ],
     },
     {
@@ -50,7 +50,7 @@ class ChatPage extends StatelessWidget {
       'time': '20 minutes ago',
       'image': 'assets/images/pic6.jpg',
       'messages': [
-        {'text': 'Miss u', 'isMe': false},
+        {'text': 'Miss u', 'isMe': false, "time": "2.20PM"},
       ],
     },
   ];
