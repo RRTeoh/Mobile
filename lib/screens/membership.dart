@@ -24,7 +24,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -54,9 +53,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
       ),
       body: Stack(
-        children: [ 
+        children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -82,22 +81,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           left: 40,
                           child: GestureDetector(
                             onTap: () async {
-                              print("Edit profile tapped");
-                                final updatedProfile = await Navigator.push<Map<String, String>>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfile(
-                                      initialFirstName: _firstName,
-                                      initialSecondName: _secondName,
-                                    ),
+                              final updatedProfile = await Navigator.push<Map<String, String>>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfile(
+                                    initialFirstName: _firstName,
+                                    initialSecondName: _secondName,
                                   ),
-                                );
-                                if (updatedProfile != null) {
-                                  setState(() {
-                                    _firstName = updatedProfile['firstName'] ?? _firstName;
-                                    _secondName = updatedProfile['secondName'] ?? _secondName;
-                                  });
-                                }
+                                ),
+                              );
+                              if (updatedProfile != null) {
+                                setState(() {
+                                  _firstName = updatedProfile['firstName'] ?? _firstName;
+                                  _secondName = updatedProfile['secondName'] ?? _secondName;
+                                });
+                              }
                             },
                             child: CircleAvatar(
                               radius: 10,
@@ -144,18 +142,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
-                                        color: selectedIndex == 0
-                                            ? Colors.black
-                                            : Colors.grey,
+                                        color: selectedIndex == 0 ? Colors.black : Colors.grey,
                                       ),
                                     ),
                                     const SizedBox(height: 5),
                                     Container(
                                       height: 2,
                                       width: screenWidth * 0.35,
-                                      color: selectedIndex == 0
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: selectedIndex == 0 ? Colors.black : Colors.white,
                                     ),
                                     const SizedBox(height: 10),
                                   ],
@@ -174,18 +168,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
-                                        color: selectedIndex == 1
-                                            ? Colors.black
-                                            : Colors.grey,
+                                        color: selectedIndex == 1 ? Colors.black : Colors.grey,
                                       ),
                                     ),
                                     const SizedBox(height: 5),
                                     Container(
                                       height: 2,
                                       width: screenWidth * 0.35,
-                                      color: selectedIndex == 1
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: selectedIndex == 1 ? Colors.black : Colors.white,
                                     ),
                                     const SizedBox(height: 10),
                                   ],
@@ -206,39 +196,41 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          // Sliding Settings panel
+
+          // Sliding Settings Panel
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             top: 0,
             bottom: 0,
             left: isSettingsOpen ? 0 : -screenWidth * 0.75,
-            child: SizedBox(
-              width: screenWidth * 0.75,
-              child: GestureDetector(
-                onTap: () {}, // absorb taps
-                child: SettingsPanel(
-                  onClose: () {
-                    setState(() {
-                      isSettingsOpen = false;
-                    });
-                  },
+            child: Row(
+              children: [
+                SizedBox(
+                  width: screenWidth * 0.75,
+                  child: SettingsPanel(
+                    onClose: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                  ),
                 ),
-              ),
+                if (isSettingsOpen)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                    child: Container(
+                      width: screenWidth * 0.25,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                    ),
+                  ),
+              ],
             ),
-          ),
-          if(isSettingsOpen)
-          GestureDetector(
-            onTap: (){
-              setState(() {
-                isSettingsOpen = false;
-              });
-            },
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.transparent,
-            )
           ),
         ],
       ),

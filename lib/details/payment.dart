@@ -9,17 +9,48 @@ class MyPayment extends StatefulWidget {
 }
 
 class _MyPaymentState extends State<MyPayment> {
-  List<PaymentDetails> payments = PaymentDetails.getallDetails();
-  String selectedFilter = '20 April 25 - 19 May 25'; // Default display
+  List<PaymentDetails> payments = PaymentDetails.getAllDetails();
+  String selectedFilter = 'Last 30 Days';
 
-  void _handleFilterSelection(String filter) {
-    setState(() {
-      selectedFilter = filter;
+void _handleFilterSelection(String filter) {
+  final now = DateTime.now();
+  final allPayments = PaymentDetails.getAllDetails();
 
-      // Optional: apply filtering logic here based on selected filter
-      // payments = PaymentDetails.getFilteredDetails(filter);
-    });
+  List<PaymentDetails> filtered;
+
+  switch (filter) {
+    case 'Today':
+      print('Today is: ${now.toIso8601String().split("T")[0]}'); 
+      filtered = allPayments.where((p) =>
+          isSameDate(p.parsedDate, now)).toList();
+      break;
+    case 'Yesterday':
+      final yesterday = now.subtract(const Duration(days: 1));
+      filtered = allPayments.where((p) =>
+          isSameDate(p.parsedDate, yesterday)).toList();
+      break;
+    case 'Last 7 Days':
+      filtered = allPayments.where((p) =>
+          p.parsedDate.isAfter(now.subtract(const Duration(days: 7)))).toList();
+      break;
+    case 'Last 30 Days':
+      filtered = allPayments.where((p) =>
+          p.parsedDate.isAfter(now.subtract(const Duration(days: 30)))).toList();
+      break;
+    default:
+      filtered = allPayments;
   }
+
+  setState(() {
+    selectedFilter = filter;
+    payments = filtered;
+  });
+}
+
+bool isSameDate(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
 
   @override
   Widget build(BuildContext context) {
