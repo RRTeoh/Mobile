@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'private_chat.dart';
 
-class ChatPage extends StatelessWidget {
-  final List<Map<String, dynamic>> chatList = [
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  final List<Map<String, dynamic>> fullChatList = [
     {
       'name': 't-rex123',
       'message': 'Noted.',
@@ -10,7 +19,7 @@ class ChatPage extends StatelessWidget {
       'image': 'assets/images/pic2.jpg',
       'unread': 'true',
       'messages': [
-        {'text': 'Hey! I just depart now.', 'isMe': true, "time": "3.00PM"},
+        {'text': 'Hey! I just depart now.', 'isMe': true, 'time': '3.00PM'},
         {'text': 'Noted.', 'isMe': false},
       ],
     },
@@ -21,7 +30,7 @@ class ChatPage extends StatelessWidget {
       'image': 'assets/images/pic3.jpg',
       'unread': 'true',
       'messages': [
-        {'text': 'Meet u 5pm @ TF Mall.', 'isMe': true, "time": "2.50PM"},
+        {'text': 'Meet u 5pm @ TF Mall.', 'isMe': true, 'time': '2.50PM'},
         {'text': 'Okay, meet u later!', 'isMe': false},
       ],
     },
@@ -31,7 +40,7 @@ class ChatPage extends StatelessWidget {
       'time': '10 minutes ago',
       'image': 'assets/images/pic4.jpg',
       'messages': [
-        {'text': 'I’m heading out now.', 'isMe': false, "time": "2.48PM"},
+        {'text': 'I’m heading out now.', 'isMe': false, 'time': '2.48PM'},
         {'text': 'okay', 'isMe': true},
       ],
     },
@@ -41,7 +50,7 @@ class ChatPage extends StatelessWidget {
       'time': '15 minutes ago',
       'image': 'assets/images/pic5.jpg',
       'messages': [
-        {'text': 'Ciao', 'isMe': false, "time": "2.30PM"},
+        {'text': 'Ciao', 'isMe': false, 'time': '2.30PM'},
       ],
     },
     {
@@ -50,10 +59,27 @@ class ChatPage extends StatelessWidget {
       'time': '20 minutes ago',
       'image': 'assets/images/pic6.jpg',
       'messages': [
-        {'text': 'Miss u', 'isMe': false, "time": "2.20PM"},
+        {'text': 'Miss u', 'isMe': false, 'time': '2.20PM'},
       ],
     },
   ];
+
+  List<Map<String, dynamic>> filteredChatList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredChatList = fullChatList;
+  }
+
+  void _filterChats(String query) {
+    final results = fullChatList.where((chat) {
+      final name = chat['name'].toString().toLowerCase();
+      return name.contains(query.toLowerCase());
+    }).toList();
+
+    setState(() => filteredChatList = results);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +89,7 @@ class ChatPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Chats',
           style: TextStyle(
             color: Colors.black,
@@ -71,7 +97,7 @@ class ChatPage extends StatelessWidget {
             fontSize: 20,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -80,38 +106,40 @@ class ChatPage extends StatelessWidget {
             SizedBox(
               height: 36,
               child: TextField(
-                style: TextStyle(fontSize: 12),
+                controller: _searchController,
+                onChanged: _filterChats,
+                style: const TextStyle(fontSize: 12),
                 decoration: InputDecoration(
                   hintText: 'Search',
-                  prefixIcon: Icon(Icons.search, size: 19),
+                  prefixIcon: const Icon(Icons.search, size: 19),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: EdgeInsets.symmetric(vertical: 0),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
                   ),
-                  hintStyle: TextStyle(fontSize: 13),
+                  hintStyle: const TextStyle(fontSize: 13),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: chatList.length,
+                itemCount: filteredChatList.length,
                 itemBuilder: (context, index) {
-                  final chat = chatList[index];
+                  final chat = filteredChatList[index];
                   return Column(
                     children: [
                       ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundImage: AssetImage(chat['image']!),
                         ),
                         title: Text(
                           chat['name']!,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,8 +163,8 @@ class ChatPage extends StatelessWidget {
                                   Container(
                                     width: 6,
                                     height: 6,
-                                    margin: EdgeInsets.only(right: 6),
-                                    decoration: BoxDecoration(
+                                    margin: const EdgeInsets.only(right: 6),
+                                    decoration: const BoxDecoration(
                                       color: Colors.red,
                                       shape: BoxShape.circle,
                                     ),

@@ -55,7 +55,7 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue[100],
         elevation: 0.5,
         leading: const BackButton(color: Colors.black),
         title: Row(
