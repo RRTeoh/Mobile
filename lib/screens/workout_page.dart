@@ -3,6 +3,9 @@ import 'package:asgm1/details/add_card.dart';
 import 'package:asgm1/details/stat_card.dart';
 import 'package:asgm1/details/workout_card.dart';
 import 'package:asgm1/screens/calories_burned_page.dart';
+import 'package:asgm1/screens/heartbeat_page.dart';
+import 'package:asgm1/screens/steps_page.dart';
+
 
 class WorkoutPage extends StatelessWidget {
   const WorkoutPage({super.key});
@@ -97,10 +100,32 @@ class WorkoutPage extends StatelessWidget {
                     const Text("Performance Statistics", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     Row(
-                      children: const [
-                        StatCard(Icons.favorite, "117", "bpm", "assets/images/heartbeat.png"),
-                        SizedBox(width: 16),
-                        StatCard(Icons.directions_walk, "3680", "steps", "assets/images/footsteps.png"),
+                      children: [
+                        StatCard(
+                          Icons.favorite,
+                          "117",
+                          "bpm",
+                          "assets/images/heartbeat.png",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const HeartbeatPage()),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 16),
+                        StatCard(
+                          Icons.directions_walk,
+                          "3680",
+                          "steps",
+                          "assets/images/footsteps.png",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const StepsPage()),
+                            );
+                          },
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
