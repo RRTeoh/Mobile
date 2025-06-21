@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPanel extends StatelessWidget {
   final VoidCallback onClose;
@@ -15,7 +16,7 @@ class SettingsPanel extends StatelessWidget {
         height: double.infinity,
         color: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-        child: SingleChildScrollView( // Ensure scrolling if content overflows
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,10 +38,8 @@ class SettingsPanel extends StatelessWidget {
               _buildItem(
                 Icons.logout,
                 "Logout",
-                onTap: () {
-                  print("Logout tapped");
-                  _showLogoutDialog(context);
-                },
+                onTap: () => _signOut(context),
+                isLogout: true,
               ),
             ],
           ),
@@ -48,73 +47,90 @@ class SettingsPanel extends StatelessWidget {
       ),
     );
   }
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white, 
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15)
-        ),
-        title: const Center(
-          child: Text(
-            "Logout Confirmation",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.grey, 
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
-        content: const Padding(
-          padding: EdgeInsets.only(top: 16.0), 
-          child: Text(
-            "Confirm Logout?",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.blue, 
-              fontSize: 15,
-            ),
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.spaceEvenly, 
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "No",
+
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      // Display the confirmation dialogue box
+      bool? shouldLogout = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logout'),
+            content: const Text(
+              'Are you sure you want to log out?',
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                ), 
+                fontSize: 16
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                ),
+                child: const Text('Logout'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldLogout == true) {
+        try {
+          await FirebaseAuth.instance.signOut();
+          onClose();
+          print('User logged out successfully.');
+        } catch (signOutError) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to logout: ${signOutError.toString()}'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+          print('Logout Error: $signOutError');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
-          TextButton(
-            onPressed: () {
-              SystemNavigator.pop();
-            },
-            child: const Text(
-              "Yes",
-              style: TextStyle(color: Colors.black,
-              fontSize: 18,), 
-            ),
-          ),
-        ],
-      ),
-    );
+        );
+      }
+      print('General Error: $e');
+    }
   }
 
-  Widget _buildItem(IconData icon, String label, {VoidCallback? onTap}) {
+  Widget _buildItem(IconData icon, String label, {VoidCallback? onTap, bool isLogout = false}) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         child: Row(
           children: [
-            Icon(icon, size: 22),
+            Icon(
+              icon, 
+              size: 22,
+              color: isLogout ? Colors.red : null,
+            ),
             const SizedBox(width: 12),
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(
+              label, 
+              style: TextStyle(
+                fontSize: 16,
+                color: isLogout ? Colors.red : null,
+              ),
+            ),
           ],
         ),
       ),
