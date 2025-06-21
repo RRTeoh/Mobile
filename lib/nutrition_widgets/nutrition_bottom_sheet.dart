@@ -222,21 +222,34 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
 
   // Building content areas
   Widget _buildContent() {
-    return ListView(
-      padding: _containerPadding,
+    return Column(
       children: [
-        TopStatsRow(
-          baseGoal: widget.baseGoal,
-          foodCalories: _getTotalCalories(),
-          exerciseCalories: widget.exerciseCalories,
+        // 非滚动的顶部统计区域
+        Padding(
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+          child: Column(
+            children: [
+              TopStatsRow(
+                baseGoal: widget.baseGoal,
+                foodCalories: _getTotalCalories(),
+                exerciseCalories: widget.exerciseCalories,
+              ),
+              const SizedBox(height: _statsSpacing),
+            ],
+          ),
         ),
-        const SizedBox(height: _statsSpacing),
-        MealSectionList(
-          expandedMealIndices: _expandedMealIndices,
-          onToggleExpand: _toggleExpand,
-          onDataChange: _updateFormDataStatus,
-          mealFoodData: _mealFoodData,
-          onMealDataUpdate: _updateMealFoodData,
+        // 可滚动的内容区域
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 50),
+            child: MealSectionList(
+              expandedMealIndices: _expandedMealIndices,
+              onToggleExpand: _toggleExpand,
+              onDataChange: _updateFormDataStatus,
+              mealFoodData: _mealFoodData,
+              onMealDataUpdate: _updateMealFoodData,
+            ),
+          ),
         ),
       ],
     );

@@ -342,27 +342,22 @@ class _ArrowButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
   final double opacity;
-  final EdgeInsets padding;
 
   const _ArrowButton({
     required this.icon,
     required this.onPressed,
     this.opacity = 1.0,
-    this.padding = EdgeInsets.zero,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Opacity(
+    return Opacity(
         opacity: opacity,
         child: IconButton(
           icon: Icon(icon, size: 60, color: UIConstants.greyColor),
           onPressed: onPressed,
         ),
-      ),
-    );
+      );
   }
 }
 
