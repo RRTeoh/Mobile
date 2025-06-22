@@ -36,7 +36,6 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
 
   // Animation and Layout Constants
   static const Duration _animationDuration = Duration(milliseconds: 300);
-  static const EdgeInsets _containerPadding = EdgeInsets.fromLTRB(20, 10, 20, 50);
   static const double _statsSpacing = 15.0;
 
   // Meal type mapping (to avoid duplicate strings)
@@ -224,7 +223,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
   Widget _buildContent() {
     return Column(
       children: [
-        // 非滚动的顶部统计区域
+        // Non-scrolling top statistical area
         Padding(
           padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
           child: Column(
@@ -238,16 +237,20 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
             ],
           ),
         ),
-        // 可滚动的内容区域
+        // Scrolling top statistical area
         Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 50),
-            child: MealSectionList(
-              expandedMealIndices: _expandedMealIndices,
-              onToggleExpand: _toggleExpand,
-              onDataChange: _updateFormDataStatus,
-              mealFoodData: _mealFoodData,
-              onMealDataUpdate: _updateMealFoodData,
+          child: MediaQuery.removeViewInsets(
+            context: context,
+            removeBottom: true,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 50),
+              child: MealSectionList(
+                expandedMealIndices: _expandedMealIndices,
+                onToggleExpand: _toggleExpand,
+                onDataChange: _updateFormDataStatus,
+                mealFoodData: _mealFoodData,
+                onMealDataUpdate: _updateMealFoodData,
+              ),
             ),
           ),
         ),

@@ -81,6 +81,9 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
   final TextEditingController _editFoodController = TextEditingController();
   final TextEditingController _editCaloriesController = TextEditingController();
 
+  final FocusNode _foodNameFocusNode = FocusNode();
+  final FocusNode _caloriesFocusNode = FocusNode();
+
   // Validation error states
   String? _foodNameError;
   String? _caloriesError;
@@ -111,6 +114,34 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     super.initState();
     _initializeData();
     _setupAnimations();
+    _setupFocusListeners();
+  }
+
+  void _setupFocusListeners() {
+    _foodNameFocusNode.addListener(() {
+      if (_foodNameFocusNode.hasFocus) {
+        _scrollToInputField();
+      }
+    });
+    
+    _caloriesFocusNode.addListener(() {
+      if (_caloriesFocusNode.hasFocus) {
+        _scrollToInputField();
+      }
+    });
+  }
+  
+  void _scrollToInputField() {
+    Future.delayed(Duration(milliseconds: 300), () {
+      if (mounted) {
+        Scrollable.ensureVisible(
+          context,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
@@ -135,6 +166,8 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
   @override
   void dispose() {
     _disposeResources();
+    _foodNameFocusNode.dispose();
+    _caloriesFocusNode.dispose();
     super.dispose();
   }
 
@@ -657,6 +690,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
               hintText: 'Food name',
               hasError: _foodNameError != null,
               onChanged: () => _onInputChanged(true),
+              focusNode: _foodNameFocusNode,
             ),
           ),
           const Expanded(flex: 5, child: SizedBox()),
@@ -669,6 +703,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
               hasError: _caloriesError != null,
               keyboardType: TextInputType.number,
               onChanged: () => _onInputChanged(false),
+              focusNode: _caloriesFocusNode,
             ),
           ),
           const Expanded(flex: 5, child: SizedBox()),
@@ -693,14 +728,26 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     required bool hasError,
     TextInputType? keyboardType,
     required VoidCallback onChanged,
+    FocusNode? focusNode,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         keyboardType: keyboardType,
         style: const TextStyle(fontSize: 14),
         onChanged: (_) => onChanged(),
+        textInputAction: keyboardType == TextInputType.number 
+            ? TextInputAction.done 
+            : TextInputAction.next,
+        onFieldSubmitted: (_) {
+          if (focusNode == _foodNameFocusNode) {
+            _caloriesFocusNode.requestFocus();
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+        },
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.grey),
