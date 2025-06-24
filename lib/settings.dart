@@ -55,7 +55,12 @@ class SettingsPanel extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Logout'),
+            title: const Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 22
+              )
+            ),
             content: const Text(
               'Are you sure you want to log out?',
               style: TextStyle(
@@ -65,14 +70,24 @@ class SettingsPanel extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 16
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.red,
                 ),
-                child: const Text('Logout'),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 16
+                  ),
+                ),
               ),
             ],
           );

@@ -44,11 +44,12 @@ class CalorieData {
 
 // Animation Configuration
 class AnimationConfig {
-  static const Duration foodDuration = Duration(milliseconds: 800);
-  static const Duration netIntakeDuration = Duration(milliseconds: 800);
-  static const Duration redTransitionDuration = Duration(milliseconds: 1500);
-  static const Duration disappearDuration = Duration(milliseconds: 1200);
-  static const Duration delayBeforeRed = Duration(milliseconds: 300);
+  static const Duration foodDuration = Duration(milliseconds: 1000);
+  static const Duration netIntakeDuration = Duration(milliseconds: 1000);
+  static const Duration redTransitionDuration = Duration(milliseconds: 1000);
+  static const Duration disappearDuration = Duration(milliseconds: 1000);
+  static const Duration delayBeforeRed = Duration(milliseconds: 500);
+  static const Duration delayAfterRed = Duration(milliseconds: 500);
   
   static const Curve easeOutCubic = Curves.easeOutCubic;
   static const Curve easeInOut = Curves.easeInOut;
@@ -262,9 +263,12 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
     
     await Future.wait(animations);
     
-    // Starts red transition and disappearance animation after a delay
+    // Starts red transition animation after a delay
     await Future.delayed(AnimationConfig.delayBeforeRed);
     await _redTransitionController.forward();
+    
+    await Future.delayed(AnimationConfig.delayAfterRed);
+    
     await _disappearController.forward();
   }
 
@@ -424,8 +428,14 @@ class _CircularIndicator extends StatelessWidget {
 // Central Content Component
 class _CenterContent extends StatelessWidget {
   final int netIntakeCalories;
+  final CalorieData? data;
+  final List<AnimationController>? controllers;
 
-  const _CenterContent({required this.netIntakeCalories});
+  const _CenterContent({
+    required this.netIntakeCalories,
+    this.data,
+    this.controllers,
+  });
 
   double getCalorieDataFontSize(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -439,13 +449,45 @@ class _CenterContent extends StatelessWidget {
     }
   }
 
+  int _calculateDynamicCalories() {
+    if (data == null || controllers == null) {
+      return netIntakeCalories;
+    }
+
+    final foodController = controllers![0];
+    final netIntakeController = controllers![1];
+    final redTransitionController = controllers![2];
+    final disappearController = controllers![3];
+
+    if (disappearController.status == AnimationStatus.forward || 
+        disappearController.status == AnimationStatus.completed) {
+      return data!.netIntakeCalories;
+    }
+
+    if (redTransitionController.status == AnimationStatus.forward || 
+        redTransitionController.status == AnimationStatus.completed) {
+      final progress = redTransitionController.value;
+      final currentValue = data!.foodCalories - (data!.foodCalories - data!.netIntakeCalories) * progress;
+      return currentValue.round().clamp(data!.netIntakeCalories, data!.foodCalories);
+    }
+
+    if (foodController.status == AnimationStatus.forward || 
+        foodController.status == AnimationStatus.completed) {
+      return (data!.foodCalories * foodController.value).round();
+    }
+
+    return data!.netIntakeCalories;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dynamicCalories = _calculateDynamicCalories();
+    
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '$netIntakeCalories',
+          '$dynamicCalories',
           style: TextStyle(
             fontSize: getCalorieDataFontSize(context),
             fontWeight: FontWeight.bold,
@@ -531,7 +573,11 @@ class _AnimatedCircleWidget extends StatelessWidget {
               ),
             
             // Centre Content
-            _CenterContent(netIntakeCalories: data.netIntakeCalories),
+            _CenterContent(
+              netIntakeCalories: data.netIntakeCalories,
+              data: data,
+              controllers: controllers,
+            ),
           ],
         );
       },

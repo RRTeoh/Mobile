@@ -41,7 +41,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
 
   // Animation and Layout Constants
   static const Duration _animationDuration = Duration(milliseconds: 300);
-  static const double _statsSpacing = 15.0;
+  static const double _statsSpacing = 10.0;
 
   // Meal type mapping (to avoid duplicate strings)
   static const List<String> _mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
@@ -309,7 +309,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
             context: context,
             removeBottom: true,
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 50),
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 50),
               child: MealSectionList(
                 expandedMealIndices: _expandedMealIndices,
                 onToggleExpand: _toggleExpand,

@@ -339,10 +339,10 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     });
   }
 
-  // Show confirmation dialog
+  // Show confirmation dialog   
   Future<bool?> _showConfirmDialog() {
-    String mealTypeLower = widget.mealType.isNotEmpty
-        ? widget.mealType[0].toLowerCase() + widget.mealType.substring(1)
+    String mealType = widget.mealType.isNotEmpty
+        ? widget.mealType
         : widget.mealType;
     return showDialog<bool>(
       context: context,
@@ -351,27 +351,49 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
           title: const Text(
             'Confirm Clear',
             style: TextStyle(
-              fontSize: 18
+              fontSize: 22
             )
           ),
-          content: Text(
-            'Are you sure you want to clear all the food in $mealTypeLower?',
+          content: RichText(
             textAlign: TextAlign.justify,
-            style: const TextStyle(
-              fontSize: 14
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+              children: [
+                const TextSpan(text: 'Are you sure you want to clear all the food items in '),
+                TextSpan(
+                  text: '$mealType Foods',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(text: '?'),
+              ],
             ),
           ),
           actions: [
             TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: TextButton.styleFrom(
+                  textStyle: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                   foregroundColor: Colors.red,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  )
                 ),
               child: const Text('Clear'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
             ),
           ],
         );
