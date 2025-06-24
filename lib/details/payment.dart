@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/paymentdetails.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
 
 class MyPayment extends StatefulWidget {
   const MyPayment({super.key});
@@ -9,47 +13,72 @@ class MyPayment extends StatefulWidget {
 }
 
 class _MyPaymentState extends State<MyPayment> {
-  List<PaymentDetails> payments = PaymentDetails.getAllDetails();
+  List<PaymentDetails> payments = [];
   String selectedFilter = 'Last 30 Days';
 
-void _handleFilterSelection(String filter) {
-  final now = DateTime.now();
-  final allPayments = PaymentDetails.getAllDetails();
-
-  List<PaymentDetails> filtered;
-
-  switch (filter) {
-    case 'Today':
-      print('Today is: ${now.toIso8601String().split("T")[0]}'); 
-      filtered = allPayments.where((p) =>
-          isSameDate(p.parsedDate, now)).toList();
-      break;
-    case 'Yesterday':
-      final yesterday = now.subtract(const Duration(days: 1));
-      filtered = allPayments.where((p) =>
-          isSameDate(p.parsedDate, yesterday)).toList();
-      break;
-    case 'Last 7 Days':
-      filtered = allPayments.where((p) =>
-          p.parsedDate.isAfter(now.subtract(const Duration(days: 7)))).toList();
-      break;
-    case 'Last 30 Days':
-      filtered = allPayments.where((p) =>
-          p.parsedDate.isAfter(now.subtract(const Duration(days: 30)))).toList();
-      break;
-    default:
-      filtered = allPayments;
+  @override
+  void initState() {
+    super.initState();
+    _loadPayments(); // Call Firestore fetch on load
   }
 
-  setState(() {
-    selectedFilter = filter;
-    payments = filtered;
-  });
-}
+  Future<void> _loadPayments() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'testUser123'; // use proper UID
 
-bool isSameDate(DateTime a, DateTime b) {
-  return a.year == b.year && a.month == b.month && a.day == b.day;
-}
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('payments')
+        .get();
+
+    final allPayments = snapshot.docs
+        .map((doc) => PaymentDetails.fromMap(doc.data()))
+        .toList();
+
+    _applyFilter(selectedFilter, allPayments);
+  }
+
+  void _applyFilter(String filter, List<PaymentDetails> allPayments) {
+    final now = DateTime.now();
+
+    List<PaymentDetails> filtered;
+
+    switch (filter) {
+      case 'Today':
+        filtered = allPayments.where((p) =>
+            isSameDate(p.parsedDate, now)).toList();
+        break;
+      case 'Yesterday':
+        final yesterday = now.subtract(const Duration(days: 1));
+        filtered = allPayments.where((p) =>
+            isSameDate(p.parsedDate, yesterday)).toList();
+        break;
+      case 'Last 7 Days':
+        filtered = allPayments.where((p) =>
+            p.parsedDate.isAfter(now.subtract(const Duration(days: 7)))).toList();
+        break;
+      case 'Last 30 Days':
+        filtered = allPayments.where((p) =>
+            p.parsedDate.isAfter(now.subtract(const Duration(days: 30)))).toList();
+        break;
+      default:
+        filtered = allPayments;
+    }
+
+    setState(() {
+      selectedFilter = filter;
+      payments = filtered;
+    });
+  }
+
+  void _handleFilterSelection(String filter) {
+    _loadPayments(); // re-fetch and apply filter
+    selectedFilter = filter;
+  }
+
+  bool isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 
 
   @override
@@ -130,11 +159,8 @@ bool isSameDate(DateTime a, DateTime b) {
                 Row(
                   children: [
                     Text(
-                      payment.date,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      DateFormat('dd MMM yyyy').format(payment.date),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(width: 10),
                     Text(

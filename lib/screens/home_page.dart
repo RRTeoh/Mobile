@@ -50,9 +50,9 @@ class _HomePageState extends State<HomePage> {
                 });
               },
             ),
-      title: isSettingsOpen
-        ? null 
-        : Icon(Icons.notifications, color: Colors.black, size: 22),
+      // title: isSettingsOpen
+      //   ? null 
+      //   : Icon(Icons.notifications, color: Colors.black, size: 22),
               //SizedBox(width:180),
             //   CircleAvatar(
             //   radius: 23,
