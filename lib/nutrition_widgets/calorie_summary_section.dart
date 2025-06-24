@@ -94,6 +94,8 @@ class CalorieSummarySection extends StatefulWidget {
   final int baseGoal;
   final int foodCalories;
   final int exerciseCalories;
+  final DateTime? earliestDate;
+  final bool isLoading;
 
   const CalorieSummarySection({
     super.key,
@@ -103,6 +105,8 @@ class CalorieSummarySection extends StatefulWidget {
     required this.baseGoal,
     required this.foodCalories,
     required this.exerciseCalories,
+    this.earliestDate,
+    this.isLoading = false,
   });
 
   @override
@@ -280,12 +284,16 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isLoading) {
+      return const SizedBox.shrink();
+    }
     final data = _cachedData ?? _createCalorieData();
     final formattedDate = DateFormat('MMM d, yyyy').format(widget.selectedDate);
     final isToday = _isToday();
     final netIntakeColor = data.isNetIntakeExceeded 
         ? UIConstants.yellowColor 
         : UIConstants.blueColor;
+    final isEarliest = widget.earliestDate != null && widget.selectedDate.year == widget.earliestDate!.year && widget.selectedDate.month == widget.earliestDate!.month && widget.selectedDate.day == widget.earliestDate!.day;
 
     return Column(
       children: [
@@ -299,7 +307,8 @@ class _CalorieSummarySectionState extends State<CalorieSummarySection>
           children: [
             _ArrowButton(
               icon: Icons.chevron_left,
-              onPressed: widget.onPreviousDay,
+              onPressed: isEarliest ? null : widget.onPreviousDay,
+              opacity: isEarliest ? 0.0 : 1.0,
             ),
             Padding(
               padding: getCalorieCirclePadding(context),

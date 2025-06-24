@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 import 'top_stats.dart';
 import 'meal_section.dart';
 import 'meal_form.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Nutritional information bottom panel, provide meal data management and statistical display function, support expand/collapse animation
 class NutritionBottomSheet extends StatefulWidget {
   final int baseGoal;
   final int exerciseCalories;
   final ValueChanged<int>? onFoodCaloriesUpdate;
+  final DateTime selectedDate;
+  final String userId;
 
   const NutritionBottomSheet({
     super.key,
     this.baseGoal = 2000,
     this.exerciseCalories = 400,
     this.onFoodCaloriesUpdate,
+    required this.selectedDate,
+    required this.userId,
   });
   
   @override
@@ -108,8 +113,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
     final totalCalories = _getTotalCalories();
     widget.onFoodCaloriesUpdate?.call(totalCalories);
     
-    // Reserved data persistence interface
-    // _saveMealDataToDatabase(mealType, foodItems);
+    _saveMealDataToFirestore(mealType, foodItems);
   }
   
   // Get the corresponding index based on the name of the meal type
@@ -117,10 +121,6 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
     return _mealTypes.indexOf(mealType);
   }
   
-  // Getting food data for a given meal type
-  // List<FoodItem> _getFoodItemsForMeal(String mealType) {
-  //   return _mealFoodData[mealType] ?? <FoodItem>[];
-  // }
   
   // Calculate total calories
   int _getTotalCalories() {
@@ -182,6 +182,72 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
           .where((entry) => entry.value.isNotEmpty)
           .length,
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant NutritionBottomSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDate != oldWidget.selectedDate) {
+      _loadMealDataFromFirestore();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMealDataFromFirestore();
+  }
+
+  Future<void> _loadMealDataFromFirestore() async {
+    final dateStr = _dateToStr(widget.selectedDate);
+    final userId = widget.userId;
+    final futures = <Future<MapEntry<String, List<FoodItem>>>>[];
+    for (final mealType in _mealTypes) {
+      futures.add(FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('meals')
+          .doc(dateStr)
+          .collection('mealTypes')
+          .doc(mealType)
+          .get()
+          .then((doc) {
+            if (doc.exists) {
+              final data = doc.data();
+              final items = (data?['foods'] as List?)?.map((e) => FoodItem.fromJson(Map<String, dynamic>.from(e))).toList() ?? <FoodItem>[];
+              return MapEntry(mealType, items);
+            } else {
+              return MapEntry(mealType, <FoodItem>[]);
+            }
+          })
+      );
+    }
+    final results = await Future.wait(futures);
+    setState(() {
+      for (final entry in results) {
+        _mealFoodData[entry.key] = entry.value;
+      }
+    });
+    // Update total calories
+    final totalCalories = _getTotalCalories();
+    widget.onFoodCaloriesUpdate?.call(totalCalories);
+  }
+
+  Future<void> _saveMealDataToFirestore(String mealType, List<FoodItem> foodItems) async {
+    final dateStr = _dateToStr(widget.selectedDate);
+    final userId = widget.userId;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('meals')
+        .doc(dateStr)
+        .collection('mealTypes')
+        .doc(mealType)
+        .set({'foods': foodItems.map((e) => e.toJson()).toList()});
+  }
+
+  String _dateToStr(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   @override

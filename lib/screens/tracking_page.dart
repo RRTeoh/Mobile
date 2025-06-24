@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'nutrition_page.dart';
 import 'workout_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // TrackerPage
 class TrackingPage extends StatefulWidget {
@@ -16,6 +17,25 @@ class _TrackerPageState extends State<TrackingPage> {
 
   // NutritionPage Controller
   final GlobalKey<NutritionPageState> _nutritionKey = GlobalKey();
+
+  DateTime? _earliestDate;
+  String? _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _currentUserId = user.uid;
+        _earliestDate = user.metadata.creationTime;
+      });
+    }
+  }
 
   EdgeInsets getSwitchBarMargin(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -114,7 +134,11 @@ class _TrackerPageState extends State<TrackingPage> {
                 onPageChanged: _onPageChanged,
                 children: [
                   const WorkoutPage(),
-                  NutritionPage(key: _nutritionKey),
+                  NutritionPage(
+                    key: _nutritionKey, 
+                    earliestDate: _earliestDate,
+                    userId: _currentUserId ?? 'anonymous',
+                  ),
                 ],
               ),
             ),

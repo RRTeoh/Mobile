@@ -237,10 +237,10 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     // Validate food name
     final foodName = _editFoodController.text.trim();
     if (foodName.isEmpty) {
-      _foodNameError = "Input box cannot be empty!";
+      _foodNameError = "Input box cannot be empty.";
       isValid = false;
     } else if (foodName.length > _maxFoodNameLength) {
-      _foodNameError = "Food name too long (max $_maxFoodNameLength characters)!";
+      _foodNameError = "Food name too long (max $_maxFoodNameLength characters).";
       isValid = false;
     } else {
       _foodNameError = null;
@@ -249,18 +249,18 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
     // Validate calories
     final caloriesText = _editCaloriesController.text.trim();
     if (caloriesText.isEmpty) {
-      _caloriesError = "Input box cannot be empty!";
+      _caloriesError = "Input box cannot be empty.";
       isValid = false;
     } else {
       final calories = int.tryParse(caloriesText);
       if (calories == null) {
-        _caloriesError = "Please enter a number!";
+        _caloriesError = "Please enter a number.";
         isValid = false;
       } else if (calories <= 0) {
-        _caloriesError = "Please enter the correct number!";
+        _caloriesError = "Please enter the correct number.";
         isValid = false;
       } else if (calories > _maxCalories) {
-        _caloriesError = "The number is too large!";
+        _caloriesError = "The number is too large.";
         isValid = false;
       } else {
         _caloriesError = null;
@@ -341,6 +341,9 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
 
   // Show confirmation dialog
   Future<bool?> _showConfirmDialog() {
+    String mealTypeLower = widget.mealType.isNotEmpty
+        ? widget.mealType[0].toLowerCase() + widget.mealType.substring(1)
+        : widget.mealType;
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -351,17 +354,20 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
               fontSize: 18
             )
           ),
-          content: const Text(
-            'Are you sure you want to clear all food items in this meal form?',
+          content: Text(
+            'Are you sure you want to clear all the food in $mealTypeLower?',
             textAlign: TextAlign.justify,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Confirm'),
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                ),
+              child: const Text('Clear'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -816,7 +822,7 @@ class _MealFormState extends State<MealForm> with TickerProviderStateMixin {
           onPressed: _editingIndex == -1 && _foodItems.isNotEmpty ? _clearAll : null,
           icon: Icons.delete_outline,
           label: 'Clear',
-          backgroundColor: Colors.grey,
+          backgroundColor: Colors.red,
         ),
       ],
     );
