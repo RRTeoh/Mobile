@@ -1,15 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class PrivateChatPage extends StatefulWidget {
-  final String name;
-  final String image;
-  final List<Map<String, dynamic>> messages;
+  final String chatId;
+  final String currentUserId;
+  final String otherUserId;
 
   const PrivateChatPage({
     super.key,
-    required this.name,
-    required this.image,
-    required this.messages,
+    required this.chatId,
+    required this.currentUserId,
+    required this.otherUserId,
   });
 
   @override
@@ -19,34 +20,50 @@ class PrivateChatPage extends StatefulWidget {
 class _PrivateChatPageState extends State<PrivateChatPage> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  late List<Map<String, dynamic>> _messages;
-
-  @override
-  void initState() {
-    super.initState();
-    _messages = List.from(widget.messages);
-  }
 
   void _sendMessage() {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
-      setState(() {
-        _messages.add({
-          'text': text,
-          'isMe': true,
-          'time': 'now', // Or you can use a formatted time string
-        });
+      FirebaseFirestore.instance
+          .collection('chats')
+          .doc(widget.chatId)
+          .collection('messages')
+          .add({
+        'senderId': widget.currentUserId,
+        'message': text,
+        'timestamp': FieldValue.serverTimestamp(),
       });
-      _controller.clear();
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
+        'users': [widget.currentUserId, widget.otherUserId],
+        'lastMessage': text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'unread': true,
+      }, SetOptions(merge: true));
+
+      _controller.clear();
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 60,
+          _scrollController.position.maxScrollExtent + 100,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
-      });
-    }
+      }
+    });
+  }
+
+  String _formatTime(Timestamp timestamp) {
+    DateTime time = timestamp.toDate().toLocal();
+    int hour = time.hour;
+    String period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 == 0 ? 12 : hour % 12;
+    String minute = time.minute.toString().padLeft(2, '0');
+    return "$hour.$minute$period";
   }
 
   @override
@@ -54,66 +71,72 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        titleSpacing: 0,
+        title: Text(
+          widget.otherUserId,
+          style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 20, // You can reduce this, e.g., 12 or 11
+    ),
+  ),
         backgroundColor: Colors.blue[100],
-        elevation: 0.5,
-        leading: const BackButton(color: Colors.black),
-        title: Row(
-          children: [
-            CircleAvatar(radius: 18, backgroundImage: AssetImage(widget.image)),
-            const SizedBox(width: 10),
-            Text(
-              widget.name,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(12),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isMe = msg['isMe'] as bool;
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('chats')
+                  .doc(widget.chatId)
+                  .collection('messages')
+                  .orderBy('timestamp', descending: false)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (msg['time'] != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          msg['time'],
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
+                final messages = snapshot.data!.docs;
+                WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(12),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = messages[index].data() as Map<String, dynamic>;
+                    final isMe = msg['senderId'] == widget.currentUserId;
+                    final time = msg['timestamp'] != null
+                        ? _formatTime(msg['timestamp'])
+                        : '';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (time.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8), // Increased spacing below time
+                            child: Text(
+                              time,
+                              style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ),
+                        Align(
+                          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            margin: const EdgeInsets.only(bottom: 18), // More space between messages
+                            decoration: BoxDecoration(
+                              color: isMe ? Colors.blue[100] : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(msg['message'] ?? '', style: const TextStyle(fontSize: 13.5)),
                           ),
                         ),
-                      ),
-                    Align(
-                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        margin: const EdgeInsets.only(bottom: 8),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.blue[100] : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          msg['text'],
-                          style: const TextStyle(fontSize: 13.5),
-                        ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 );
               },
             ),
