@@ -36,7 +36,8 @@ class _EditProfileState extends State<EditProfile> {
   super.initState();
   firstNameController.text = widget.initialFirstName;
   secondNameController.text = widget.initialSecondName;
-  
+  emailController.text = widget.initialEmail;
+
   }
 
   void dispose() {
@@ -50,28 +51,14 @@ class _EditProfileState extends State<EditProfile> {
   }
 
 void onSave() async {
-  final user = FirebaseAuth.instance.currentUser;
-
-  if (user != null) {
-    final uid = user.uid;
-
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
-      'firstName': firstNameController.text,
-      'secondName': secondNameController.text,
-      'email': emailController.text,
-      'dob': dobController.text,
-      'phone': phoneController.text,
-    }, SetOptions(merge: true)); // merge = true to update only the fields
-
-    // Return values to ProfilePage
-    Navigator.pop(context, {
-      'firstName': firstNameController.text,
-      'secondName': secondNameController.text,
-      'email': emailController.text,
-      'dob': dobController.text,
-      'phone': phoneController.text,
-    });
-  }
+final user = FirebaseAuth.instance.currentUser;
+if (user != null) {
+  await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+    'firstName': firstNameController.text.trim(),
+    'secondName': secondNameController.text.trim(),
+    'email': emailController.text.trim(), // optional to update
+  });
+}
 }
 
   @override

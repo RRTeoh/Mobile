@@ -51,8 +51,8 @@ class _SignUpPageState extends State<SignUpPage> {
       // Add user profile data to Firestore
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'email': _emailController.text.trim(),
-        'firstName': '', // optional: can add input for this
-        'secondName': '', // optional: can add input for this
+        'firstName': user.uid,
+        'secondName':'',            
         'createdAt': FieldValue.serverTimestamp(),
       });
     }

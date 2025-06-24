@@ -6,6 +6,7 @@ import 'package:asgm1/details/payment.dart';
 import 'package:asgm1/screens/editprofile.dart';
 import 'package:asgm1/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,9 +18,27 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int selectedIndex = 0;
   bool isSettingsOpen = false;
-  String _firstName = 'Jackson';
-  String _secondName = 'Wang';
-  
+  String _firstName = 'Loading';
+  String _secondName = '';
+  @override
+  void initState() {
+  super.initState();
+  _loadUserData(); 
+  }
+
+  void _loadUserData() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final data = snapshot.data();
+    if (data != null) {
+      setState(() {
+        _firstName = data['firstName'] ?? '';
+        _secondName = data['secondName'] ?? '';
+      });
+    }
+  }
+}
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -74,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         ProfileAvatar(
                           imagePath: 'assets/images/Profile.png',
-                          name: '$_firstName $_secondName',
+                          name: '${_firstName.length > 6 ? _firstName.substring(0, 6) + "***" : _firstName} $_secondName',
                           streak: '145 🔥',
                         ),
                         Positioned(
@@ -83,23 +102,33 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: GestureDetector(
                             onTap: () async {
                               final user = FirebaseAuth.instance.currentUser;
+                              if (user != null) {
+                                // Get user data from Firestore
+                                final snapshot = await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user.uid)
+                                    .get();
 
-                              final updatedProfile = await Navigator.push<Map<String, String>>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditProfile(
-                                    initialFirstName: _firstName,
-                                    initialSecondName: _secondName,
-                                    initialEmail: user?.email ?? '', // 👈 load email only when navigating
+                                final data = snapshot.data();
+
+                                // Navigate to EditProfile screen with prefilled data
+                                final updatedProfile = await Navigator.push<Map<String, String>>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProfile(
+                                      initialFirstName: data?['firstName'] ?? user.uid, // fallback to UID
+                                      initialSecondName: data?['secondName'] ?? '',
+                                      initialEmail: data?['email'] ?? user.email ?? '',
+                                    ),
                                   ),
-                                ),
-                              );
-
-                              if (updatedProfile != null) {
-                                setState(() {
-                                  _firstName = updatedProfile['firstName'] ?? _firstName;
-                                  _secondName = updatedProfile['secondName'] ?? _secondName;
-                                });
+                                );
+                                // Optional: update local state if EditProfile returns changes
+                                if (updatedProfile != null) {
+                                  setState(() {
+                                    _firstName = updatedProfile['firstName'] ?? _firstName;
+                                    _secondName = updatedProfile['secondName'] ?? _secondName;
+                                  });
+                                }
                               }
                             },
                             child: CircleAvatar(
