@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EditProfile extends StatefulWidget {
   final String initialFirstName;
   final String initialSecondName;
-  //final String initialEmail;
+  final String initialEmail;
   //final String initialDob;
   //final String initialPhone;
 
@@ -11,7 +13,7 @@ class EditProfile extends StatefulWidget {
     super.key,
     required this.initialFirstName,
     required this.initialSecondName,
-    //required this.initialEmail,
+    required this.initialEmail,
     //required this.initialDob,
     //required this.initialPhone,
   });
@@ -34,6 +36,7 @@ class _EditProfileState extends State<EditProfile> {
   super.initState();
   firstNameController.text = widget.initialFirstName;
   secondNameController.text = widget.initialSecondName;
+  
   }
 
   void dispose() {
@@ -46,10 +49,21 @@ class _EditProfileState extends State<EditProfile> {
     super.dispose();
   }
 
-  void onSave() {
-    // You can perform validation here if needed
+void onSave() async {
+  final user = FirebaseAuth.instance.currentUser;
 
-    // Return the updated data to previous screen
+  if (user != null) {
+    final uid = user.uid;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'firstName': firstNameController.text,
+      'secondName': secondNameController.text,
+      'email': emailController.text,
+      'dob': dobController.text,
+      'phone': phoneController.text,
+    }, SetOptions(merge: true)); // merge = true to update only the fields
+
+    // Return values to ProfilePage
     Navigator.pop(context, {
       'firstName': firstNameController.text,
       'secondName': secondNameController.text,
@@ -58,6 +72,7 @@ class _EditProfileState extends State<EditProfile> {
       'phone': phoneController.text,
     });
   }
+}
 
   @override
   Widget build(BuildContext context) {

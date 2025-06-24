@@ -5,6 +5,7 @@ import 'package:asgm1/details/myreward.dart';
 import 'package:asgm1/details/payment.dart';
 import 'package:asgm1/screens/editprofile.dart';
 import 'package:asgm1/settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -18,7 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isSettingsOpen = false;
   String _firstName = 'Jackson';
   String _secondName = 'Wang';
-
+  
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -81,15 +82,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           left: 40,
                           child: GestureDetector(
                             onTap: () async {
+                              final user = FirebaseAuth.instance.currentUser;
+
                               final updatedProfile = await Navigator.push<Map<String, String>>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EditProfile(
                                     initialFirstName: _firstName,
                                     initialSecondName: _secondName,
+                                    initialEmail: user?.email ?? '', // 👈 load email only when navigating
                                   ),
                                 ),
                               );
+
                               if (updatedProfile != null) {
                                 setState(() {
                                   _firstName = updatedProfile['firstName'] ?? _firstName;

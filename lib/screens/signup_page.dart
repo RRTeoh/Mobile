@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -36,14 +38,27 @@ class _SignUpPageState extends State<SignUpPage> {
       _isLoading = true;
     });
 
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
+  try {
+    // Create user
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
-      // Logout immediately after successful registration to prevent automatic jump to the home interface
-      await _auth.signOut();
+    User? user = userCredential.user;
+
+    if (user != null) {
+      // Add user profile data to Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'email': _emailController.text.trim(),
+        'firstName': '', // optional: can add input for this
+        'secondName': '', // optional: can add input for this
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    // Sign out after registration
+    await _auth.signOut();
       
       // Successful registration, displays a success message and jumps to the login page
       print('Registration successful: ${userCredential.user?.email}');
