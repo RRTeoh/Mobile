@@ -94,7 +94,8 @@ if (user != null) {
             children: [
               const CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/Profile.png'),
+                backgroundImage: AssetImage('assets/images/noprofile.png'),
+                //assets/images/Profile.png
               ),
               const SizedBox(height: 20),
 

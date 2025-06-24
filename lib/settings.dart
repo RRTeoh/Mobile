@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:asgm1/screens/Aboutus.dart';
 
 class SettingsPanel extends StatelessWidget {
   final VoidCallback onClose;
@@ -30,11 +31,21 @@ class SettingsPanel extends StatelessWidget {
                 ],
               ),
               const Divider(),
-              _buildItem(Icons.help_outline, "Help Center"),
               _buildItem(Icons.account_circle, "Manage Account"),
-              _buildItem(Icons.lock_outline, "Privacy Settings"),
               _buildItem(Icons.notifications, "Notifications"),
+              _buildItem(Icons.lock_outline, "Privacy Settings"),
               _buildItem(Icons.language, "Language"),
+              _buildItem(Icons.help_outline, "Help Center"),
+              _buildItem(
+                  Icons.warning_rounded,
+                  "About Us",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AboutBoostify()),
+                    );
+                  },
+                ),
               _buildItem(
                 Icons.logout,
                 "Logout",

@@ -64,6 +64,8 @@ class _MyPaymentState extends State<MyPayment> {
       default:
         filtered = allPayments;
     }
+    
+    filtered.sort((a, b) => b.parsedDate.compareTo(a.parsedDate));
 
     setState(() {
       selectedFilter = filter;

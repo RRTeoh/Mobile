@@ -126,8 +126,8 @@ flutter:
    - assets/images/trainers/Trainer6.jpg
    - assets/images/trainers/Trainer7.jpg
    - assets/images/blood_pressure_chart.png
-
- 
+   - assets/images/noprofile.png
+   - assets/images/boostifylogo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

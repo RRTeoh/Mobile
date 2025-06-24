@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Stack(
                       children: [
                         ProfileAvatar(
-                          imagePath: 'assets/images/Profile.png',
+                          imagePath: 'assets/images/noprofile.png',
                           name: '${_firstName.length > 6 ? _firstName.substring(0, 6) + "***" : _firstName} $_secondName',
                           streak: '145 🔥',
                         ),
