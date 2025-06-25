@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/Aboutus.dart';
+import 'package:asgm1/screens/Helpcenter.dart';
+import 'package:asgm1/screens/Notifications.dart';
+import 'package:asgm1/screens/PrivacySettings.dart';
+import 'package:asgm1/screens/editprofile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class SettingsPanel extends StatelessWidget {
   final VoidCallback onClose;
@@ -31,11 +37,59 @@ class SettingsPanel extends StatelessWidget {
                 ],
               ),
               const Divider(),
-              _buildItem(Icons.account_circle, "Manage Account"),
-              _buildItem(Icons.notifications, "Notifications"),
-              _buildItem(Icons.lock_outline, "Privacy Settings"),
-              _buildItem(Icons.language, "Language"),
-              _buildItem(Icons.help_outline, "Help Center"),
+              _buildItem(
+                Icons.account_circle,
+                "Manage Account",
+                onTap: () async {
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    final snapshot = await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .get();
+
+                    final data = snapshot.data();
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfile(
+                          initialFirstName: data?['firstName'] ?? '',
+                          initialSecondName: data?['secondName'] ?? '',
+                          initialEmail: data?['email'] ?? user.email ?? '',
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              _buildItem(Icons.notifications,
+               "Notifications",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Notifications()),
+                    );
+                  },                 
+               ),
+              _buildItem(Icons.lock_outline, "Privacy Settings",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const privacySettings()),
+                    );
+                  },              
+              ),
+             // _buildItem(Icons.language, "Language"),
+              _buildItem(Icons.help_outline,
+               "Help Center",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Helpcenter()),
+                    );
+                  },                
+              ),
               _buildItem(
                   Icons.warning_rounded,
                   "About Us",

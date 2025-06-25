@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
             : const Text(
                 "Membership",
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
