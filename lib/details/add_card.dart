@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/screens/add_workout_page.dart'; 
+
 class AddCard extends StatelessWidget {
-  const AddCard({super.key});
+  final VoidCallback? onTap;
+
+  const AddCard({this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AddExercisePage()),
-        );
-      },
+      onTap: onTap,
       child: SizedBox(
         width: 80,
         height: 130,
@@ -24,7 +22,7 @@ class AddCard extends StatelessWidget {
             boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 3)],
           ),
           child: const Center(
-            child: Icon(Icons.add, size: 24, color: Colors.grey),
+            child: Icon(Icons.add, size: 28, color: Colors.black45),
           ),
         ),
       ),

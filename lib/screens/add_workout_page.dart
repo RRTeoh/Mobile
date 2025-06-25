@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:asgm1/details/workout_model.dart';
 
 class Exercise {
   final String name;
   final String imagePath;
   final int exercises;
   final int minutes;
-  bool isSelected;
 
   Exercise({
     required this.name,
     required this.imagePath,
     required this.exercises,
     required this.minutes,
-    this.isSelected = false,
   });
 }
 
@@ -26,7 +25,7 @@ class AddExercisePage extends StatefulWidget {
 class _AddExercisePageState extends State<AddExercisePage> {
   final TextEditingController _searchController = TextEditingController();
 
-  List<Exercise> _allExercises = [
+  final List<Exercise> _allExercises = [
     Exercise(name: 'Push-ups', imagePath: 'assets/images/exercise/pushup.png', exercises: 30, minutes: 10),
     Exercise(name: 'Sit-ups', imagePath: 'assets/images/exercise/situp.png', exercises: 50, minutes: 12),
     Exercise(name: 'Jumping Jacks', imagePath: 'assets/images/exercise/jumpingjacks.png', exercises: 40, minutes: 15),
@@ -64,23 +63,80 @@ class _AddExercisePageState extends State<AddExercisePage> {
     super.dispose();
   }
 
-  void _onAddSelected() {
-    final selected = _allExercises.where((ex) => ex.isSelected).toList();
-    if (selected.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one exercise')),
-      );
-      return;
-    }
-    Navigator.pop(context, selected);
+  void _showInputDialog(Exercise exercise) {
+    final repsController = TextEditingController();
+    final minutesController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFFEAF6FF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Log ${exercise.name}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: repsController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Reps',
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+              TextField(
+                controller: minutesController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Minutes',
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      final reps = int.tryParse(repsController.text) ?? 0;
+                      final minutes = int.tryParse(minutesController.text) ?? 0;
+
+                      Navigator.pop(context); // close dialog
+                      Navigator.pop(context, [
+                        Exercise(
+                          name: exercise.name,
+                          imagePath: exercise.imagePath,
+                          exercises: reps,
+                          minutes: minutes,
+                        )
+                      ]);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0A84FF),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text("Save"),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
-    const primaryBlue = Color(0xFF0A84FF);
-
     return Scaffold(
-      extendBody: true,
+      resizeToAvoidBottomInset: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -90,9 +146,10 @@ class _AddExercisePageState extends State<AddExercisePage> {
           ),
         ),
         child: SafeArea(
+          top: false,
           child: Column(
             children: [
-              // AppBar style to match Analytics
+              // AppBar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: Row(
@@ -140,11 +197,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                   itemBuilder: (context, index) {
                     final ex = _filteredExercises[index];
                     return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          ex.isSelected = !ex.isSelected;
-                        });
-                      },
+                      onTap: () => _showInputDialog(ex),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(16),
