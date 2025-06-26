@@ -8,14 +8,35 @@ class PrivacySettings extends StatefulWidget {
   State<PrivacySettings> createState() => _PrivacySettingsState();
 }
 
-class _PrivacySettingsState extends State<PrivacySettings> {
+class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProviderStateMixin {
   String userEmail = "";
   bool _is2FAEnabled = false;
+
+  // Toast animation
+  OverlayEntry? _overlayEntry;
+  late AnimationController _toastController;
+  late Animation<double> _toastAnimation;
+  static const Duration _toastDuration = Duration(milliseconds: 300);
+  static const Duration _toastDisplayDuration = Duration(seconds: 1);
 
   @override
   void initState() {
     super.initState();
     _loadUserEmail();
+    _toastController = AnimationController(
+      duration: _toastDuration,
+      vsync: this,
+    );
+    _toastAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _toastController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _toastController.dispose();
+    _removeOverlay();
+    super.dispose();
   }
 
   void _loadUserEmail() {
@@ -72,7 +93,12 @@ class _PrivacySettingsState extends State<PrivacySettings> {
               title: "Security Settings",
               children: [
                 _infoRow("Two-factor authentication", "", isSwitch: true),
-                _infoRow("Password", "Set password", isButton: true),
+                _infoRow(
+                  "Password",
+                  "Reset password",
+                  isButton: true,
+                  onButtonPressed: _onSetPasswordPressed,
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -105,7 +131,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
   }
 
   Widget _infoRow(String label, String value,
-      {bool isButton = false, bool isSwitch = false}) {
+      {bool isButton = false, bool isSwitch = false, VoidCallback? onButtonPressed}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -134,7 +160,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
               )
             else if (isButton)
               ElevatedButton(
-                onPressed: () {},
+                onPressed: onButtonPressed ?? () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 185, 227, 245),
                   foregroundColor: Colors.black,
@@ -152,4 +178,121 @@ class _PrivacySettingsState extends State<PrivacySettings> {
     );
   }
 
+  void _onSetPasswordPressed() async {
+    if (userEmail.isEmpty || userEmail == "No email found") {
+      _showToast("No email associated with this account.");
+      return;
+    }
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Reset Password',
+          style: TextStyle(
+              fontSize: 22
+          )
+        ),
+        content: Text('Do you want to send a password reset email to $userEmail?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            style: TextButton.styleFrom(
+                  textStyle: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    if (result == true) {
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: userEmail);
+        if (mounted) {
+          _showToast('Password reset email sent.');
+        }
+      } catch (e) {
+        if (mounted) {
+          _showToast('Failed to send reset email:\n$e');
+        }
+      }
+    }
+  }
+
+  // Show toast message
+  void _showToast(String message) {
+    _removeOverlay();
+    _overlayEntry = OverlayEntry(
+      builder: (context) => AnimatedBuilder(
+        animation: _toastAnimation,
+        builder: (context, child) => _buildToastOverlay(message),
+      ),
+    );
+    Overlay.of(context).insert(_overlayEntry!);
+    _toastController.forward().then((_) {
+      Future.delayed(_toastDisplayDuration, () {
+        _toastController.reverse().then((_) => _removeOverlay());
+      });
+    });
+  }
+
+  // Build toast overlay
+  Widget _buildToastOverlay(String message) {
+    return Positioned(
+      top: 30,
+      left: 20,
+      right: 20,
+      child: Opacity(
+        opacity: _toastAnimation.value,
+        child: Transform.scale(
+          scale: 0.8 + 0.2 * _toastAnimation.value,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(230, 82, 81, 81),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Remove overlay
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _toastController.reset();
+  }
 }
