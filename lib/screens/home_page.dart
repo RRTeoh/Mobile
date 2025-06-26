@@ -4,8 +4,9 @@ import 'package:asgm1/details/promotion.dart';
 import 'package:asgm1/settings.dart';
 import 'package:asgm1/screens/Promo1.dart';
 import 'package:intl/intl.dart';
-import 'package:asgm1/screens/viewscheduled.dart'
-;
+import 'package:asgm1/screens/viewscheduled.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,6 +27,39 @@ class _HomePageState extends State<HomePage> {
   
   //final List<Date> dates = [];
   bool isSettingsOpen = false;
+  Map<String, dynamic>? _nextEvent;
+  bool _loadingEvent = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNextEvent();
+  }
+
+  Future<void> _fetchNextEvent() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final scheduleRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('schedule');
+      final snapshot = await scheduleRef.get();
+      final tomorrow = DateFormat('d MMMM yyyy').format(DateTime.now().add(const Duration(days: 1)));
+      final events = snapshot.docs
+          .map((doc) => doc.data())
+          .where((data) => data['date'] == tomorrow)
+          .toList();
+      setState(() {
+        _nextEvent = events.isNotEmpty ? events.first : null;
+        _loadingEvent = false;
+      });
+    } else {
+      setState(() {
+        _nextEvent = null;
+        _loadingEvent = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,12 +273,10 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(width:10),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const MySchedulePage(), // or pass data if needed
-                                ),
-                              );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MySchedulePage()),
+                            );
                             },
                             child: Container(
                               margin: EdgeInsets.only(top: 15),
@@ -264,32 +296,26 @@ class _HomePageState extends State<HomePage> {
                                       "Tomorrow",
                                       style: TextStyle(fontSize: 12, color: Colors.black),
                                     ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          height: 30,
-                                          width: 5,
-                                          decoration: BoxDecoration(
-                                            color: const Color.fromARGB(255, 194, 194, 194),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: const [
-                                            Text(
-                                              "12:00 p.m. - 1:00 p.m.",
-                                              style: TextStyle(fontSize: 10, color: Colors.black),
+                                    _loadingEvent
+                                      ? const CircularProgressIndicator()
+                                      : _nextEvent != null
+                                          ? Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  _nextEvent!['subtitle'] ?? '',
+                                                  style: const TextStyle(fontSize: 10, color: Colors.black),
+                                                ),
+                                                Text(
+                                                  _nextEvent!['title'] ?? '',
+                                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
+                                                ),
+                                              ],
+                                            )
+                                          : const Text(
+                                              'No upcoming events',
+                                              style: TextStyle(fontSize: 12, color: Colors.black),
                                             ),
-                                            Text(
-                                              "Yoga Class",
-                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
                                   ],
                                 ),
                               ),

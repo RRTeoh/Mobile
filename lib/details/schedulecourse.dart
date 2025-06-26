@@ -48,11 +48,10 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Oliva Mitchell",
         teacherimagepath: "assets/images/trainers/Trainer6.jpg",
-        date: "14 May 2025",
+        date: "30 June 2025",
         address: "Mid Valley Megamall, Eko Cheras, Suria KLCC",
         description: "Join our Body Balance class and enjoy a holistic workout that combines yoga, tai chi, and Pilates to improve flexibility, core strength, and balance. With calming music and mindful movements, this low-impact class helps reduce stress, enhance posture, and bring harmony to body and mind—perfect for all fitness levels."
       )
-
     );
 
     scourse.add(
@@ -66,7 +65,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Lena Graves",
         teacherimagepath: "assets/images/trainers/Trainer5.jpg",
-        date: "14 May 2025",
+        date: "1 July 2025",
         address: "Jalan Metro Prima 5, Kepong, 52100 Kuala Lumpur",
         description: "Unleash your inner warrior with Body Combat—a high-energy cardio workout inspired by martial arts like boxing, kickboxing, and Muay Thai. Set to powerful music, this non-contact class boosts endurance, tones your body, and helps you burn serious calories, all while building confidence and having fun."
       )
@@ -84,11 +83,10 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Ivy Monroe",
         teacherimagepath: "assets/images/trainers/Trainer7.jpg",
-        date: "26 June 2025",
+        date: "27 June 2025",
         address: "Jalan Kuchai Lama, 58200 Kuala Lumpur",
         description: "Join our Pilates class and experience a full-body workout that enhances strength, flexibility, and posture while promoting relaxation and mental clarity. Suitable for all fitness levels, our expert instructors will guide you through controlled, low-impact movements that engage your core, improve balance, and tone muscles without bulking up."
       )
-
     );
 
     scourse.add(

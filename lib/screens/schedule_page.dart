@@ -3,6 +3,8 @@ import 'package:asgm1/details/schedulecourse.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:asgm1/settings.dart';
 import 'package:asgm1/screens/viewscheduled.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SearchCourse extends StatefulWidget {
   const SearchCourse({super.key});
@@ -21,8 +23,27 @@ class _SearchCourseState extends State<SearchCourse> {
 
   @override
   void initState() {
-    _foundCourse = _allCourse;
     super.initState();
+    _foundCourse = _allCourse;
+    _loadUserSchedule();
+  }
+
+  Future<void> _loadUserSchedule() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final scheduleRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('schedule');
+      final snapshot = await scheduleRef.get();
+      final scheduledTitles = snapshot.docs.map((doc) => doc['title'] as String).toSet();
+      setState(() {
+        addedCourseIndices = _allCourse.asMap().entries
+          .where((entry) => scheduledTitles.contains(entry.value.title))
+          .map((entry) => entry.key)
+          .toSet();
+      });
+    }
   }
 
   void _runFilter(String enteredKeyword) {
@@ -36,7 +57,11 @@ class _SearchCourseState extends State<SearchCourse> {
               .contains(enteredKeyword.toLowerCase()))
           .toList();
     }
-
+    // If a date is selected, filter by date as well
+    if (selectedDate != null) {
+      final formattedDate = "${selectedDate!.day.toString().padLeft(2, '0')} ${_monthName(selectedDate!.month)} ${selectedDate!.year}";
+      results = results.where((scourse) => scourse.date == formattedDate).toList();
+    }
     setState(() {
       _foundCourse = results;
     });
@@ -57,6 +82,15 @@ class _SearchCourseState extends State<SearchCourse> {
     setState(() {
       _foundCourse = results;
     });
+  }
+
+  // Helper to get month name for formatting
+  String _monthName(int month) {
+    const months = [
+      '', 'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month];
   }
 
   @override
@@ -210,6 +244,7 @@ class _SearchCourseState extends State<SearchCourse> {
                               setState(() {
                                 selectedDate = pickedDate;
                               });
+                              _runFilter("");
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -234,26 +269,16 @@ class _SearchCourseState extends State<SearchCourse> {
                       SizedBox(
                         height: 36,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Navigate to MySchedulePage (you must define and pass your booked list)
-                            Navigator.push(
+                          onPressed: () async {
+                            // Navigate to MySchedulePage and refresh schedule after return
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => MySchedulePage(
-                                  bookedCourses: _foundCourse
-                                    .asMap()
-                                    .entries
-                                    .where((entry) => addedCourseIndices.contains(entry.key))
-                                    .map((entry) => {
-                                      'title': entry.value.title,
-                                      'subtitle': entry.value.subtitle,
-                                      'date': entry.value.date,
-                                      'teachername': entry.value.teachername,
-                                    })
-                                    .toList(),
-                                ),
+                                builder: (context) => MySchedulePage(),
                               ),
                             );
+                            // Refresh schedule to update button states
+                            await _loadUserSchedule();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.lightBlue.shade200,
@@ -383,215 +408,234 @@ class _SearchCourseState extends State<SearchCourse> {
                                           color: Colors.white,
                                           size: 20,
                                           ),
-                                        onPressed: () {
-                                          Schedulecourse course = _foundCourse[index];
-                                        // Handle add action
-                                        showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              builder: (BuildContext context) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    height: 500,
-                                    padding: const EdgeInsets.only(left:20),
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Stack(
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            //const SizedBox(height: 40),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  course.title,
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold
-                                                  )
-                                                ),
-                                                SizedBox(width:10),
-                                                Container(
-                                                margin:EdgeInsets.only(top:10,bottom:10),
-                                                  height:25,
-                                                  width:60,
-                                                    decoration: BoxDecoration(
-                                                    color: const Color.fromARGB(255, 218, 218, 218),
-                                                    borderRadius: BorderRadius.circular(15),
-                                                    
-                                                ),
-                                                padding: EdgeInsets.all(5),
-                                                  child: Text(
-                                                    course.classmode,
-                                                    textAlign: TextAlign.center,
-                                                      style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.black
-                                                      )
-                                                  )
-                                                ),
-                                              ],
-                                            ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(right:20),
-                                                    child:Container(
-                                                    height: 200,
-                                                    width: 350,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(15),
-                                                      image: 
-                                                      DecorationImage(
-                                                      image: AssetImage(course.imagePath),
-                                                      fit: BoxFit.cover
-                                                    )
+                                        onPressed: addedCourseIndices.contains(index)
+                                            ? null
+                                            : () {
+                                                Schedulecourse course = _foundCourse[index];
+                                                // Handle add action
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  shape: const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.vertical(
+                                                      top: Radius.circular(20),
                                                     ),
                                                   ),
-                                                  ),
-                                                  const SizedBox(height:15),
-                                                  Row(
-                                                    children: [
-                                                      CircleAvatar(
-                                                        radius: 23,
-                                                        backgroundImage: AssetImage(course.teacherimagepath),
-                                                      ),
-                                                      SizedBox(width:10),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            "Trainer",
-                                                            textAlign: TextAlign.left,
-                                                            style:TextStyle(
-                                                              fontSize: 10,
-                                                              color:Colors.grey
-                                                            )
-                                                          ),
-                                                          Text(
-                                                            course.teachername,
-                                                            textAlign: TextAlign.left,
-                                                            style:TextStyle(
-                                                              fontSize: 15,
-                                                              color:Colors.black
-                                                            )
-                                                          ),
-                                                          RatingBar.builder(
-                                                          initialRating: course.rating.toDouble(),
-                                                          minRating: 1,
-                                                          direction: Axis.horizontal,
-                                                          itemSize: 10,
-                                                          itemBuilder: (context, _) => const Icon(
-                                                          Icons.star,
-                                                          color: Colors.yellow
-                                                          ),
-                                                          onRatingUpdate: (double value) { },
-                                                          ),
-                                                        ],
-                                                      )
-
-                                                    ]
-                                                  ),
-                                                  SizedBox(height:10),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(left:10),
-                                                    child:Column(
-                                                    children: 
-                                                    [
-                                                      Row(
-                                                      children:[Icon(Icons.access_time, size: 14, color: Colors.grey),
-                                                      SizedBox(width: 5),
-                                                      Text(
-                                                        course.subtitle,
-                                                        style: TextStyle(fontSize: 10, color: Colors.black),
-                                                      ),
-                                                      ]
-                                                      ),
-                                                      SizedBox(height: 5),
-                                                      Row(
-                                                      children:[Icon(Icons.calendar_month, size: 14, color: Colors.red),
-                                                      SizedBox(width: 5),
-                                                      Text(
-                                                        course.date,
-                                                        style: TextStyle(fontSize: 10, color: Colors.black),
-                                                      ),
-                                                      ]
-                                                      ),
-                                                      SizedBox(height: 5),
-                                                      Row(
-                                                      children:[Icon(Icons.location_on, size: 14, color: Colors.blue),
-                                                      SizedBox(width: 5),
-                                                      Text(
-                                                        course.address,
-                                                        style: TextStyle(fontSize: 10, color: Colors.black),
-                                                      ),
-                                                      ]
-                                                      ),
-                                                      SizedBox(height:10),
-                                                      Padding(
-                                                        padding: EdgeInsets.only(right:20),
-                                                        child:Text(
-                                                        course.description,
-                                                        textAlign: TextAlign.justify,
-                                                        style: TextStyle(
-                                                          fontSize: 8,
-                                                          color: Colors.black
-                                                        )
-                                                      )
-                                                      ),
-                                                      SizedBox(height:10),
-                                                        StatefulBuilder(
-                                                          builder: (BuildContext context, StateSetter setModalState) {
-                                                            return ElevatedButton(
-                                                              style: ElevatedButton.styleFrom(
-                                                                backgroundColor: addedCourseIndices.contains(index)
-                                                                    ? Colors.greenAccent.shade200
-                                                                    : const Color.fromARGB(255, 22, 45, 180),
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  addedCourseIndices.add(index); // update main screen
-                                                                });
-                                                                setModalState(() {}); // update modal button state
-                                                              },
-                                                              child: Text(
-                                                                addedCourseIndices.contains(index)
-                                                                    ? "Added"
-                                                                    : "+ Add to my schedule",
-                                                                style: TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: addedCourseIndices.contains(index)
-                                                                      ? Colors.black
-                                                                      : Colors.white,
+                                                  builder: (BuildContext context) {
+                                                    return SingleChildScrollView(
+                                                      child: Container(
+                                                        height: 500,
+                                                        padding: const EdgeInsets.only(left: 20),
+                                                        width: MediaQuery.of(context).size.width,
+                                                        child: Stack(
+                                                          children: [
+                                                            Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                //const SizedBox(height: 40),
+                                                                Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      course.title,
+                                                                      style: TextStyle(
+                                                                          fontSize: 20,
+                                                                          fontWeight: FontWeight.bold),
+                                                                    ),
+                                                                    SizedBox(width: 10),
+                                                                    Container(
+                                                                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                                                                      height: 25,
+                                                                      width: 60,
+                                                                      decoration: BoxDecoration(
+                                                                        color: const Color.fromARGB(255, 218, 218, 218),
+                                                                        borderRadius: BorderRadius.circular(15),
+                                                                      ),
+                                                                      padding: EdgeInsets.all(5),
+                                                                      child: Text(
+                                                                        course.classmode,
+                                                                        textAlign: TextAlign.center,
+                                                                        style: TextStyle(
+                                                                            fontSize: 10,
+                                                                            color: Colors.black),
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
+                                                                Padding(
+                                                                  padding: EdgeInsets.only(right: 20),
+                                                                  child: Container(
+                                                                    height: 200,
+                                                                    width: 350,
+                                                                    decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.circular(15),
+                                                                      image: DecorationImage(
+                                                                        image: AssetImage(course.imagePath),
+                                                                        fit: BoxFit.cover,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(height: 15),
+                                                                Row(
+                                                                  children: [
+                                                                    CircleAvatar(
+                                                                      radius: 23,
+                                                                      backgroundImage: AssetImage(course.teacherimagepath),
+                                                                    ),
+                                                                    SizedBox(width: 10),
+                                                                    Column(
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      children: [
+                                                                        Text(
+                                                                          "Trainer",
+                                                                          textAlign: TextAlign.left,
+                                                                          style: TextStyle(
+                                                                              fontSize: 10,
+                                                                              color: Colors.grey),
+                                                                        ),
+                                                                        Text(
+                                                                          course.teachername,
+                                                                          textAlign: TextAlign.left,
+                                                                          style: TextStyle(
+                                                                              fontSize: 15,
+                                                                              color: Colors.black),
+                                                                        ),
+                                                                        RatingBar.builder(
+                                                                          initialRating: course.rating.toDouble(),
+                                                                          minRating: 1,
+                                                                          direction: Axis.horizontal,
+                                                                          itemSize: 10,
+                                                                          itemBuilder: (context, _) => const Icon(
+                                                                              Icons.star,
+                                                                              color: Colors.yellow),
+                                                                          onRatingUpdate: (double value) {},
+                                                                        ),
+                                                                      ],
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                                SizedBox(height: 10),
+                                                                Padding(
+                                                                  padding: EdgeInsets.only(left: 10),
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                                                          SizedBox(width: 5),
+                                                                          Text(
+                                                                            course.subtitle,
+                                                                            style: TextStyle(fontSize: 10, color: Colors.black),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      SizedBox(height: 5),
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(Icons.calendar_month, size: 14, color: Colors.red),
+                                                                          SizedBox(width: 5),
+                                                                          Text(
+                                                                            course.date,
+                                                                            style: TextStyle(fontSize: 10, color: Colors.black),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      SizedBox(height: 5),
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(Icons.location_on, size: 14, color: Colors.blue),
+                                                                          SizedBox(width: 5),
+                                                                          Text(
+                                                                            course.address,
+                                                                            style: TextStyle(fontSize: 10, color: Colors.black),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      SizedBox(height: 10),
+                                                                      Padding(
+                                                                        padding: EdgeInsets.only(right: 20),
+                                                                        child: Text(
+                                                                          course.description,
+                                                                          textAlign: TextAlign.justify,
+                                                                          style: TextStyle(
+                                                                              fontSize: 8,
+                                                                              color: Colors.black),
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(height: 10),
+                                                                      StatefulBuilder(
+                                                                        builder: (BuildContext context, StateSetter setModalState) {
+                                                                          return ElevatedButton(
+                                                                            style: ElevatedButton.styleFrom(
+                                                                              backgroundColor: addedCourseIndices.contains(index)
+                                                                                  ? Colors.greenAccent.shade200
+                                                                                  : const Color.fromARGB(255, 22, 45, 180),
+                                                                            ),
+                                                                            onPressed: addedCourseIndices.contains(index)
+                                                                                ? null
+                                                                                : () async {
+                                                                                    final user = FirebaseAuth.instance.currentUser;
+                                                                                    if (user != null) {
+                                                                                      final scheduleRef = FirebaseFirestore.instance
+                                                                                          .collection('users')
+                                                                                          .doc(user.uid)
+                                                                                          .collection('schedule');
+                                                                                      await scheduleRef.add({
+                                                                                        'title': course.title,
+                                                                                        'subtitle': course.subtitle,
+                                                                                        'date': course.date,
+                                                                                        'teachername': course.teachername,
+                                                                                        'time': course.time,
+                                                                                        'duration': course.duration,
+                                                                                        'address': course.address,
+                                                                                        'classmode': course.classmode,
+                                                                                        'imagePath': course.imagePath,
+                                                                                        'teacherimagepath': course.teacherimagepath,
+                                                                                        'description': course.description,
+                                                                                        'createdAt': FieldValue.serverTimestamp(),
+                                                                                      });
+                                                                                    }
+                                                                                    setState(() {
+                                                                                      addedCourseIndices.add(index);
+                                                                                    });
+                                                                                    setModalState(() {});
+                                                                                  },
+                                                                            child: Text(
+                                                                              addedCourseIndices.contains(index)
+                                                                                  ? "Added"
+                                                                                  : "+ Add to my schedule",
+                                                                              style: TextStyle(
+                                                                                  fontSize: 16,
+                                                                                  color: addedCourseIndices.contains(index)
+                                                                                      ? Colors.black
+                                                                                      : Colors.white,
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            Positioned(
+                                                              top: 0,
+                                                              right: 0,
+                                                              child: IconButton(
+                                                                icon: const Icon(Icons.close),
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                },
                                                               ),
-                                                            );
-                                                          },
+                                                            ),
+                                                          ],
                                                         ),
-                                                    ],),
-                                                  )
-                                                ],
-                                              ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: IconButton(
-                                            icon: const Icon(Icons.close),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
                                       )
                                         
                                       ),
