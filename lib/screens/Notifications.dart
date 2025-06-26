@@ -49,34 +49,48 @@ class _NotificationsState extends State<Notifications> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            _switchTile("Show notifications", showNotifications, (val) {
-              setState(() => showNotifications = val);
-            }),
-            const Divider(
-              color: Colors.grey,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                )]
+              ),
+            padding: const EdgeInsets.all(16),
+            child: Column(children: [
+              _switchTile("Show notifications", showNotifications, (val) {
+                setState(() => showNotifications = val);
+              }),
+              const Divider(
+                color: Colors.grey,
+              ),
+              _switchTile("Show app icon badges", showIconBadges, (val) {
+                setState(() => showIconBadges = val);
+              }),
+              _switchTile("Floating notifications", floatingNotifications, (val) {
+                setState(() => floatingNotifications = val);
+              }, subtitle: "Allow floating notifications"),
+              _switchTile("Lock screen notifications", lockScreenNotifications, (val) {
+                setState(() => lockScreenNotifications = val);
+              }, subtitle: "Allow notifications on the Lock screen"),
+              _switchTile("Allow sound", allowSound, (val) {
+                setState(() => allowSound = val);
+              }),
+              _switchTile("Allow vibration", allowVibration, (val) {
+                setState(() => allowVibration = val);
+              }),
+              _switchTile("Allow using LED light", allowLED, (val) {
+                setState(() => allowLED = val);
+              }),
+              const SizedBox(height: 20),
+              //   const Divider(
+              //   color: Colors.grey,
+              // ),              
+            ],)
             ),
-            _switchTile("Show app icon badges", showIconBadges, (val) {
-              setState(() => showIconBadges = val);
-            }),
-            _switchTile("Floating notifications", floatingNotifications, (val) {
-              setState(() => floatingNotifications = val);
-            }, subtitle: "Allow floating notifications"),
-            _switchTile("Lock screen notifications", lockScreenNotifications, (val) {
-              setState(() => lockScreenNotifications = val);
-            }, subtitle: "Allow notifications on the Lock screen"),
-            _switchTile("Allow sound", allowSound, (val) {
-              setState(() => allowSound = val);
-            }),
-            _switchTile("Allow vibration", allowVibration, (val) {
-              setState(() => allowVibration = val);
-            }),
-            _switchTile("Allow using LED light", allowLED, (val) {
-              setState(() => allowLED = val);
-            }),
-            const SizedBox(height: 20),
-            //   const Divider(
-            //   color: Colors.grey,
-            // ),
           ],
         ),
       ),

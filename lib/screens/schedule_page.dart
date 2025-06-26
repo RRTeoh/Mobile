@@ -247,6 +247,7 @@ class _SearchCourseState extends State<SearchCourse> {
                             itemBuilder: (context, index) => Card(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               elevation: 3,
+                              color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                 child: Row(
@@ -261,7 +262,7 @@ class _SearchCourseState extends State<SearchCourse> {
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 12, 0, 143),
+                                              color: Colors.cyan,
                                             ),
                                           ),
                                           SizedBox(height: 4),
@@ -564,38 +565,34 @@ class _SearchCourseState extends State<SearchCourse> {
             top: 0,
             bottom: 0,
             left: isSettingsOpen ? 0 : -screenWidth * 0.75,
-            child: SizedBox(
-              width: screenWidth * 0.75,
-              child: GestureDetector(
-                onTap: () {},
-                child: SettingsPanel(
-                  onClose: () {
-                    setState(() {
-                      isSettingsOpen = false;
-                    });
-                  },
+            child: Row(
+              children: [
+                SizedBox(
+                  width: screenWidth * 0.75,
+                  child: SettingsPanel(
+                    onClose: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                  ),
                 ),
-              ),
+                if (isSettingsOpen)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                    child: Container(
+                      width: screenWidth * 0.25,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                    ),
+                  ),
+              ],
             ),
           ),
-
-          // Transparent overlay to close drawer
-          if (isSettingsOpen)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isSettingsOpen = false;
-                });
-              },
-              child: Container(
-                color: Colors.transparent,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          
-          
-
         ],
       ),
     );

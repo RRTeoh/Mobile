@@ -850,32 +850,33 @@ class _HomePageState extends State<HomePage> {
             top: 0,
             bottom: 0,
             left: isSettingsOpen ? 0 : -screenWidth * 0.75,
-            child: SizedBox(
-              width: screenWidth * 0.75,
-              child: GestureDetector(
-                onTap: () {}, // absorb taps
-                child: SettingsPanel(
-                  onClose: () {
-                    setState(() {
-                      isSettingsOpen = false;
-                    });
-                  },
+            child: Row(
+              children: [
+                SizedBox(
+                  width: screenWidth * 0.75,
+                  child: SettingsPanel(
+                    onClose: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                  ),
                 ),
-              ),
+                if (isSettingsOpen)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                    child: Container(
+                      width: screenWidth * 0.25,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                    ),
+                  ),
+              ],
             ),
-          ),
-          if(isSettingsOpen)
-          GestureDetector(
-            onTap: (){
-              setState(() {
-                isSettingsOpen = false;
-              });
-            },
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.transparent,
-            )
           ),
         ],
       ),
