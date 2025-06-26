@@ -326,169 +326,22 @@ class _HomePageState extends State<HomePage> {
                       )
                     ],
                 )
-                ),
+                ),      
                 SizedBox(height:20),
-                Text(
-                  "Sports You May Like",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black
-                  )
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child:
-                  Row(
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(width:10),
-                    //list of sports you may like
-                    Container(
-                      margin:EdgeInsets.only(top:10,bottom:10),
-                      height:27,
-                      width:60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          )
-                        ]
+                    Text(
+                      "Courses",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        //fontWeight: FontWeight.bold
                       ),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Yoga",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      )
                     ),
-                    SizedBox(width:10),
-                    Container(
-                      margin:EdgeInsets.only(top:10,bottom:10),
-                      height:27,
-                      width:60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          )
-                        ]
-                      ),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Cycling",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      )
-                    ),
-                    SizedBox(width:10),
-                    Container(
-                      margin:EdgeInsets.only(top:10,bottom:10),
-                      height:27,
-                      width:97,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          )
-                        ]
-                      ),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Weightlifting",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      )
-                    ),
-                    SizedBox(width:10),
-                    Container(
-                      margin:EdgeInsets.only(top:10,bottom:10),
-                      height:27,
-                      width:97,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          )
-                        ]
-                      ),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Rock Climbing",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      )
-                    ),
-                    SizedBox(width:10),
-                    Container(
-                      margin:EdgeInsets.only(top:10,bottom:10),
-                      height:27,
-                      width:60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          )
-                        ]
-                      ),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Boxing",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      )
-                    ),
-                    SizedBox(width:10)
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black),
                   ],
-                ),
-                ),
-                
-                SizedBox(height:20),
-                Text(
-                  "Courses",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                  )
                 ),
                 SizedBox(
                   height: 175,
@@ -540,16 +393,21 @@ class _HomePageState extends State<HomePage> {
                   },
                   ),
                 ),
-                    
-                
                 SizedBox(height:10),
-                Text(
-                  "Promotion",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                  )
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Services",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        //fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black),
+                  ],
                 ),
 
                 SizedBox(
@@ -561,10 +419,53 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      // setState(() {
-                      //   pages[promotionIndex];
-                      // });
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.asset(
+                                      promotion[index].promoimage,
+                                      width: double.infinity,
+                                      height: 180,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    promotion[index].promoname,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    promotion[index].description,
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 16),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
+
                    child:Container(
                     margin: EdgeInsets.only(right: 8),
                       height: 175,
@@ -657,4 +558,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
+} 

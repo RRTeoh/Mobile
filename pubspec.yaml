@@ -130,6 +130,10 @@ flutter:
    - assets/images/noprofile.png
    - assets/images/boostifylogo.png
    - assets/images/storypic1.jpeg
+   - assets/images/services/fitnessassessment.jpg
+   - assets/images/services/groupfitness.jpg
+   - assets/images/services/nutritionconsult.jpg
+   - assets/images/services/personaltraining.jpg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
