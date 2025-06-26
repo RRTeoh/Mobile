@@ -141,13 +141,16 @@ class FeedPage extends StatelessWidget {
               itemCount: posts.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
-                  return Column(
-                    children: [
-                      storySection(),
-                      const SizedBox(height: 5),
-                    ],
-                  );
-                }
+                return Column(
+                  children: [
+                    storySection(
+                      currentUserId: currentUserId,
+                    ),
+                  const SizedBox(height: 5),
+                  ],
+                );
+              }
+
 
                 final data = posts[index - 1].data() as Map<String, dynamic>;
                 final postId = posts[index - 1].id;

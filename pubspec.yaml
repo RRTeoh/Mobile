@@ -128,6 +128,7 @@ flutter:
    - assets/images/blood_pressure_chart.png
    - assets/images/noprofile.png
    - assets/images/boostifylogo.png
+   - assets/images/storypic1.jpeg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
