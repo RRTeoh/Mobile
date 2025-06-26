@@ -105,35 +105,21 @@ Widget storySection({
               children: [
                 const SizedBox(width: 10),
 
-                // Current user's story (detect by hasStory flag)
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(currentUserId)
-                      .collection('stories')
-                      .orderBy('time', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    final docs = snapshot.data?.docs ?? [];
-                    final hasStory = docs.isNotEmpty;
-
-                    String username = "Your Name";
-                    String userImage = "assets/images/default.jpg";
-
-                    if (docs.isNotEmpty) {
-                      final data = docs.first.data() as Map<String, dynamic>;
-                      username = data['username'] ?? "Your Name";
-                      userImage = data['userImage'] ?? "assets/images/default.jpg";
-                    }
+                // Current user's story
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance.collection('stories').doc(currentUserId).snapshots(),
+                  builder: (context, userSnapshot) {
+                    final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
+                    final hasStory = userData != null;
+                    final username = userData?['username'] ?? 'Your Name';
+                    final userImage = userData?['userImage'] ?? 'assets/images/default.jpg';
 
                     return GestureDetector(
                       onTap: () {
                         if (hasStory) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => StoryViewScreen(userId: currentUserId),
-                            ),
+                            MaterialPageRoute(builder: (context) => StoryViewScreen(userId: currentUserId)),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +130,7 @@ Widget storySection({
                       child: StoryNonRead(
                         imagePath: userImage,
                         username: username,
-                        showPlus: !hasStory,
+                        showPlus: true,
                       ),
                     );
                   },
@@ -152,34 +138,34 @@ Widget storySection({
 
                 const SizedBox(width: 15),
 
-                // Other users' stories
+                // Other users' stories with correct order
                 StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collectionGroup('stories')
-                      .orderBy('time', descending: true)
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('stories').orderBy('time', descending: true).snapshots(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox();
+                    if (!snapshot.hasData) {
+                      return const SizedBox();
+                    }
 
                     final stories = snapshot.data!.docs;
 
                     final unreadStories = stories.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final parentUserId = doc.reference.parent.parent?.id ?? '';
-                      return data['hasUnread'] == true && parentUserId != currentUserId;
+                      return data['hasUnread'] == true && doc.id != currentUserId;
                     }).toList();
 
                     final readStories = stories.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final parentUserId = doc.reference.parent.parent?.id ?? '';
-                      return (data['hasUnread'] != true) && parentUserId != currentUserId;
+                      return (data['hasUnread'] != true) && doc.id != currentUserId;
                     }).toList();
 
                     return Row(
                       children: [
+                        // Unread stories (left first)
                         ...unreadStories.map((doc) {
                           final data = doc.data() as Map<String, dynamic>;
-                          final parentUserId = doc.reference.parent.parent?.id ?? '';
+                          final userId = doc.id;
+                          final username = data['username'] ?? '';
+                          final userImage = data['userImage'] ?? 'assets/images/default.jpg';
 
                           return Row(
                             children: [
@@ -187,24 +173,22 @@ Widget storySection({
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StoryViewScreen(userId: parentUserId),
-                                    ),
+                                    MaterialPageRoute(builder: (context) => StoryViewScreen(userId: userId)),
                                   );
                                 },
-                                child: StoryNonRead(
-                                  imagePath: data['userImage'] ?? 'assets/images/default.jpg',
-                                  username: data['username'] ?? '',
-                                ),
+                                child: StoryNonRead(imagePath: userImage, username: username),
                               ),
                               const SizedBox(width: 15),
                             ],
                           );
                         }),
 
+                        // Read stories (after unread)
                         ...readStories.map((doc) {
                           final data = doc.data() as Map<String, dynamic>;
-                          final parentUserId = doc.reference.parent.parent?.id ?? '';
+                          final userId = doc.id;
+                          final username = data['username'] ?? '';
+                          final userImage = data['userImage'] ?? 'assets/images/default.jpg';
 
                           return Row(
                             children: [
@@ -212,15 +196,10 @@ Widget storySection({
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StoryViewScreen(userId: parentUserId),
-                                    ),
+                                    MaterialPageRoute(builder: (context) => StoryViewScreen(userId: userId)),
                                   );
                                 },
-                                child: StoryRead(
-                                  imagePath: data['userImage'] ?? 'assets/images/default.jpg',
-                                  username: data['username'] ?? '',
-                                ),
+                                child: StoryRead(imagePath: userImage, username: username),
                               ),
                               const SizedBox(width: 15),
                             ],

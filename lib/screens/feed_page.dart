@@ -1,58 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:asgm1/screens/feed_noti.dart';
-import 'package:asgm1/screens/chat_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/details/story.dart';
 import 'package:asgm1/details/post.dart';
+import 'package:asgm1/screens/chat_page.dart';
+import 'package:asgm1/screens/feed_noti.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+class FeedPage extends StatelessWidget {
+  final String currentUserId = "yourUserId"; // Replace with FirebaseAuth.instance.currentUser!.uid
+  final String currentUserName = "Jackson Wang"; // Logged-in user's display name
+  final String currentUserAvatar = "assets/images/pic1.jpg"; // Logged-in user's avatar
 
-  @override
-  State<FeedPage> createState() => _FeedPageState();
-}
+  FeedPage({super.key});
 
-class _FeedPageState extends State<FeedPage> {
-  String? currentUserId;
-  String? currentUserName;
-  String? currentUserAvatar;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCurrentUser();
-  }
-
-  Future<void> fetchCurrentUser() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userSnap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      setState(() {
-        currentUserId = user.uid;
-        currentUserName = userSnap['firstName'] ?? 'Unknown';
-        currentUserAvatar = userSnap['avatar'] ?? 'assets/images/default.jpg';
-      });
-    }
-  }
-
-  // ✅ Corrected Notification Count Stream
   Stream<int> getUnreadCount(String userId) {
     return FirebaseFirestore.instance
-        .collection('users')
+        .collection('notifications')
         .doc(userId)
-        .collection('notifications') // Correct structure based on your Firestore
+        .collection('notifications')
         .where('read', isEqualTo: false)
         .snapshots()
-        .map((snapshot) 
-        {
-          print("Unread Count: ${snapshot.docs.length}");
-          return snapshot.docs.length;
-        });
+        .map((snapshot) => snapshot.docs.length);
   }
 
   String _timeAgo(DateTime time) {
@@ -65,12 +32,6 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (currentUserId == null || currentUserName == null || currentUserAvatar == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xff8fd4e8),
@@ -83,13 +44,11 @@ class _FeedPageState extends State<FeedPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => FeedNoti(currentUserId: currentUserId!),
-                  ),
+                  MaterialPageRoute(builder: (context) => FeedNoti(currentUserId: currentUserId)),
                 );
               },
               child: StreamBuilder<int>(
-                stream: getUnreadCount(currentUserId!),
+                stream: getUnreadCount(currentUserId),
                 builder: (context, snapshot) {
                   int unread = snapshot.data ?? 0;
                   return Stack(
@@ -163,12 +122,7 @@ class _FeedPageState extends State<FeedPage> {
       body: Container(
         color: Colors.white,
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUserId!)
-              .collection('posts')
-              .orderBy('timestamp', descending: true)
-              .snapshots(),
+          stream: FirebaseFirestore.instance.collection('posts').orderBy('time', descending: true).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text("Error loading posts"));
@@ -187,28 +141,32 @@ class _FeedPageState extends State<FeedPage> {
               itemCount: posts.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
-                  return Column(
-                    children: [
-                      storySection(currentUserId: currentUserId!),
-                      const SizedBox(height: 5),
-                    ],
-                  );
-                }
+                return Column(
+                  children: [
+                    storySection(
+                      currentUserId: currentUserId,
+                    ),
+                  const SizedBox(height: 5),
+                  ],
+                );
+              }
+
 
                 final data = posts[index - 1].data() as Map<String, dynamic>;
                 final postId = posts[index - 1].id;
 
                 return Posts(
-                  username: data['username'] ?? 'Unknown',
-                  userImage: data['userImage'] ?? 'assets/images/default.jpg',
-                  postImage: data['image'] ?? '',
-                  caption: data['caption'] ?? '',
-                  timeAgo: _timeAgo((data['timestamp'] as Timestamp).toDate()),
+                  username: data['username'],
+                  userImage: data['userImage'],
+                  postImage: data['postImage'],
+                  caption: data['caption'],
+                  timeAgo: _timeAgo((data['time'] as Timestamp).toDate()),
                   initialLikes: data['likes'] ?? 0,
-                  currentUserId: currentUserId!,
-                  currentUserName: currentUserName!,
-                  currentUserAvatar: currentUserAvatar!,
-                  postOwnerId: currentUserId!,
+                  shares: data['shares'] ?? 0,
+                  currentUserId: currentUserId,
+                  currentUserName: currentUserName,
+                  currentUserAvatar: currentUserAvatar,
+                  postOwnerId: data['userId'],
                   postId: postId,
                 );
               },
