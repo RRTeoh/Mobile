@@ -3,6 +3,7 @@ import 'package:asgm1/details/course.dart';
 import 'package:asgm1/details/promotion.dart';
 import 'package:asgm1/settings.dart';
 import 'package:asgm1/screens/Promo1.dart';
+import 'package:intl/intl.dart';
 
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
@@ -32,6 +33,20 @@ class _HomePageState extends State<HomePage> {
     //final dates = Date.getAllDate();
     final screenWidth = MediaQuery.of(context).size.width;
     //final screenHeight = MediaQuery.of(context).size.height;
+    final DateTime today = DateTime(2025, 6, 26); // Replace with DateTime.now() in production
+    final int weekday = today.weekday; // Monday = 1
+    final DateTime monday = today.subtract(Duration(days: weekday - 1));
+
+      final List<Map<String, dynamic>> weekDates = List.generate(7, (index) {
+    DateTime day = monday.add(Duration(days: index));
+    return {
+      'label': DateFormat('E').format(day), // 'Mon', 'Tue', etc.
+      'day': day.day,
+      'isToday': day.day == today.day &&
+                 day.month == today.month &&
+                 day.year == today.year,
+    };
+    });
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -65,7 +80,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(right: 20.0),
             child: CircleAvatar(
               radius: 23,
-              backgroundImage: AssetImage("assets/images/Profile.png"),
+              backgroundImage: AssetImage("assets/images/noprofile.png"),
             ),
           ),
           ]
@@ -103,12 +118,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height:2),
                 Text(
-                    "May 14, 2025",
-                    style: TextStyle(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 12, 0, 143)
-                    ),
+                  DateFormat('d MMMM yyyy').format(DateTime.now()),
+                  style: TextStyle(
+                    fontSize: 18, 
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 12, 0, 143)
+                  ),
                 ),
                 SizedBox(height:10),
                 Container(
@@ -120,316 +135,56 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child:Column(
                     children: [
-                      Row(
-                        children: [
-                          //mon,tues,wed,thurs,fri,sat,sun
-                          SizedBox(width:12),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    //dates[index].day, 
-                                    "Mon",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "10",
-                                    //dates[index].date,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
-                            ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Tue",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "11",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
+                    SizedBox(height: 17),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: weekDates.map((date) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: Container(
+                          height: 85,
+                          width: 38,
+                          decoration: BoxDecoration(
+                            color: date['isToday']
+                                ? const Color.fromARGB(255, 12, 0, 143)
+                                : const Color.fromARGB(255, 233, 233, 233),
+                            borderRadius: BorderRadius.circular(75),
                           ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Wed",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 15),
+                              Text(
+                                date['label'],
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: date['isToday'] ? Colors.white : Colors.black,
                                 ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "12",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
-                          ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Thu",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
+                              ),
+                              const SizedBox(height: 15),
+                              Container(
+                                height: 30,
+                                width: 30,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
                                 ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  date['day'].toString(),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Center(
-                                  child: Text(
-                                    "13",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                  )
-                                )
-                              ],
-                            )
-                          ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 12, 0, 143),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Fri",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white
-                                    )
-                                  )
                                 ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "14",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
+                              ),
+                            ],
                           ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Sat",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "15",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
-                          ),
-                          SizedBox(width:5),
-                          Container(
-                            margin:EdgeInsets.only(top: 30),
-                            height: 85,
-                            width: 38,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 233, 233, 233),
-                              borderRadius: BorderRadius.circular(75)
-                            ),
-                            child:Column(
-                              children: [
-                                Container(
-                                  margin:EdgeInsets.only(top: 15),
-                                  child: Text(
-                                    "Sun",
-                                    style: TextStyle(
-                                      fontSize:13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                ),
-                                SizedBox(height:15),
-                                Container(
-                                  height:30,
-                                  width:30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  child: Text(
-                                    "16",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  )
-                                )
-                              ],
-                            )
-                          ),
-                        ],
-                      ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                       Row(
                         children: [
                           //25%,calories,reminder

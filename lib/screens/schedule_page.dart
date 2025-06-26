@@ -17,6 +17,7 @@ class _SearchCourseState extends State<SearchCourse> {
   List<Schedulecourse> _foundCourse = [];
   Set<int> addedCourseIndices = {};
 
+
   @override
   void initState() {
     _foundCourse = _allCourse;
@@ -500,28 +501,34 @@ class _SearchCourseState extends State<SearchCourse> {
                                                       )
                                                       ),
                                                       SizedBox(height:10),
-                                                      ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                        backgroundColor: addedCourseIndices.contains(index)
-                                                        ? Colors.greenAccent.shade200
-                                                        : const Color.fromARGB(255, 22, 45, 180),
+                                                        StatefulBuilder(
+                                                          builder: (BuildContext context, StateSetter setModalState) {
+                                                            return ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: addedCourseIndices.contains(index)
+                                                                    ? Colors.greenAccent.shade200
+                                                                    : const Color.fromARGB(255, 22, 45, 180),
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  addedCourseIndices.add(index); // update main screen
+                                                                });
+                                                                setModalState(() {}); // update modal button state
+                                                              },
+                                                              child: Text(
+                                                                addedCourseIndices.contains(index)
+                                                                    ? "Added"
+                                                                    : "+ Add to my schedule",
+                                                                style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: addedCourseIndices.contains(index)
+                                                                      ? Colors.black
+                                                                      : Colors.white,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
                                                         ),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            addedCourseIndices.add(index); // mark this item as added
-                                                          });  
-                                                        },
-                                                        child: Text(
-                                                          addedCourseIndices.contains(index) ? "Added" : "+ Add to my schedule",
-                                                          
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            
-                                                            color: addedCourseIndices.contains(index) ?Colors.black :Colors.white,
-                                                          ),
-                                                        ),
-                                                            ),
-            
                                                     ],),
                                                   )
                                                 ],
