@@ -7,6 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:asgm1/screens/viewscheduled.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:asgm1/screens/Course_page.dart';
+import 'package:asgm1/screens/course_details.dart';
+
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +19,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<CourseDetails> detailedCourses = CourseDetails.getAllCourse();
   final List<Course> courses = [];
   final List<Promotion> promotion = [];
   // int promotionIndex = 1;
@@ -72,6 +76,12 @@ class _HomePageState extends State<HomePage> {
     final int weekday = today.weekday; // Monday = 1
     final DateTime monday = today.subtract(Duration(days: weekday - 1));
 
+    final List<Map<String, String>> instructors = [
+    {"name": "Ava Chen", "image": "assets/images/trainers/Trainer1.jpg"},
+    {"name": "Liam Wong", "image": "assets/images/trainers/Trainer2.jpg"},
+    {"name": "Sophia Lim", "image": "assets/images/trainers/Trainer3.jpg"},
+    {"name": "Noah Tan", "image": "assets/images/trainers/Trainer4.jpg"},
+  ];
       final List<Map<String, dynamic>> weekDates = List.generate(7, (index) {
     DateTime day = monday.add(Duration(days: index));
     return {
@@ -334,7 +344,7 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       "Courses",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.black,
                         //fontWeight: FontWeight.bold
                       ),
@@ -350,57 +360,80 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(right: 8),
+                  return GestureDetector(
+                    onTap: () {
+                      final selectedCourse = courses[index];
+                      final matchedDetail = detailedCourses.firstWhere(
+                        (detail) => detail.coursename == selectedCourse.coursename,
+                        orElse: () => CourseDetails(
+                          courseimage: '',
+                          coursename: selectedCourse.coursename,
+                          videoUrl: '',
+                          duration: '',
+                          difficulty: '',
+                          description: 'Details not available.',
+                        ),
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseDetailsPage(
+                            videoUrl: matchedDetail.videoUrl,
+                            title: matchedDetail.coursename,
+                            duration: matchedDetail.duration,
+                            difficulty: matchedDetail.difficulty,
+                            description: matchedDetail.description,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 8),
                       height: 175,
                       width: 150,
-                      decoration:BoxDecoration(
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: const Color.fromARGB(255, 214,233,249),
+                        color: const Color.fromARGB(255, 214, 233, 249),
                       ),
                       child: Column(
                         children: [
                           Container(
-                            margin:EdgeInsets.only(top:10),
+                            margin: EdgeInsets.only(top: 10),
                             width: 130,
                             height: 130,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              image: 
-                              DecorationImage(
+                              image: DecorationImage(
                                 image: AssetImage(courses[index].courseimage),
-                                fit: BoxFit.cover
-                                )
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Container(
-                            margin:EdgeInsets.only(top:5),
+                            margin: EdgeInsets.only(top: 5),
                             padding: EdgeInsets.only(left: 10),
                             alignment: Alignment.centerLeft,
                             child: Text(
                               courses[index].coursename,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                                //fontWeight: FontWeight.bold
-                            )
-                          )
+                              style: TextStyle(fontSize: 14, color: Colors.black),
+                            ),
                           ),
-                        ]
-                      )
-                    );
+                        ],
+                      ),
+                    ),
+                  );
                   },
                   ),
                 ),
-                SizedBox(height:10),
+                SizedBox(height:15),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       "Services",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.black,
                         //fontWeight: FontWeight.bold
                       ),
@@ -512,6 +545,67 @@ class _HomePageState extends State<HomePage> {
                   },
                   ),
                 ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      "Instructors",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black),
+                  ],
+                ),
+                SizedBox(height: 10),
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: instructors.length,
+                    itemBuilder: (context, index) {
+                      final instructor = instructors[index];
+                      return Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        width: 130,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(70),
+                              child: Image.asset(
+                                instructor['image']!,
+                                fit: BoxFit.cover,
+                                width: 150,
+                                height: 190,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              instructor['name']!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Fitness Instructors', // Placeholder for position
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
               ],//final
                 ),
               )
@@ -559,3 +653,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 } 
+
