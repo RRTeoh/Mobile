@@ -73,7 +73,7 @@ class MySchedulePage extends StatelessWidget {
   }
 
   Widget _buildCourseCard(Map<String, dynamic> course) {
-    final List<Color> colors = [const Color.fromARGB(255, 156, 217, 255), const Color.fromARGB(255, 118, 180, 255), const Color.fromARGB(255, 143, 223, 230)];
+    final List<Color> colors = [Colors.purple.shade100, Colors.pink.shade100, Colors.orange.shade100];
     final Color background = colors[course['title'].hashCode % colors.length];
 
     return Container(
