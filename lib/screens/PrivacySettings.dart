@@ -199,7 +199,6 @@ class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProv
             style: TextButton.styleFrom(
                   textStyle: const TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.bold
                   )
                 ),
             child: const Text('Cancel'),
@@ -210,7 +209,6 @@ class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProv
                   foregroundColor: Colors.red,
                   textStyle: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold
                   )
                 ),
             child: const Text('Reset'),
