@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:asgm1/screens/Notifications.dart';
+import 'package:asgm1/screens/PrivacySettings.dart';
+import 'package:asgm1/screens/editprofile.dart';
+import 'package:asgm1/screens/Feedback.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Helpcenter extends StatefulWidget {
   const Helpcenter({super.key});
@@ -96,10 +102,34 @@ final List<String> answers = [
                 runSpacing: 20,
                 alignment: WrapAlignment.center,
                 children: [
-                  _buildToolItem(Icons.account_circle, "Acc Check"),
-                  _buildToolItem(Icons.notifications, "Notify"),
-                  _buildToolItem(Icons.lock_outline, "Acc Safety"),
-                  _buildToolItem(Icons.card_giftcard, "Vouchers"),
+                  _buildToolItem(Icons.account_circle_outlined, "Acc Check", () async {
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+                      final data = doc.data();
+                      if (data != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditProfile(
+                              initialFirstName: data['firstName'] ?? '',
+                              initialSecondName: data['secondName'] ?? '',
+                              initialEmail: data['email'] ?? user.email ?? '',
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  }),
+                  _buildToolItem(Icons.notifications_outlined, "Notify", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Notifications()));
+                  }),
+                  _buildToolItem(Icons.lock_outline, "Acc Safety", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacySettings()));
+                  }),
+                  _buildToolItem(Icons.feedback_outlined, "Feedback", () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const FeedbackPage()));
+                  }),
                 ],
               ),
             ),
@@ -171,18 +201,17 @@ final List<String> answers = [
     );
   }
 
-Widget _buildToolItem(IconData icon, String label) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, size: 30, color: Colors.black),
-      const SizedBox(height: 6),
-      Text(
-        label,
-        style: const TextStyle(fontSize: 12, color: Colors.black),
-        textAlign: TextAlign.center,
-      ),
-    ],
+Widget _buildToolItem(IconData icon, String label, VoidCallback onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 30, color: Colors.black),
+        const SizedBox(height: 6),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black)),
+      ],
+    ),
   );
 }
 }
