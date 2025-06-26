@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:asgm1/screens/membership.dart'; 
 
 class EditProfile extends StatefulWidget {
   final String initialFirstName;
@@ -29,6 +30,7 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  bool _isSaved = false;
 
   @override
 
@@ -50,16 +52,34 @@ class _EditProfileState extends State<EditProfile> {
     super.dispose();
   }
 
-void onSave() async {
-final user = FirebaseAuth.instance.currentUser;
-if (user != null) {
-  await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-    'firstName': firstNameController.text.trim(),
-    'secondName': secondNameController.text.trim(),
-    'email': emailController.text.trim(), // optional to update
-  });
-}
-}
+  void onSave() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'firstName': firstNameController.text.trim(),
+        'secondName': secondNameController.text.trim(),
+        'email': emailController.text.trim(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile saved successfully!'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      setState(() {
+        _isSaved = true;
+      });
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,19 +197,20 @@ if (user != null) {
 
               // Save button
               ElevatedButton(
-                onPressed: onSave,
+                onPressed: _isSaved ? null : onSave,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 12, 0, 143),
+                  backgroundColor: _isSaved ? Colors.lightBlue : const Color.fromARGB(255, 12, 0, 143),
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text(
-                  'Save',
+                child: Text(
+                  _isSaved ? 'Saved' : 'Save',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white),
+                    color: _isSaved ? Colors.white : Colors.white,
+                  ),
                 ),
               ),
             ],
