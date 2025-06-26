@@ -25,7 +25,7 @@ class CourseDetails {
         difficulty: 'Medium',
         description: 'A balanced workout focusing on flexibility, breathing, and core strength.',
       ),
-          CourseDetails(
+      CourseDetails(
       courseimage: 'assets/images/courses/Cardio.png',
       coursename: 'Cardio',
       videoUrl: 'assets/videos/Cardio.mp4',
