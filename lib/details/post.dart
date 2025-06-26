@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Posts extends StatefulWidget {
@@ -8,7 +9,11 @@ class Posts extends StatefulWidget {
   final String timeAgo;
   final int initialLikes;
   final int shares;
-  final List<Map<String, String>> initialComments;
+  final String currentUserId;
+  final String currentUserName;
+  final String currentUserAvatar;
+  final String postOwnerId;
+  final String postId;
 
   const Posts({
     required this.username,
@@ -18,7 +23,11 @@ class Posts extends StatefulWidget {
     required this.timeAgo,
     required this.initialLikes,
     required this.shares,
-    required this.initialComments,
+    required this.currentUserId,
+    required this.currentUserName,
+    required this.currentUserAvatar,
+    required this.postOwnerId,
+    required this.postId,
     super.key,
   });
 
@@ -27,36 +36,88 @@ class Posts extends StatefulWidget {
 }
 
 class _PostsState extends State<Posts> {
-  late int likeCount;
+  int likeCount = 0;
   bool isLiked = false;
   final TextEditingController _commentController = TextEditingController();
-  List<Map<String, String>> commentList = [];
 
   @override
   void initState() {
     super.initState();
-    likeCount = widget.initialLikes;
-    commentList = [...widget.initialComments];
+    _loadInitialLikeState();
   }
 
-  void toggleLike() {
+  void _loadInitialLikeState() async {
+    DocumentSnapshot postSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.postId).get();
+    if (postSnap.exists) {
+      setState(() {
+        likeCount = postSnap['likes'] ?? 0;
+      });
+    }
+    DocumentSnapshot likeSnap = await FirebaseFirestore.instance
+        .collection('posts')
+        .doc(widget.postId)
+        .collection('likes')
+        .doc(widget.currentUserId)
+        .get();
+    if (likeSnap.exists) {
+      setState(() {
+        isLiked = true;
+      });
+    }
+  }
+
+  void toggleLike() async {
     setState(() {
       isLiked = !isLiked;
       likeCount += isLiked ? 1 : -1;
     });
+
+    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+
+    if (isLiked) {
+      await postRef.update({'likes': FieldValue.increment(1)});
+      await postRef.collection('likes').doc(widget.currentUserId).set({'likedAt': FieldValue.serverTimestamp()});
+
+      if (widget.currentUserId != widget.postOwnerId) {
+        _sendNotification("liked your post.");
+      }
+    } else {
+      await postRef.update({'likes': FieldValue.increment(-1)});
+      await postRef.collection('likes').doc(widget.currentUserId).delete();
+    }
   }
 
-  void _submitComment() {
+  void _submitComment() async {
     String comment = _commentController.text.trim();
     if (comment.isEmpty) return;
-    setState(() {
-      commentList.add({
-        "user": widget.username,
-        "comment": comment,
-        "avatar": widget.userImage,
-        "time": widget.timeAgo
-      });
-      _commentController.clear();
+
+    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    await postRef.collection('comments').add({
+      'user': widget.currentUserName,
+      'avatar': widget.currentUserAvatar,
+      'comment': comment,
+      'time': FieldValue.serverTimestamp(),
+    });
+
+    _commentController.clear();
+
+    if (widget.currentUserId != widget.postOwnerId) {
+      _sendNotification("commented on your post.");
+    }
+  }
+
+  void _sendNotification(String action) {
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(widget.postOwnerId)
+        .collection('notifications')
+        .add({
+      'user': widget.currentUserName,
+      'avatar': widget.currentUserAvatar,
+      'action': action,
+      'time': FieldValue.serverTimestamp(),
+      'preview': widget.postImage,
+      'read': false,
     });
   }
 
@@ -90,36 +151,51 @@ class _PostsState extends State<Posts> {
                   ),
                   const Text("Comments", style: TextStyle(fontWeight: FontWeight.bold)),
                   Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: commentList.length,
-                      itemBuilder: (context, index) {
-                        final item = commentList[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            radius: 20,
-                            backgroundImage: AssetImage(item["avatar"] ?? widget.userImage),
-                          ),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('posts')
+                          .doc(widget.postId)
+                          .collection('comments')
+                          .orderBy('time', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        final comments = snapshot.data!.docs;
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: comments.length,
+                          itemBuilder: (context, index) {
+                            final comment = comments[index].data() as Map<String, dynamic>;
+                            final time = (comment['time'] as Timestamp).toDate();
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundImage: AssetImage(comment['avatar']),
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    item['user'] ?? '',
-                                    style: const TextStyle(fontWeight: FontWeight.bold,fontSize:12,),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        comment['user'] ?? '',
+                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        _timeAgo(time),
+                                        style: const TextStyle(fontSize: 10, color: Colors.grey),
+                                      )
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    item['time'] ?? '',
-                                    style: const TextStyle(fontSize: 10, color: Colors.grey),
-                                  )
+                                  const SizedBox(height: 2),
+                                  Text(comment['comment'] ?? '', style: const TextStyle(fontSize: 12)),
                                 ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(item['comment'] ?? '', style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -162,6 +238,14 @@ class _PostsState extends State<Posts> {
         );
       },
     );
+  }
+
+  String _timeAgo(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 1) return "just now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
+    if (diff.inHours < 24) return "${diff.inHours}h";
+    return "${diff.inDays}d";
   }
 
   Widget _buildOptionTile(IconData icon, String title) {
@@ -231,7 +315,6 @@ class _PostsState extends State<Posts> {
                               _buildOptionTile(Icons.person_outline, 'About this account'),
                               const SizedBox(height: 10),
                               _buildOptionTile(Icons.hide_source, 'Hide'),
-                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -273,7 +356,17 @@ class _PostsState extends State<Posts> {
                 child: const Icon(Icons.comment_outlined, size: 18),
               ),
               const SizedBox(width: 4),
-              Text('${commentList.length}', style: const TextStyle(fontSize: 13)),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(widget.postId)
+                    .collection('comments')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  int count = snapshot.data?.docs.length ?? 0;
+                  return Text('$count', style: const TextStyle(fontSize: 13));
+                },
+              ),
               const SizedBox(width: 16),
               const Icon(Icons.share_outlined, size: 18),
               const SizedBox(width: 4),

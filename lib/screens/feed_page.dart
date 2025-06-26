@@ -3,9 +3,32 @@ import 'package:asgm1/details/story.dart';
 import 'package:asgm1/details/post.dart';
 import 'package:asgm1/screens/chat_page.dart';
 import 'package:asgm1/screens/feed_noti.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedPage extends StatelessWidget {
-  const FeedPage({super.key});
+  final String currentUserId = "yourUserId"; // Replace with FirebaseAuth.instance.currentUser!.uid
+  final String currentUserName = "Jackson Wang"; // Logged-in user's display name
+  final String currentUserAvatar = "assets/images/pic1.jpg"; // Logged-in user's avatar
+
+  FeedPage({super.key});
+
+  Stream<int> getUnreadCount(String userId) {
+    return FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .where('read', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  String _timeAgo(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 1) return "just now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
+    if (diff.inHours < 24) return "${diff.inHours}h";
+    return "${diff.inDays}d";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +44,32 @@ class FeedPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FeedNoti()),
+                  MaterialPageRoute(builder: (context) => FeedNoti(currentUserId: currentUserId)),
                 );
               },
-              child: Stack(
-                children: [
-                  const Icon(Icons.notifications_none, size: 25),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: CircleAvatar(
-                      radius: 6,
-                      backgroundColor: Colors.red,
-                      child: const Text(
-                        '1',
-                        style: TextStyle(fontSize: 8, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
+              child: StreamBuilder<int>(
+                stream: getUnreadCount(currentUserId),
+                builder: (context, snapshot) {
+                  int unread = snapshot.data ?? 0;
+                  return Stack(
+                    children: [
+                      const Icon(Icons.notifications_none, size: 25),
+                      if (unread > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: CircleAvatar(
+                            radius: 6,
+                            backgroundColor: Colors.red,
+                            child: Text(
+                              '$unread',
+                              style: const TextStyle(fontSize: 8, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
 
@@ -91,38 +121,54 @@ class FeedPage extends StatelessWidget {
       ),
       body: Container(
         color: Colors.white,
-        child: ListView(
-          children: [
-            storySection(),
-            const SizedBox(height: 5),
-            Posts(
-              username: 'Jackson Wang',
-              userImage: 'assets/images/pic1.jpg',
-              postImage: 'assets/images/post_pic1.jpg',
-              caption: 'Every drop of sweat brings me closer to my goals.\nProgress takes time.',
-              timeAgo: '5 minutes ago',
-              initialLikes: 8,
-              initialComments: [
-                {"user": "t-rex123", "comment": "Keep going!", "avatar": "assets/images/pic2.jpg", "time": "10m"},
-                {"user": "Ashley_520", "comment": "You inspire me!", "avatar": "assets/images/pic3.jpg", "time": "8m"},
-              ],
-              shares: 2,
-            ),
-            Posts(
-              username: 'Ashley_520',
-              userImage: 'assets/images/pic3.jpg',
-              postImage: 'assets/images/post_pic2.jpg',
-              caption: 'Fuel your body with good food and strong intentions!',
-              timeAgo: '12 minutes ago',
-              initialLikes: 12,
-              initialComments: [
-                {"user": "Sina886", "comment": "Burning!!", "avatar": "assets/images/pic4.jpg", "time": "5m"},
-                {"user": "Jackson Wang", "comment": "Love it", "avatar": "assets/images/pic1.jpg", "time": "4m"},
-                {"user": "Ryu_Ken", "comment": "Rock it", "avatar": "assets/images/pic6.jpg", "time": "just now"},
-              ],
-              shares: 1,
-            ),
-          ],
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('posts').orderBy('time', descending: true).snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(child: Text("Error loading posts"));
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final posts = snapshot.data!.docs;
+
+            if (posts.isEmpty) {
+              return const Center(child: Text("No posts yet"));
+            }
+
+            return ListView.builder(
+              itemCount: posts.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Column(
+                    children: [
+                      storySection(),
+                      const SizedBox(height: 5),
+                    ],
+                  );
+                }
+
+                final data = posts[index - 1].data() as Map<String, dynamic>;
+                final postId = posts[index - 1].id;
+
+                return Posts(
+                  username: data['username'],
+                  userImage: data['userImage'],
+                  postImage: data['postImage'],
+                  caption: data['caption'],
+                  timeAgo: _timeAgo((data['time'] as Timestamp).toDate()),
+                  initialLikes: data['likes'] ?? 0,
+                  shares: data['shares'] ?? 0,
+                  currentUserId: currentUserId,
+                  currentUserName: currentUserName,
+                  currentUserAvatar: currentUserAvatar,
+                  postOwnerId: data['userId'],
+                  postId: postId,
+                );
+              },
+            );
+          },
         ),
       ),
     );
