@@ -74,10 +74,10 @@ class _EditProfileState extends State<EditProfile> {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ProfilePage()),
-      );
+      Navigator.pop(context, {
+        'firstName': firstNameController.text.trim(),
+        'secondName': secondNameController.text.trim(),
+      });
     }
   }
 
