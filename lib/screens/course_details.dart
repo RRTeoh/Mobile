@@ -26,9 +26,9 @@ class CourseDetails {
         description: 'A balanced workout focusing on flexibility, breathing, and core strength.',
       ),
           CourseDetails(
-      courseimage: 'assets/images/courses/Yoga.png',
+      courseimage: 'assets/images/courses/Cardio.png',
       coursename: 'Cardio',
-      videoUrl: 'assets/videos/yoga.mp4',
+      videoUrl: 'assets/videos/Cardio.mp4',
       duration: '25 min',
       difficulty: 'High',
       description:
@@ -45,7 +45,7 @@ class CourseDetails {
     ),
     CourseDetails(
       courseimage: 'assets/images/courses/Yoga.jpg',
-      coursename: 'Adventure',
+      coursename: 'Muay Thai',
       videoUrl: 'assets/videos/yoga.mp4',
       duration: '20 min',
       difficulty: 'Low',
@@ -54,16 +54,7 @@ class CourseDetails {
     ),
     CourseDetails(
       courseimage: 'assets/images/courses/Yoga.jpg',
-      coursename: 'Combat',
-      videoUrl: 'assets/videos/yoga.mp4',
-      duration: '20 min',
-      difficulty: 'Low',
-      description:
-          'A low-impact class that improves flexibility, builds strength, and develops control and endurance in the entire body. Focus on core stability.',
-    ),
-    CourseDetails(
-      courseimage: 'assets/images/courses/Yoga.jpg',
-      coursename: 'Kickboxing',
+      coursename: 'Ariel Yoga',
       videoUrl: 'assets/videos/yoga.mp4',
       duration: '20 min',
       difficulty: 'Low',
