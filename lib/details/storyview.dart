@@ -13,27 +13,22 @@ class StoryViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('stories')
-            .orderBy('time', descending: true) // latest story first
-            .limit(1)
-            .snapshots(),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection('stories').doc(userId).snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text("Story not found", style: TextStyle(color: Colors.white)),
-            );
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          final doc = snapshot.data!.docs.first;
-          final data = doc.data() as Map<String, dynamic>;
+          final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+          if (data == null) {
+            return const Center(child: Text("Story not found", style: TextStyle(color: Colors.white)));
+          }
 
           final storyImage = (data['storyImage'] ?? '').toString();
           final username = (data['username'] ?? 'Unknown').toString();
-          final userImage = (data['userImage'] ?? 'assets/images/default.jpg').toString();
+          final userImage = (data['userImage'] ?? 'assets/images/default.jpeg').toString();
 
           return Stack(
             children: [
