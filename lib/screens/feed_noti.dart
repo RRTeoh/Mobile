@@ -17,7 +17,7 @@ class _FeedNotiState extends State<FeedNoti> {
   void initState() {
     super.initState();
     notificationsRef = FirebaseFirestore.instance
-        .collection('notifications')
+        .collection('users')
         .doc(widget.currentUserId)
         .collection('notifications');
 
@@ -26,7 +26,6 @@ class _FeedNotiState extends State<FeedNoti> {
 
   Future<void> _markAllAsRead() async {
     final unreadSnap = await notificationsRef.where('read', isEqualTo: false).get();
-
     for (var doc in unreadSnap.docs) {
       doc.reference.update({'read': true});
     }
@@ -38,6 +37,14 @@ class _FeedNotiState extends State<FeedNoti> {
     if (diff.inMinutes < 60) return "${diff.inMinutes}m";
     if (diff.inHours < 24) return "${diff.inHours}h";
     return "${diff.inDays}d";
+  }
+
+  ImageProvider _getImage(String path) {
+    if (path.startsWith("http")) {
+      return NetworkImage(path);
+    } else {
+      return AssetImage(path);
+    }
   }
 
   @override
@@ -81,7 +88,7 @@ class _FeedNotiState extends State<FeedNoti> {
                 tileColor: isRead ? null : Colors.blue.shade50,
                 leading: CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(noti['avatar']),
+                  backgroundImage: _getImage(noti['avatar']),
                 ),
                 title: RichText(
                   text: TextSpan(
@@ -106,7 +113,10 @@ class _FeedNotiState extends State<FeedNoti> {
                   height: 40,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(noti['preview'], fit: BoxFit.cover),
+                    child: Image(
+                      image: _getImage(noti['preview']),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );

@@ -8,7 +8,6 @@ class Posts extends StatefulWidget {
   final String caption;
   final String timeAgo;
   final int initialLikes;
-  final int shares;
   final String currentUserId;
   final String currentUserName;
   final String currentUserAvatar;
@@ -22,7 +21,6 @@ class Posts extends StatefulWidget {
     required this.caption,
     required this.timeAgo,
     required this.initialLikes,
-    required this.shares,
     required this.currentUserId,
     required this.currentUserName,
     required this.currentUserAvatar,
@@ -47,18 +45,20 @@ class _PostsState extends State<Posts> {
   }
 
   void _loadInitialLikeState() async {
-    DocumentSnapshot postSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.postId).get();
+    final postRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.postOwnerId)
+        .collection('posts')
+        .doc(widget.postId);
+
+    final postSnap = await postRef.get();
     if (postSnap.exists) {
       setState(() {
         likeCount = postSnap['likes'] ?? 0;
       });
     }
-    DocumentSnapshot likeSnap = await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(widget.postId)
-        .collection('likes')
-        .doc(widget.currentUserId)
-        .get();
+
+    final likeSnap = await postRef.collection('likes').doc(widget.currentUserId).get();
     if (likeSnap.exists) {
       setState(() {
         isLiked = true;
@@ -67,16 +67,22 @@ class _PostsState extends State<Posts> {
   }
 
   void toggleLike() async {
+    final postRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.postOwnerId)
+        .collection('posts')
+        .doc(widget.postId);
+
     setState(() {
       isLiked = !isLiked;
       likeCount += isLiked ? 1 : -1;
     });
 
-    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
-
     if (isLiked) {
       await postRef.update({'likes': FieldValue.increment(1)});
-      await postRef.collection('likes').doc(widget.currentUserId).set({'likedAt': FieldValue.serverTimestamp()});
+      await postRef.collection('likes').doc(widget.currentUserId).set({
+        'likedAt': FieldValue.serverTimestamp(),
+      });
 
       if (widget.currentUserId != widget.postOwnerId) {
         _sendNotification("liked your post.");
@@ -91,7 +97,12 @@ class _PostsState extends State<Posts> {
     String comment = _commentController.text.trim();
     if (comment.isEmpty) return;
 
-    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    final postRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.postOwnerId)
+        .collection('posts')
+        .doc(widget.postId);
+
     await postRef.collection('comments').add({
       'user': widget.currentUserName,
       'avatar': widget.currentUserAvatar,
@@ -153,6 +164,8 @@ class _PostsState extends State<Posts> {
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(widget.postOwnerId)
                           .collection('posts')
                           .doc(widget.postId)
                           .collection('comments')
@@ -179,15 +192,11 @@ class _PostsState extends State<Posts> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
-                                        comment['user'] ?? '',
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                      ),
+                                      Text(comment['user'] ?? '',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                                       const SizedBox(width: 10),
-                                      Text(
-                                        _timeAgo(time),
-                                        style: const TextStyle(fontSize: 10, color: Colors.grey),
-                                      )
+                                      Text(_timeAgo(time),
+                                          style: const TextStyle(fontSize: 10, color: Colors.grey)),
                                     ],
                                   ),
                                   const SizedBox(height: 2),
@@ -272,10 +281,7 @@ class _PostsState extends State<Posts> {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage(widget.userImage),
-              ),
+              CircleAvatar(radius: 20, backgroundImage: AssetImage(widget.userImage)),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,6 +364,8 @@ class _PostsState extends State<Posts> {
               const SizedBox(width: 4),
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.postOwnerId)
                     .collection('posts')
                     .doc(widget.postId)
                     .collection('comments')
@@ -367,10 +375,6 @@ class _PostsState extends State<Posts> {
                   return Text('$count', style: const TextStyle(fontSize: 13));
                 },
               ),
-              const SizedBox(width: 16),
-              const Icon(Icons.share_outlined, size: 18),
-              const SizedBox(width: 4),
-              Text('${widget.shares}', style: const TextStyle(fontSize: 11)),
             ],
           ),
         ],
