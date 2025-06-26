@@ -1,47 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class FeedNoti extends StatefulWidget {
-  final String currentUserId;
-
-  const FeedNoti({super.key, required this.currentUserId});
-
-  @override
-  State<FeedNoti> createState() => _FeedNotiState();
-}
-
-class _FeedNotiState extends State<FeedNoti> {
-  late CollectionReference<Map<String, dynamic>> notificationsRef;
-
-  @override
-  void initState() {
-    super.initState();
-    notificationsRef = FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(widget.currentUserId)
-        .collection('notifications');
-
-    _markAllAsRead();
-  }
-
-  Future<void> _markAllAsRead() async {
-    final unreadSnap = await notificationsRef.where('read', isEqualTo: false).get();
-
-    for (var doc in unreadSnap.docs) {
-      doc.reference.update({'read': true});
-    }
-  }
-
-  String _timeAgo(DateTime time) {
-    final diff = DateTime.now().difference(time);
-    if (diff.inMinutes < 1) return "just now";
-    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
-    if (diff.inHours < 24) return "${diff.inHours}h";
-    return "${diff.inDays}d";
-  }
+class FeedNoti extends StatelessWidget {
+  const FeedNoti({super.key});
 
   @override
   Widget build(BuildContext context) {
+    String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "yourUserId";
+    print("DEBUG: Current User ID -> $currentUserId");
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xff8fd4e8),
@@ -52,52 +20,67 @@ class _FeedNotiState extends State<FeedNoti> {
         ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: notificationsRef.orderBy('time', descending: true).snapshots(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('notifications')
+            .where('receiver', isEqualTo: currentUserId)
+            .orderBy('time', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text("Error loading notifications"));
-          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final notifications = snapshot.data!.docs;
+          if (snapshot.hasError) {
+            print("DEBUG: Error fetching notifications -> ${snapshot.error}");
+            return const Center(child: Text("Error loading notifications"));
+          }
 
-          if (notifications.isEmpty) {
-            return const Center(child: Text("No notifications yet"));
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            print("DEBUG: No notifications found for this user.");
+            return const Center(child: Text("No notifications yet."));
+          }
+
+          final notifications = snapshot.data!.docs;
+          print("DEBUG: Notifications loaded -> ${notifications.length} found");
+
+          // Mark all as read
+          for (var doc in notifications) {
+            if (doc['read'] == false) {
+              doc.reference.update({'read': true});
+            }
           }
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             itemCount: notifications.length,
             itemBuilder: (context, index) {
-              final noti = notifications[index].data();
-              final timestamp = noti['time'] as Timestamp;
-              final isRead = noti['read'] ?? false;
+              final data = notifications[index].data() as Map<String, dynamic>;
+
+              final senderAvatar = data['senderAvatar'] ?? 'assets/images/default.jpg';
+              final preview = data['preview'] ?? 'assets/images/default.jpg';
+              final senderName = data['senderName'] ?? 'Unknown';
+              final action = data['action'] ?? '';
+
+              print("DEBUG: Notification [$index] -> Sender: $senderName, Action: $action");
 
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                tileColor: isRead ? null : Colors.blue.shade50,
                 leading: CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(noti['avatar']),
+                  backgroundImage: AssetImage(senderAvatar),
                 ),
                 title: RichText(
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: noti['user'],
+                        text: senderName,
                         style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                       TextSpan(
-                        text: " ${noti['action']}",
+                        text: " $action",
                         style: const TextStyle(color: Colors.black),
                       ),
-                      TextSpan(
-                        text: " ${_timeAgo(timestamp.toDate())}",
-                        style: const TextStyle(fontSize: 11, color: Colors.grey),
-                      )
                     ],
                   ),
                 ),
@@ -106,7 +89,7 @@ class _FeedNotiState extends State<FeedNoti> {
                   height: 40,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(noti['preview'], fit: BoxFit.cover),
+                    child: Image.asset(preview, fit: BoxFit.cover),
                   ),
                 ),
               );

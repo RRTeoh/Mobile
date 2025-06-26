@@ -5,12 +5,16 @@ class PrivateChatPage extends StatefulWidget {
   final String chatId;
   final String currentUserId;
   final String otherUserId;
+  final String otherUserName;
+  final String otherUserImage;
 
   const PrivateChatPage({
     super.key,
     required this.chatId,
     required this.currentUserId,
     required this.otherUserId,
+    required this.otherUserName,
+    required this.otherUserImage,
   });
 
   @override
@@ -36,6 +40,9 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
 
       FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
         'users': [widget.currentUserId, widget.otherUserId],
+        'otherUserId': widget.otherUserId,
+        'otherUserName': widget.otherUserName,
+        'otherUserImage': widget.otherUserImage,
         'lastMessage': text,
         'timestamp': FieldValue.serverTimestamp(),
         'unread': true,
@@ -58,11 +65,10 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   String _formatTime(Timestamp timestamp) {
-    DateTime time = timestamp.toDate().toLocal();
-    int hour = time.hour;
-    String period = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 == 0 ? 12 : hour % 12;
-    String minute = time.minute.toString().padLeft(2, '0');
+    final time = timestamp.toDate();
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+    final minute = time.minute.toString().padLeft(2, '0');
     return "$hour.$minute$period";
   }
 
@@ -71,15 +77,17 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          widget.otherUserId,
-          style: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 20, // You can reduce this, e.g., 12 or 11
-    ),
-  ),
         backgroundColor: Colors.blue[100],
+        title: Row(
+          children: [
+            CircleAvatar(radius: 16, backgroundImage: AssetImage(widget.otherUserImage)),
+            const SizedBox(width: 8),
+            Text(
+              widget.otherUserName,
+              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -89,16 +97,16 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                   .collection('chats')
                   .doc(widget.chatId)
                   .collection('messages')
-                  .orderBy('timestamp', descending: false)
+                  .orderBy('timestamp')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+                if (snapshot.hasError) return const Center(child: Text('Error'));
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 final messages = snapshot.data!.docs;
-                WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+                _scrollToBottom();
 
                 return ListView.builder(
                   controller: _scrollController,
@@ -107,26 +115,21 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                   itemBuilder: (context, index) {
                     final msg = messages[index].data() as Map<String, dynamic>;
                     final isMe = msg['senderId'] == widget.currentUserId;
-                    final time = msg['timestamp'] != null
-                        ? _formatTime(msg['timestamp'])
-                        : '';
+                    final time = msg['timestamp'] != null ? _formatTime(msg['timestamp']) : '';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if (time.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 8), // Increased spacing below time
-                            child: Text(
-                              time,
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
-                            ),
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Text(time, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                           ),
                         Align(
                           alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            margin: const EdgeInsets.only(bottom: 18), // More space between messages
+                            margin: const EdgeInsets.only(bottom: 14),
                             decoration: BoxDecoration(
                               color: isMe ? Colors.blue[100] : Colors.grey[200],
                               borderRadius: BorderRadius.circular(16),
@@ -142,12 +145,11 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(25),
@@ -158,7 +160,7 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                       decoration: const InputDecoration(
                         hintText: 'Message...',
                         border: InputBorder.none,
-                        isCollapsed: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                       ),
                       style: const TextStyle(fontSize: 13),
                       onSubmitted: (_) => _sendMessage(),
@@ -171,10 +173,7 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                   child: Container(
                     width: 39,
                     height: 39,
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
-                    ),
+                    decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
                     child: const Icon(Icons.send, color: Colors.white, size: 20),
                   ),
                 ),

@@ -13,61 +13,75 @@ class StoryViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection('stories').doc(userId).snapshots(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('stories')
+            .doc(userId)
+            .collection('userStories')
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text("Story not found", style: TextStyle(color: Colors.white)),
+            );
           }
 
-          final data = snapshot.data!.data() as Map<String, dynamic>?;
+          final storyData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+          final storyImage = (storyData['storyImage'] ?? 'assets/images/default.jpg').toString();
 
-          if (data == null) {
-            return const Center(child: Text("Story not found", style: TextStyle(color: Colors.white)));
-          }
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance.collection('stories').doc(userId).get(),
+            builder: (context, userSnapshot) {
+              if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final storyImage = (data['storyImage'] ?? '').toString();
-          final username = (data['username'] ?? 'Unknown').toString();
-          final userImage = (data['userImage'] ?? 'assets/images/default.jpeg').toString();
+              final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+              final username = userData['username'] ?? 'Unknown';
+              final userImage = userData['userImage'] ?? 'assets/images/default.jpg';
 
-          return Stack(
-            children: [
-              Center(
-                child: Image.asset(
-                  storyImage,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-              ),
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage(userImage),
-                        radius: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        username,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+              return Stack(
+                children: [
+                  Center(
+                    child: Image.asset(
+                      storyImage,
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
                   ),
-                ),
-              ),
-            ],
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: AssetImage(userImage),
+                            radius: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            username,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),

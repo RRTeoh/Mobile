@@ -8,27 +8,25 @@ class Posts extends StatefulWidget {
   final String caption;
   final String timeAgo;
   final int initialLikes;
-  final int shares;
   final String currentUserId;
   final String currentUserName;
   final String currentUserAvatar;
-  final String postOwnerId;
   final String postId;
+  final String postOwnerId;
 
   const Posts({
+    super.key,
     required this.username,
     required this.userImage,
     required this.postImage,
     required this.caption,
     required this.timeAgo,
     required this.initialLikes,
-    required this.shares,
     required this.currentUserId,
     required this.currentUserName,
     required this.currentUserAvatar,
-    required this.postOwnerId,
     required this.postId,
-    super.key,
+    required this.postOwnerId,
   });
 
   @override
@@ -43,47 +41,21 @@ class _PostsState extends State<Posts> {
   @override
   void initState() {
     super.initState();
-    _loadInitialLikeState();
-  }
-
-  void _loadInitialLikeState() async {
-    DocumentSnapshot postSnap = await FirebaseFirestore.instance.collection('posts').doc(widget.postId).get();
-    if (postSnap.exists) {
-      setState(() {
-        likeCount = postSnap['likes'] ?? 0;
-      });
-    }
-    DocumentSnapshot likeSnap = await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(widget.postId)
-        .collection('likes')
-        .doc(widget.currentUserId)
-        .get();
-    if (likeSnap.exists) {
-      setState(() {
-        isLiked = true;
-      });
-    }
+    likeCount = widget.initialLikes;
   }
 
   void toggleLike() async {
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+
     setState(() {
       isLiked = !isLiked;
       likeCount += isLiked ? 1 : -1;
     });
 
-    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    await postRef.update({'likes': FieldValue.increment(isLiked ? 1 : -1)});
 
-    if (isLiked) {
-      await postRef.update({'likes': FieldValue.increment(1)});
-      await postRef.collection('likes').doc(widget.currentUserId).set({'likedAt': FieldValue.serverTimestamp()});
-
-      if (widget.currentUserId != widget.postOwnerId) {
-        _sendNotification("liked your post.");
-      }
-    } else {
-      await postRef.update({'likes': FieldValue.increment(-1)});
-      await postRef.collection('likes').doc(widget.currentUserId).delete();
+    if (isLiked && widget.currentUserId != widget.postOwnerId) {
+      _sendNotification("liked your post.");
     }
   }
 
@@ -91,7 +63,8 @@ class _PostsState extends State<Posts> {
     String comment = _commentController.text.trim();
     if (comment.isEmpty) return;
 
-    DocumentReference postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+
     await postRef.collection('comments').add({
       'user': widget.currentUserName,
       'avatar': widget.currentUserAvatar,
@@ -107,17 +80,14 @@ class _PostsState extends State<Posts> {
   }
 
   void _sendNotification(String action) {
-    FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(widget.postOwnerId)
-        .collection('notifications')
-        .add({
-      'user': widget.currentUserName,
-      'avatar': widget.currentUserAvatar,
+    FirebaseFirestore.instance.collection('notifications').add({
+      'receiver': widget.postOwnerId,
+      'senderName': widget.currentUserName,
+      'senderAvatar': widget.currentUserAvatar,
       'action': action,
-      'time': FieldValue.serverTimestamp(),
       'preview': widget.postImage,
       'read': false,
+      'time': FieldValue.serverTimestamp(),
     });
   }
 
@@ -170,24 +140,15 @@ class _PostsState extends State<Posts> {
                             final comment = comments[index].data() as Map<String, dynamic>;
                             final time = (comment['time'] as Timestamp).toDate();
                             return ListTile(
-                              leading: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage(comment['avatar']),
-                              ),
+                              leading: CircleAvatar(radius: 20, backgroundImage: AssetImage(comment['avatar'])),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
-                                        comment['user'] ?? '',
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                      ),
+                                      Text(comment['user'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                                       const SizedBox(width: 10),
-                                      Text(
-                                        _timeAgo(time),
-                                        style: const TextStyle(fontSize: 10, color: Colors.grey),
-                                      )
+                                      Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
                                     ],
                                   ),
                                   const SizedBox(height: 2),
@@ -248,21 +209,6 @@ class _PostsState extends State<Posts> {
     return "${diff.inDays}d";
   }
 
-  Widget _buildOptionTile(IconData icon, String title) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: ListTile(
-        dense: true,
-        leading: Icon(icon, size: 22, color: Colors.black),
-        title: Text(title, style: const TextStyle(fontSize: 14)),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -272,10 +218,7 @@ class _PostsState extends State<Posts> {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage(widget.userImage),
-              ),
+              CircleAvatar(radius: 20, backgroundImage: AssetImage(widget.userImage)),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,12 +273,7 @@ class _PostsState extends State<Posts> {
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Image.asset(
-              widget.postImage,
-              height: 185,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(widget.postImage, height: 185, width: double.infinity, fit: BoxFit.cover),
           ),
           const SizedBox(height: 6),
           Row(
@@ -367,13 +305,24 @@ class _PostsState extends State<Posts> {
                   return Text('$count', style: const TextStyle(fontSize: 13));
                 },
               ),
-              const SizedBox(width: 16),
-              const Icon(Icons.share_outlined, size: 18),
-              const SizedBox(width: 4),
-              Text('${widget.shares}', style: const TextStyle(fontSize: 11)),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOptionTile(IconData icon, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(icon, size: 22, color: Colors.black),
+        title: Text(title, style: const TextStyle(fontSize: 14)),
       ),
     );
   }
