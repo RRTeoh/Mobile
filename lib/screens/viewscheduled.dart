@@ -9,20 +9,11 @@ class MySchedulePage extends StatelessWidget {
 
   // Group courses by date
   Map<String, List<Map<String, dynamic>>> _groupCoursesByDate() {
-    // First, sort the bookedCourses list by date (convert to DateTime for proper comparison)
-    bookedCourses.sort((a, b) {
-      final dateA = DateFormat("d MMMM yyyy").parse(a['date']);
-      final dateB = DateFormat("d MMMM yyyy").parse(b['date']);
-      return dateA.compareTo(dateB);
-    });
-
-    // Then group by string date
     final Map<String, List<Map<String, dynamic>>> grouped = {};
     for (var course in bookedCourses) {
-      final date = course['date'];
+      final date = course['date']; // Expected: "Tuesday, July 9"
       grouped.putIfAbsent(date, () => []).add(course);
     }
-
     return grouped;
   }
 
@@ -82,7 +73,7 @@ class MySchedulePage extends StatelessWidget {
   }
 
   Widget _buildCourseCard(Map<String, dynamic> course) {
-    final List<Color> colors = [const Color.fromARGB(255, 146, 208, 238), const Color.fromARGB(255, 104, 184, 255), const Color.fromARGB(255, 114, 145, 255)];
+    final List<Color> colors = [Colors.purple.shade100, Colors.pink.shade100, Colors.orange.shade100];
     final Color background = colors[course['title'].hashCode % colors.length];
 
     return Container(
