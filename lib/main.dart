@@ -4,6 +4,7 @@ import 'package:asgm1/bottom_widgets/bottom_app.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/login_page.dart';
+import 'package:asgm1/screens/IntroVideoPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AuthWrapper(),
+      home: const SplashVideoPage(),
     );
   }
 }
