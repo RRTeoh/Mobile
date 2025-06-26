@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:asgm1/details/schedulecourse.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:asgm1/settings.dart';
+import 'package:asgm1/screens/viewscheduled.dart';
 
 class SearchCourse extends StatefulWidget {
   const SearchCourse({super.key});
@@ -16,6 +17,7 @@ class _SearchCourseState extends State<SearchCourse> {
   final List<Schedulecourse> _allCourse = Schedulecourse.getAllSC();
   List<Schedulecourse> _foundCourse = [];
   Set<int> addedCourseIndices = {};
+
 
   @override
   void initState() {
@@ -170,61 +172,102 @@ class _SearchCourseState extends State<SearchCourse> {
                     ),
                   ),
                   SizedBox(height: 20),
-
-                  // Schedule Button
-                  SizedBox(
-                    width: 150,
-                    height: 36,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(DateTime.now().year,
-                              DateTime.now().month),
-                          lastDate: DateTime(DateTime.now().year,
-                              DateTime.now().month + 1, 0),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
-                                  primary: Colors.lightBlue,
-                                  onPrimary: Colors.white,
-                                  onSurface: Colors.black,
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.lightBlue,
+                  // Schedule + View Buttons Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Schedule Your Date Button
+                      SizedBox(
+                        width: 150,
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(DateTime.now().year, DateTime.now().month),
+                              lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, 0),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: ColorScheme.light(
+                                      primary: Colors.lightBlue,
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.black,
+                                    ),
+                                    textButtonTheme: TextButtonThemeData(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.lightBlue,
+                                      ),
+                                    ),
                                   ),
+                                  child: child!,
+                                );
+                              },
+                            );
+
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedDate = pickedDate;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlue.shade200,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: Text(
+                            selectedDate == null
+                                ? "Schedule Your Date"
+                                : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // View My Schedule Button
+                      SizedBox(
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to MySchedulePage (you must define and pass your booked list)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MySchedulePage(
+                                  bookedCourses: _foundCourse
+                                    .asMap()
+                                    .entries
+                                    .where((entry) => addedCourseIndices.contains(entry.key))
+                                    .map((entry) => {
+                                      'title': entry.value.title,
+                                      'subtitle': entry.value.subtitle,
+                                      'date': entry.value.date,
+                                      'teachername': entry.value.teachername,
+                                    })
+                                    .toList(),
                                 ),
                               ),
-                              child: child!,
                             );
                           },
-                        );
-
-                        if (pickedDate != null) {
-                          setState(() {
-                            selectedDate = pickedDate;
-                          });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue.shade100,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlue.shade200,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text("View My Schedule", style: TextStyle(fontSize: 12, color: Colors.black)),
                         ),
-                        padding: EdgeInsets.zero,
                       ),
-                      child: Text(
-                        selectedDate == null
-                            ? "Schedule Your Date"
-                            : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    ],
                   ),
+
                 ],
               ),
             ),
@@ -247,6 +290,7 @@ class _SearchCourseState extends State<SearchCourse> {
                             itemBuilder: (context, index) => Card(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               elevation: 3,
+                              color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                 child: Row(
@@ -261,7 +305,7 @@ class _SearchCourseState extends State<SearchCourse> {
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 12, 0, 143),
+                                              color: Colors.cyan,
                                             ),
                                           ),
                                           SizedBox(height: 4),
@@ -499,28 +543,34 @@ class _SearchCourseState extends State<SearchCourse> {
                                                       )
                                                       ),
                                                       SizedBox(height:10),
-                                                      ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                        backgroundColor: addedCourseIndices.contains(index)
-                                                        ? Colors.greenAccent.shade200
-                                                        : const Color.fromARGB(255, 22, 45, 180),
+                                                        StatefulBuilder(
+                                                          builder: (BuildContext context, StateSetter setModalState) {
+                                                            return ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: addedCourseIndices.contains(index)
+                                                                    ? Colors.greenAccent.shade200
+                                                                    : const Color.fromARGB(255, 22, 45, 180),
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  addedCourseIndices.add(index); // update main screen
+                                                                });
+                                                                setModalState(() {}); // update modal button state
+                                                              },
+                                                              child: Text(
+                                                                addedCourseIndices.contains(index)
+                                                                    ? "Added"
+                                                                    : "+ Add to my schedule",
+                                                                style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: addedCourseIndices.contains(index)
+                                                                      ? Colors.black
+                                                                      : Colors.white,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
                                                         ),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            addedCourseIndices.add(index); // mark this item as added
-                                                          });  
-                                                        },
-                                                        child: Text(
-                                                          addedCourseIndices.contains(index) ? "Added" : "+ Add to my schedule",
-                                                          
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            
-                                                            color: addedCourseIndices.contains(index) ?Colors.black :Colors.white,
-                                                          ),
-                                                        ),
-                                                            ),
-            
                                                     ],),
                                                   )
                                                 ],
@@ -564,38 +614,34 @@ class _SearchCourseState extends State<SearchCourse> {
             top: 0,
             bottom: 0,
             left: isSettingsOpen ? 0 : -screenWidth * 0.75,
-            child: SizedBox(
-              width: screenWidth * 0.75,
-              child: GestureDetector(
-                onTap: () {},
-                child: SettingsPanel(
-                  onClose: () {
-                    setState(() {
-                      isSettingsOpen = false;
-                    });
-                  },
+            child: Row(
+              children: [
+                SizedBox(
+                  width: screenWidth * 0.75,
+                  child: SettingsPanel(
+                    onClose: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                  ),
                 ),
-              ),
+                if (isSettingsOpen)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSettingsOpen = false;
+                      });
+                    },
+                    child: Container(
+                      width: screenWidth * 0.25,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                    ),
+                  ),
+              ],
             ),
           ),
-
-          // Transparent overlay to close drawer
-          if (isSettingsOpen)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isSettingsOpen = false;
-                });
-              },
-              child: Container(
-                color: Colors.transparent,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          
-          
-
         ],
       ),
     );

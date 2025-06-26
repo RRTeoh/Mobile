@@ -43,7 +43,7 @@ class AboutBoostify extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 246, 246, 246), // white
+                  color: Colors.white, // white
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(

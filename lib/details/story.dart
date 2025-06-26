@@ -1,54 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-class StoryRead extends StatelessWidget {
-  final String imagePath;
-  final String username;
-
-  const StoryRead({
-    required this.imagePath,
-    required this.username,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildAvatar(
-      gradient: LinearGradient(
-        colors: [Colors.grey, Colors.grey.shade400],
-      ),
-    );
-  }
-
-  Widget _buildAvatar({required Gradient gradient}) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: gradient,
-          ),
-          child: CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.white,
-            child: CircleAvatar(
-              radius: 29,
-              backgroundImage: AssetImage(imagePath),
-            ),
-          ),
-        ),
-        SizedBox(height: 5),
-        Text(
-          username,
-          style: TextStyle(fontSize: 10),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
+import 'package:asgm1/details/storyview.dart';
 
 class StoryNonRead extends StatelessWidget {
   final String imagePath;
@@ -69,22 +21,15 @@ class StoryNonRead extends StatelessWidget {
         Stack(
           children: [
             Container(
-              padding: EdgeInsets.all(3),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(3),
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.orange, Colors.yellow],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: LinearGradient(colors: [Colors.pink, Colors.orange, Colors.yellow]),
               ),
               child: CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 29,
-                  backgroundImage: AssetImage(imagePath),
-                ),
+                child: CircleAvatar(radius: 29, backgroundImage: AssetImage(imagePath)),
               ),
             ),
             if (showPlus)
@@ -94,67 +39,183 @@ class StoryNonRead extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 10,
                   backgroundColor: Colors.blue,
-                  child: Icon(Icons.add, size: 19, color: Colors.white),
+                  child: const Icon(Icons.add, size: 19, color: Colors.white),
                 ),
               ),
           ],
         ),
-        SizedBox(height: 5),
-        Text(
-          username,
-          style: TextStyle(fontSize: 10),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          textAlign: TextAlign.center,
-        ),
+        const SizedBox(height: 5),
+        Text(username, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
       ],
     );
   }
 }
 
-Widget storySection() {
-  return Container(
-    color: Color(0xff8fd4e8),
-    padding: EdgeInsets.symmetric(vertical: 12),
+class StoryRead extends StatelessWidget {
+  final String imagePath;
+  final String username;
+
+  const StoryRead({
+    required this.imagePath,
+    required this.username,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(colors: [Colors.grey, Colors.grey.shade400]),
+          ),
+          child: CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: CircleAvatar(radius: 29, backgroundImage: AssetImage(imagePath)),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(username, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
+      ],
+    );
+  }
+}
+
+Widget storySection({
+  required String currentUserId,
+}) {
+  return SizedBox(
     height: 110,
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: const [
-          SizedBox(width: 10),
-          StoryNonRead(
-            imagePath: 'assets/images/pic1.jpg',
-            username: 'Jackson Wang',
-            showPlus: true,
+    width: double.infinity,
+    child: Stack(
+      children: [
+        Container(
+          color: const Color(0xff8fd4e8),
+          width: double.infinity,
+          height: 110,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                const SizedBox(width: 10),
+
+                // Current user's story
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance.collection('stories').doc(currentUserId).snapshots(),
+                  builder: (context, userSnapshot) {
+                    final userData = userSnapshot.data?.data() as Map<String, dynamic>?;
+                    final hasStory = userData != null;
+                    final username = userData?['username'] ?? 'Your Name';
+                    final userImage = userData?['userImage'] ?? 'assets/images/default.jpg';
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (hasStory) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => StoryViewScreen(userId: currentUserId)),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("You have no story yet")),
+                          );
+                        }
+                      },
+                      child: StoryNonRead(
+                        imagePath: userImage,
+                        username: username,
+                        showPlus: true,
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(width: 15),
+
+                // Other users' stories with correct order
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('stories').orderBy('time', descending: true).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox();
+                    }
+
+                    final stories = snapshot.data!.docs;
+
+                    final unreadStories = stories.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      return data['hasUnread'] == true && doc.id != currentUserId;
+                    }).toList();
+
+                    final readStories = stories.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      return (data['hasUnread'] != true) && doc.id != currentUserId;
+                    }).toList();
+
+                    return Row(
+                      children: [
+                        // Unread stories (left first)
+                        ...unreadStories.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final userId = doc.id;
+                          final username = data['username'] ?? '';
+                          final userImage = data['userImage'] ?? 'assets/images/default.jpg';
+
+                          return Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => StoryViewScreen(userId: userId)),
+                                  );
+                                },
+                                child: StoryNonRead(imagePath: userImage, username: username),
+                              ),
+                              const SizedBox(width: 15),
+                            ],
+                          );
+                        }),
+
+                        // Read stories (after unread)
+                        ...readStories.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final userId = doc.id;
+                          final username = data['username'] ?? '';
+                          final userImage = data['userImage'] ?? 'assets/images/default.jpg';
+
+                          return Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => StoryViewScreen(userId: userId)),
+                                  );
+                                },
+                                child: StoryRead(imagePath: userImage, username: username),
+                              ),
+                              const SizedBox(width: 15),
+                            ],
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                ),
+
+                const SizedBox(width: 10),
+              ],
+            ),
           ),
-          SizedBox(width: 15),
-          StoryNonRead(
-            imagePath: 'assets/images/pic2.jpg',
-            username: 't-rex123',
-          ),
-          SizedBox(width: 15),
-          StoryNonRead(
-            imagePath: 'assets/images/pic3.jpg',
-            username: 'Ashley_520',
-          ),
-          SizedBox(width: 15),
-          StoryRead(
-            imagePath: 'assets/images/pic4.jpg',
-            username: 'Sina886',
-          ),
-          SizedBox(width: 15),
-          StoryRead(
-            imagePath: 'assets/images/pic5.jpg',
-            username: 'Anthony',
-          ),
-          SizedBox(width: 15),
-          StoryRead(
-            imagePath: 'assets/images/pic6.jpg',
-            username: 'Ryu_Ken',
-          ),
-          SizedBox(width: 10),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }

@@ -1,107 +1,118 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class FeedNoti extends StatelessWidget {
-  const FeedNoti({super.key});
+class FeedNoti extends StatefulWidget {
+  final String currentUserId;
+
+  const FeedNoti({super.key, required this.currentUserId});
+
+  @override
+  State<FeedNoti> createState() => _FeedNotiState();
+}
+
+class _FeedNotiState extends State<FeedNoti> {
+  late CollectionReference<Map<String, dynamic>> notificationsRef;
+
+  @override
+  void initState() {
+    super.initState();
+    notificationsRef = FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(widget.currentUserId)
+        .collection('notifications');
+
+    _markAllAsRead();
+  }
+
+  Future<void> _markAllAsRead() async {
+    final unreadSnap = await notificationsRef.where('read', isEqualTo: false).get();
+
+    for (var doc in unreadSnap.docs) {
+      doc.reference.update({'read': true});
+    }
+  }
+
+  String _timeAgo(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 1) return "just now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
+    if (diff.inHours < 24) return "${diff.inHours}h";
+    return "${diff.inDays}d";
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Grouped notifications by day label
-    final Map<String, List<Map<String, dynamic>>> groupedNotifications = {
-      "Today": [
-        {
-          "user": "Jackson Wang",
-          "avatar": "assets/images/pic1.jpg",
-          "action": "liked your post.",
-          "time": "2m",
-          "preview": "assets/images/post_pic1.jpg"
-        },
-        {
-          "user": "Ashley_520",
-          "avatar": "assets/images/pic3.jpg",
-          "action": "liked your post.",
-          "time": "5m",
-          "preview": "assets/images/post_pic2.jpg"
-        },
-        {
-          "user": "t-rex123",
-          "avatar": "assets/images/pic2.jpg",
-          "action": "commented: Great shot!",
-          "time": "10m",
-          "preview": "assets/images/post_pic1.jpg"
-        },
-        {
-          "user": "Sina886",
-          "avatar": "assets/images/pic4.jpg",
-          "action": "liked your post.",
-          "time": "12m",
-          "preview": "assets/images/post_pic2.jpg"
-        },
-      ],
-    };
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xff8fd4e8),
         elevation: 0,
-        title: const Text("Notifications", style: TextStyle(color: Colors.black, fontSize:20, fontWeight: FontWeight.bold,)),
+        title: const Text(
+          "Notifications",
+          style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        children: groupedNotifications.entries.map((entry) {
-          final title = entry.key;
-          final items = entry.value;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 10),
-              ...items.map((noti) => ListTile(
-                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundImage: AssetImage(noti["avatar"]),
-                    ),
-                    title: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: noti["user"],
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          TextSpan(
-                            text: " ${noti["action"]}",
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                          TextSpan(
-                            text:noti["time"],
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
-                          )
-                        ],
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: notificationsRef.orderBy('time', descending: true).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error loading notifications"));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final notifications = snapshot.data!.docs;
+
+          if (notifications.isEmpty) {
+            return const Center(child: Text("No notifications yet"));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final noti = notifications[index].data();
+              final timestamp = noti['time'] as Timestamp;
+              final isRead = noti['read'] ?? false;
+
+              return ListTile(
+                contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                tileColor: isRead ? null : Colors.blue.shade50,
+                leading: CircleAvatar(
+                  radius: 24,
+                  backgroundImage: AssetImage(noti['avatar']),
+                ),
+                title: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: noti['user'],
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                       ),
-                    ),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(noti["preview"], fit: BoxFit.cover),
-                          ),
-                        )
-                      ],
-                    ),
-                  ))
-            ],
+                      TextSpan(
+                        text: " ${noti['action']}",
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: " ${_timeAgo(timestamp.toDate())}",
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      )
+                    ],
+                  ),
+                ),
+                trailing: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(noti['preview'], fit: BoxFit.cover),
+                  ),
+                ),
+              );
+            },
           );
-        }).toList(),
+        },
       ),
     );
   }

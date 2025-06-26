@@ -84,7 +84,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Ivy Monroe",
         teacherimagepath: "assets/images/trainers/Trainer7.jpg",
-        date: "14 May 2025",
+        date: "26 June 2025",
         address: "Jalan Kuchai Lama, 58200 Kuala Lumpur",
         description: "Join our Pilates class and experience a full-body workout that enhances strength, flexibility, and posture while promoting relaxation and mental clarity. Suitable for all fitness levels, our expert instructors will guide you through controlled, low-impact movements that engage your core, improve balance, and tone muscles without bulking up."
       )
@@ -102,7 +102,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Lin Xinyi",
         teacherimagepath: "assets/images/trainers/Trainer2.jpg",
-        date: "14 May 2025",
+        date: "10 June 2025",
         address: "Jalan Bukit Pantai, Bangsar, 59100 Kuala Lumpur",
         description: "Step into the ring with confidence in our Boxing for Beginners class, where you'll learn basic punches, footwork, and defensive moves in a supportive setting. This fun, full-body workout builds strength, coordination, and endurance while relieving stress—no prior experience needed!"
       )
@@ -120,7 +120,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Zoe Blake",
         teacherimagepath: "assets/images/trainers/Trainer4.jpg",
-        date: "14 May 2025",
+        date: "14 July 2025",
         address: "Jalan Sentul Bahagia, 51000 Kuala Lumpur",
         description: "Step into the ring with confidence in our Boxing for Beginners class, where you'll learn basic punches, footwork, and defensive moves in a supportive setting. This fun, full-body workout builds strength, coordination, and endurance while relieving stress—no prior experience needed!"
       )
@@ -138,7 +138,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Thomas Hayes",
         teacherimagepath: "assets/images/trainers/Trainer3.jpg",
-        date: "14 May 2025",
+        date: "30 July 2025",
         address: "Jalan Setapak Indah 2, 53300 Kuala Lumpur",
         description: "Push your limits in our HIIT Burn class—a dynamic, high-intensity workout featuring short bursts of cardio and strength exercises. Designed to maximize calorie burn and build lean muscle in less time, this class is perfect for anyone looking to challenge themselves, boost metabolism, and stay motivated."
       )
@@ -156,7 +156,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Axel Thorn",
         teacherimagepath: "assets/images/trainers/Trainer1.jpg",
-        date: "14 May 2025",
+        date: "11 June 2025",
         address: "Jalan Damai Perdana, 56000 Kuala Lumpur",
         description: "Find your balance with our Yoga class, designed to increase flexibility, build strength, and enhance mental focus through guided poses and breathwork. Whether you're a beginner or experienced, this practice supports relaxation, body awareness, and overall well-being in a calm and inclusive environment."
       )
