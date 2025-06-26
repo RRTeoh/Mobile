@@ -1,4 +1,3 @@
-// CHAT PAGE
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +12,9 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _searchController = TextEditingController();
+  
   String _searchQuery = '';
   String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-
-  String formatTime(Timestamp timestamp) {
-    DateTime msgTime = timestamp.toDate();
-    Duration diff = DateTime.now().difference(msgTime);
-    if (diff.inMinutes < 1) return "now";
-    if (diff.inMinutes < 60) return "${diff.inMinutes} minutes ago";
-    if (diff.inHours < 24) return "${diff.inHours} hours ago";
-    return "${msgTime.day}/${msgTime.month}/${msgTime.year}";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +36,6 @@ class _ChatPageState extends State<ChatPage> {
               child: TextField(
                 controller: _searchController,
                 onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
-                style: const TextStyle(fontSize: 12),
                 decoration: InputDecoration(
                   hintText: 'Search',
                   prefixIcon: const Icon(Icons.search, size: 19),
@@ -56,56 +46,80 @@ class _ChatPageState extends State<ChatPage> {
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
                   ),
-                  hintStyle: const TextStyle(fontSize: 13),
                 ),
               ),
             ),
             const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('chats').orderBy('timestamp', descending: true).snapshots(),
+                stream: FirebaseFirestore.instance.collection('chats').snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) return const Center(child: Text('Error loading chats'));
-                  if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-                  final chats = snapshot.data!.docs;
-                  final filteredChats = chats.where((doc) {
+                  final chats = snapshot.data!.docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
-                    final otherUserName = data['otherUserName']?.toString().toLowerCase() ?? '';
-                    return otherUserName.contains(_searchQuery);
+                    final name = data['otherUserName']?.toString().toLowerCase() ?? '';
+                    return name.contains(_searchQuery);
                   }).toList();
 
                   return ListView.builder(
-                    itemCount: filteredChats.length,
+                    itemCount: chats.length,
                     itemBuilder: (context, index) {
-                      final data = filteredChats[index].data() as Map<String, dynamic>;
-                      final chatId = filteredChats[index].id;
-                      final otherUserId = data['otherUserId'] ?? '';
-                      final otherUserName = data['otherUserName'] ?? 'Unknown';
-                      final otherUserImage = data['otherUserImage'] ?? 'assets/images/default.jpg';
-                      final lastMessage = data['lastMessage'] ?? '';
-                      final unread = data['unread'] ?? false;
-                      final time = data['timestamp'] != null ? formatTime(data['timestamp']) : '';
+                      final chatData = chats[index].data() as Map<String, dynamic>;
+                      final chatId = chats[index].id;
+                      final otherUserId = chatData['otherUserId'] ?? '';
+                      final otherUserName = chatData['otherUserName'] ?? 'Unknown';
+                      final otherUserImage = chatData['otherUserImage'] ?? 'assets/images/default.jpg';
+                      final unreadList = chatData['unreadBy'] is List ? chatData['unreadBy'] : [];
+                      final bool hasUnread = unreadList.contains(currentUserId);
+                      final lastMessage = chatData['lastMessage'] ?? '';
+                      final time = chatData['timestamp'] != null ? _formatTime(chatData['timestamp']) : '';
 
                       return Column(
                         children: [
                           ListTile(
-                            leading: CircleAvatar(radius: 25, backgroundImage: AssetImage(otherUserImage)),
-                            title: Text(otherUserName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                            subtitle: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                            leading: Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: CircleAvatar(radius: 25, backgroundImage: AssetImage(otherUserImage)),
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Text(lastMessage, overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 12, fontWeight: unread ? FontWeight.bold : FontWeight.normal),
+                                Text(otherUserName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                const SizedBox(height: 6),
+                                Text(
+                                  lastMessage,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: hasUnread  ? FontWeight.bold : FontWeight.normal,
                                   ),
                                 ),
-                                if (unread)
-                                  Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
-                                Text(time, style: const TextStyle(fontSize: 11, color: Colors.grey)),
                               ],
                             ),
+                            trailing: SizedBox(
+                              width: 40,
+                              height: 30,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Text(time, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                  ),
+                                  if (hasUnread)
+                                    const Positioned(
+                                      top: -2,
+                                      right: -2,
+                                      child: Icon(Icons.circle, color: Colors.red, size: 10),
+                                    ),
+                                ],
+                              ),
+                            ),
                             onTap: () {
+                              FirebaseFirestore.instance.collection('chats').doc(chatId).update({'unreadBy': false});
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -120,7 +134,7 @@ class _ChatPageState extends State<ChatPage> {
                               );
                             },
                           ),
-                          const Divider(indent: 70, endIndent: 10, height: 1, thickness: 0.6, color: Colors.grey),
+                          const Divider(indent: 70, endIndent: 10, height: 1),
                         ],
                       );
                     },
@@ -132,5 +146,21 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
     );
+  }
+
+  String _formatTime(Timestamp timestamp) {
+    final now = DateTime.now();
+    final msgTime = timestamp.toDate();
+    final diff = now.difference(msgTime);
+
+    if (diff.inMinutes < 1) return "now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
+    if (diff.inHours < 24) return "${diff.inHours}h";
+    if (diff.inDays == 1) return "Yesterday";
+    if (diff.inDays < 7) {
+      const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      return weekdays[msgTime.weekday - 1];
+    }
+    return "${msgTime.day}/${msgTime.month}";
   }
 }

@@ -12,8 +12,8 @@ class FeedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "yourUserId";
-    String currentUserName = "Jackson Wang"; 
-    String currentUserAvatar = "assets/images/pic1.jpg"; 
+    String currentUserName = "Jackson Wang";
+    String currentUserAvatar = "assets/images/pic1.jpg";
 
     return Scaffold(
       appBar: AppBar(
@@ -23,6 +23,7 @@ class FeedPage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Notifications Badge
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('notifications')
@@ -34,10 +35,7 @@ class FeedPage extends StatelessWidget {
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const FeedNoti()),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedNoti()));
                   },
                   child: Stack(
                     children: [
@@ -65,42 +63,47 @@ class FeedPage extends StatelessWidget {
               padding: EdgeInsets.only(left: 40),
               child: Text(
                 "Feeds",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
 
+            // Chat Badge with Unread Count
             Row(
               children: [
                 const Icon(Icons.add_box_outlined, size: 22),
                 const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ChatPage()),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('chats')
+                      .where('unreadBy', arrayContains: currentUserId)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    int unreadChats = snapshot.data?.docs.length ?? 0;
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatPage()));
+                      },
+                      child: Stack(
+                        children: [
+                          const Icon(Icons.chat_bubble_outline, size: 22),
+                          if (unreadChats > 0)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: CircleAvatar(
+                                radius: 6,
+                                backgroundColor: Colors.red,
+                                child: Text(
+                                  '$unreadChats',
+                                  style: const TextStyle(fontSize: 8, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     );
                   },
-                  child: Stack(
-                    children: [
-                      const Icon(Icons.chat_bubble_outline, size: 22),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: CircleAvatar(
-                          radius: 5,
-                          backgroundColor: Colors.red,
-                          child: const Text(
-                            '2',
-                            style: TextStyle(fontSize: 7, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
