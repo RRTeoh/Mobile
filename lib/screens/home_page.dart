@@ -4,7 +4,8 @@ import 'package:asgm1/details/promotion.dart';
 import 'package:asgm1/settings.dart';
 import 'package:asgm1/screens/Promo1.dart';
 import 'package:intl/intl.dart';
-
+import 'package:asgm1/screens/viewscheduled.dart'
+;
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child:Column(
                     children: [
-                    SizedBox(height: 17),
+                    SizedBox(height: 20),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: weekDates.map((date) {
@@ -236,72 +237,65 @@ class _HomePageState extends State<HomePage> {
                             )
                           ),
                           SizedBox(width:10),
-                          Container(
-                            margin:EdgeInsets.only(top:15),
-                            height:60,
-                            width:160,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 214,233,249),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.only(left:10),
-                              child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children:[
-                                SizedBox(height:5),
-                                Text(
-                                  "Tomorrow",
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    //fontWeight: FontWeight.bold,
-                                    color: Colors.black
-                                  )
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MySchedulePage(), // or pass data if needed
                                 ),
-                                Row(
-                                  children: 
-                                  [
-                                    Container(
-                                      height:30,
-                                      width:5,
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromARGB(255, 194, 194, 194),
-                                        borderRadius: BorderRadius.circular(10)
-                                      ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 15),
+                              height: 60,
+                              width: 160,
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 214, 233, 249),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 5),
+                                    const Text(
+                                      "Tomorrow",
+                                      style: TextStyle(fontSize: 12, color: Colors.black),
                                     ),
-                                    SizedBox(width:5),
-                                    Column (
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                    Row(
                                       children: [
-                                        Text(
-                                      "12:00 p.m. - 1:00 p.m.",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        //fontWeight: FontWeight.bold,
-                                        color: Colors.black
-                                      )
-                                    ),
-                                    SizedBox(width:15),
-                                    Text(
-                                      "Yoga Class",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black
-                                      )
-                                    )
+                                        Container(
+                                          height: 30,
+                                          width: 5,
+                                          decoration: BoxDecoration(
+                                            color: const Color.fromARGB(255, 194, 194, 194),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: const [
+                                            Text(
+                                              "12:00 p.m. - 1:00 p.m.",
+                                              style: TextStyle(fontSize: 10, color: Colors.black),
+                                            ),
+                                            Text(
+                                              "Yoga Class",
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
                                       ],
-                                    )
-                                    
+                                    ),
                                   ],
-                                )
-                              ]
-                            )
-                            )
+                                ),
+                              ),
+                            ),
                           ),
+
                         ],
                       )
                     ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:asgm1/details/schedulecourse.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:asgm1/settings.dart';
+import 'package:asgm1/screens/viewscheduled.dart';
 
 class SearchCourse extends StatefulWidget {
   const SearchCourse({super.key});
@@ -171,61 +172,102 @@ class _SearchCourseState extends State<SearchCourse> {
                     ),
                   ),
                   SizedBox(height: 20),
-
-                  // Schedule Button
-                  SizedBox(
-                    width: 150,
-                    height: 36,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(DateTime.now().year,
-                              DateTime.now().month),
-                          lastDate: DateTime(DateTime.now().year,
-                              DateTime.now().month + 1, 0),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
-                                  primary: Colors.lightBlue,
-                                  onPrimary: Colors.white,
-                                  onSurface: Colors.black,
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.lightBlue,
+                  // Schedule + View Buttons Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Schedule Your Date Button
+                      SizedBox(
+                        width: 150,
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(DateTime.now().year, DateTime.now().month),
+                              lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, 0),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: ColorScheme.light(
+                                      primary: Colors.lightBlue,
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.black,
+                                    ),
+                                    textButtonTheme: TextButtonThemeData(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.lightBlue,
+                                      ),
+                                    ),
                                   ),
+                                  child: child!,
+                                );
+                              },
+                            );
+
+                            if (pickedDate != null) {
+                              setState(() {
+                                selectedDate = pickedDate;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlue.shade200,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: Text(
+                            selectedDate == null
+                                ? "Schedule Your Date"
+                                : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // View My Schedule Button
+                      SizedBox(
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to MySchedulePage (you must define and pass your booked list)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MySchedulePage(
+                                  bookedCourses: _foundCourse
+                                    .asMap()
+                                    .entries
+                                    .where((entry) => addedCourseIndices.contains(entry.key))
+                                    .map((entry) => {
+                                      'title': entry.value.title,
+                                      'subtitle': entry.value.subtitle,
+                                      'date': entry.value.date,
+                                      'teachername': entry.value.teachername,
+                                    })
+                                    .toList(),
                                 ),
                               ),
-                              child: child!,
                             );
                           },
-                        );
-
-                        if (pickedDate != null) {
-                          setState(() {
-                            selectedDate = pickedDate;
-                          });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue.shade100,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightBlue.shade200,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text("View My Schedule", style: TextStyle(fontSize: 12, color: Colors.black)),
                         ),
-                        padding: EdgeInsets.zero,
                       ),
-                      child: Text(
-                        selectedDate == null
-                            ? "Schedule Your Date"
-                            : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    ],
                   ),
+
                 ],
               ),
             ),
