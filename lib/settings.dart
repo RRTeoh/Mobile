@@ -76,7 +76,7 @@ class SettingsPanel extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const privacySettings()),
+                      MaterialPageRoute(builder: (context) => const PrivacySettings()),
                     );
                   },              
               ),
