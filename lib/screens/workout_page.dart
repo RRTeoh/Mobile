@@ -213,7 +213,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const HeartbeatPage()),
+                                  MaterialPageRoute(builder: (context) => const HeartbeatPage(bpm: 117)),
                                 );
                               },
                             ),
