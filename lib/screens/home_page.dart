@@ -10,6 +10,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/Course_page.dart';
 import 'package:asgm1/screens/course_details.dart';
 import 'package:asgm1/nutrition_widgets/calorie_service.dart';
+import 'package:asgm1/screens/notification_settings.dart';
+import 'package:asgm1/services/notification_service.dart';
+import 'package:asgm1/screens/notification_test.dart';
 
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
@@ -212,17 +215,8 @@ class _HomePageState extends State<HomePage> {
                 });
               },
             ),
-      // title: isSettingsOpen
-      //   ? null 
-      //   : Icon(Icons.notifications, color: Colors.black, size: 22),
-              //SizedBox(width:180),
-            //   CircleAvatar(
-            //   radius: 23,
-            //   backgroundImage: AssetImage("assets/images/Profile.png"),
-            // ),
-            //],
-          //),
-          actions:[
+      // actions: notification settings button removed
+      actions:[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: CircleAvatar(
@@ -409,18 +403,23 @@ class _HomePageState extends State<HomePage> {
                 ),      
                 SizedBox(height:20),
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Courses",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        //fontWeight: FontWeight.bold
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Courses",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            //fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black),
+                      ],
                     ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black),
                   ],
                 ),
                 SizedBox(

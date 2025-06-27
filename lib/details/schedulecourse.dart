@@ -48,7 +48,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Oliva Mitchell",
         teacherimagepath: "assets/images/trainers/Trainer6.jpg",
-        date: "30 June 2025",
+        date: "28 June 2025",
         address: "Mid Valley Megamall, Eko Cheras, Suria KLCC",
         description: "Join our Body Balance class and enjoy a holistic workout that combines yoga, tai chi, and Pilates to improve flexibility, core strength, and balance. With calming music and mindful movements, this low-impact class helps reduce stress, enhance posture, and bring harmony to body and mind—perfect for all fitness levels."
       )
@@ -74,10 +74,10 @@ class Schedulecourse{
 
     scourse.add(
       Schedulecourse(
-        time: '12:30', 
+        time: '3:00', 
         duration: '45m', 
         title: 'Pilates',
-        subtitle: '12:30 pm - 01:15 pm',
+        subtitle: '3:00pm - 3:45pm',
         rating: 5.0,
         imagePath: "assets/images/courses/Pilates.jpg",
         classmode: "physical",
@@ -100,7 +100,7 @@ class Schedulecourse{
         classmode: "physical",
         teachername: "Lin Xinyi",
         teacherimagepath: "assets/images/trainers/Trainer2.jpg",
-        date: "10 June 2025",
+        date: "27 June 2025",
         address: "Jalan Bukit Pantai, Bangsar, 59100 Kuala Lumpur",
         description: "Step into the ring with confidence in our Boxing for Beginners class, where you'll learn basic punches, footwork, and defensive moves in a supportive setting. This fun, full-body workout builds strength, coordination, and endurance while relieving stress—no prior experience needed!"
       )

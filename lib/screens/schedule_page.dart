@@ -5,6 +5,7 @@ import 'package:asgm1/settings.dart';
 import 'package:asgm1/screens/viewscheduled.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 class SearchCourse extends StatefulWidget {
   const SearchCourse({super.key});
@@ -137,7 +138,7 @@ class _SearchCourseState extends State<SearchCourse> {
                         },
                       ),
                     const Spacer(),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(right: 16.0),
                       child: Text(
                         "Gym Schedule",
@@ -287,7 +288,7 @@ class _SearchCourseState extends State<SearchCourse> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text("View My Schedule", style: TextStyle(fontSize: 12, color: Colors.black)),
+                          child: Text("View My Schedule", style: TextStyle(fontSize: 12, color: Colors.black)),
                         ),
                       ),
                     ],
@@ -453,7 +454,6 @@ class _SearchCourseState extends State<SearchCourse> {
                                                                       padding: EdgeInsets.all(5),
                                                                       child: Text(
                                                                         course.classmode,
-                                                                        textAlign: TextAlign.center,
                                                                         style: TextStyle(
                                                                             fontSize: 10,
                                                                             color: Colors.black),
@@ -488,14 +488,12 @@ class _SearchCourseState extends State<SearchCourse> {
                                                                       children: [
                                                                         Text(
                                                                           "Trainer",
-                                                                          textAlign: TextAlign.left,
                                                                           style: TextStyle(
                                                                               fontSize: 10,
                                                                               color: Colors.grey),
                                                                         ),
                                                                         Text(
                                                                           course.teachername,
-                                                                          textAlign: TextAlign.left,
                                                                           style: TextStyle(
                                                                               fontSize: 15,
                                                                               color: Colors.black),
@@ -556,7 +554,6 @@ class _SearchCourseState extends State<SearchCourse> {
                                                                         padding: EdgeInsets.only(right: 20),
                                                                         child: Text(
                                                                           course.description,
-                                                                          textAlign: TextAlign.justify,
                                                                           style: TextStyle(
                                                                               fontSize: 8,
                                                                               color: Colors.black),
@@ -594,6 +591,22 @@ class _SearchCourseState extends State<SearchCourse> {
                                                                                         'description': course.description,
                                                                                         'createdAt': FieldValue.serverTimestamp(),
                                                                                       });
+                                                                                      // Send notification
+                                                                                      final notificationService = NotificationService();
+                                                                                      await notificationService.sendCustomInstantNotification(
+                                                                                        title: 'Schedule Update',
+                                                                                        body: 'You successfully added the course to your schedule',
+                                                                                      );
+                                                                                      // Show snackbar
+                                                                                      if (mounted) {
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                          SnackBar(
+                                                                                            content: Text('Successfully added course to your schedule!'),
+                                                                                            backgroundColor: Color(0xFF8FD4E8),
+                                                                                            duration: Duration(seconds: 2),
+                                                                                          ),
+                                                                                        );
+                                                                                      }
                                                                                     }
                                                                                     setState(() {
                                                                                       addedCourseIndices.add(index);
@@ -746,4 +759,4 @@ class _SearchCourseState extends State<SearchCourse> {
 //       ),
 //     );
 //   }
- }
+}

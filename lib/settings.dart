@@ -6,6 +6,7 @@ import 'package:asgm1/screens/Helpcenter.dart';
 import 'package:asgm1/screens/Notifications.dart';
 import 'package:asgm1/screens/PrivacySettings.dart';
 import 'package:asgm1/screens/editprofile.dart';
+import 'package:asgm1/screens/notification_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -68,7 +69,7 @@ class SettingsPanel extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Notifications()),
+                      MaterialPageRoute(builder: (context) => const NotificationSettingsPage()),
                     );
                   },                 
                ),

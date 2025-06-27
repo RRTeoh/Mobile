@@ -5,10 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/login_page.dart';
 import 'package:asgm1/screens/IntroVideoPage.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  
+  // Initialize notification service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+  await notificationService.requestPermissions();
+  
   runApp(MyApp());
 }
 
