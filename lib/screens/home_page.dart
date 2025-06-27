@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
     //final dates = Date.getAllDate();
     final screenWidth = MediaQuery.of(context).size.width;
     //final screenHeight = MediaQuery.of(context).size.height;
-    final DateTime today = DateTime(2025, 6, 26); // Replace with DateTime.now() in production
+    final DateTime today = DateTime.now();// Replace with DateTime.now() in production
     final int weekday = today.weekday; // Monday = 1
     final DateTime monday = today.subtract(Duration(days: weekday - 1));
 
@@ -198,6 +198,8 @@ class _HomePageState extends State<HomePage> {
                  day.year == today.year,
     };
     });
+    final String todayStr = DateFormat('d MMM yyy').format(DateTime.now());
+    final String displayedDate = DateFormat('d MMM yyy').format(DateTime.now());
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -260,11 +262,13 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height:2),
                 Text(
-                  DateFormat('d MMMM yyyy').format(DateTime.now()),
+                  displayedDate,
                   style: TextStyle(
                     fontSize: 18, 
                     fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 12, 0, 143)
+                    color: displayedDate == todayStr
+                      ? const Color.fromARGB(255, 12, 0, 143)
+                      : Colors.grey,
                   ),
                 ),
                 SizedBox(height:10),
