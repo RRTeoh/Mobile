@@ -13,44 +13,52 @@ class StoryViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('stories')
-            .doc(userId)
-            .collection('userStories')
-            .orderBy('timestamp', descending: true)
-            .limit(1)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text("Story not found", style: TextStyle(color: Colors.white)),
-            );
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance.collection('stories').doc(userId).get(),
+        builder: (context, userSnapshot) {
+          if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          final storyData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
-          final storyImage = (storyData['storyImage'] ?? 'assets/images/default.jpg').toString();
+          final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+          final username = userData['username'] ?? 'User';
+          final userImage = userData['userImage'] ?? 'assets/images/default.jpg';
 
-          return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
-            builder: (context, userSnapshot) {
-              if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                return const Center(child: CircularProgressIndicator());
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('stories')
+                .doc(userId)
+                .collection('userStories')
+                .orderBy('timestamp', descending: true)
+                .limit(1)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(
+                  child: Text("Story not found", style: TextStyle(color: Colors.white)),
+                );
               }
 
-              final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-              final username = '${userData['firstName'] ?? ''} ${userData['secondName'] ?? ''}'.trim();
-              final userImage = userData['userImage'] ?? 'assets/images/default.jpg';
+              final storyData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+              final storyImage = (storyData['storyImage'] ?? 'assets/images/default.jpg').toString();
 
               return Stack(
                 children: [
                   Center(
-                    child: Image.asset(
-                      storyImage,
-                      fit: BoxFit.contain,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
+                    child: storyImage.contains('http')
+                        ? Image.network(
+                            storyImage,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/images/default.jpg', fit: BoxFit.contain);
+                            },
+                          )
+                        : Image.asset(
+                            storyImage.isNotEmpty ? storyImage : 'assets/images/default.jpg',
+                            fit: BoxFit.contain,
+                          ),
                   ),
                   SafeArea(
                     child: Padding(
@@ -58,7 +66,9 @@ class StoryViewScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(userImage),
+                            backgroundImage: userImage.contains('http')
+                                ? NetworkImage(userImage)
+                                : AssetImage(userImage) as ImageProvider,
                             radius: 18,
                           ),
                           const SizedBox(width: 8),
