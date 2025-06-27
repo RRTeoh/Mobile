@@ -60,7 +60,10 @@ class _ChatPageState extends State<ChatPage> {
             const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('chats').snapshots(),
+                stream: FirebaseFirestore.instance
+                .collection('chats')
+                .orderBy('timestamp', descending: true) // Sort by latest timestamp
+                .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 

@@ -43,56 +43,78 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: BackButton(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _controller.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  )
+      body: Stack(
+        children: [
+          // Positioned Video at Top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 315, // Adjust video height as needed
+            child: _controller.value.isInitialized
+                ? VideoPlayer(_controller)
                 : const Center(child: CircularProgressIndicator()),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+          ),
+
+          // White Panel with Content
+          Positioned(
+            top: 300, // Adjust to overlap with video
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        widget.title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${widget.duration} • Workout • ${widget.difficulty}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        widget.description,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "${widget.duration} • Workout • ${widget.difficulty}",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xff8fd4e8),
+        backgroundColor: const Color(0xff8fd4e8),
         onPressed: () {
           setState(() {
             _controller.value.isPlaying
