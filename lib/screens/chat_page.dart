@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'private_chat.dart';
+import 'package:asgm1/screens/search_user.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -35,7 +36,14 @@ class _ChatPageState extends State<ChatPage> {
               height: 36,
               child: TextField(
                 controller: _searchController,
-                onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
+                readOnly: true,  // Prevents keyboard, just navigates
+                //onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SearchUsersPage()),
+                  );
+                },
                 decoration: InputDecoration(
                   hintText: 'Search',
                   prefixIcon: const Icon(Icons.search, size: 19),
