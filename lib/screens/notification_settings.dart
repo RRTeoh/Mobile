@@ -153,9 +153,12 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: const Text('Notification Settings', 
+        style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF8FD4E8),
         foregroundColor: Colors.white,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -249,7 +252,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8FD4E8),
+                backgroundColor: const Color.fromARGB(255, 129, 192, 209),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -372,7 +375,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                       Text(
                         'Change Time',
                         style: TextStyle(
-                          color: const Color(0xFF8FD4E8),
+                          color: const Color.fromARGB(255, 122, 184, 201),
                           fontWeight: FontWeight.w500,
                         ),
                       ),

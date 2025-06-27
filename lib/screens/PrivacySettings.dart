@@ -48,8 +48,18 @@ class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProv
     }
   }
 
+  String _maskEmail(String email) {
+    // Mask everything after the first character and before the @
+    final atIdx = email.indexOf('@');
+    if (atIdx <= 1) return email;
+    return email[0] + '**' + email.substring(atIdx);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final maskedEmail = user != null && user.email != null ? _maskEmail(user.email!) : "No email found";
+    final isVerified = user?.emailVerified ?? false;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -58,120 +68,216 @@ class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProv
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Account Security",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: Colors.black,
-          ),
+          'Privacy Settings',
+          style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        centerTitle: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0, 
         iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xff8fd4e8), Colors.white],
+            colors: [Color(0xFF8FD4E8), Colors.white],
+            stops: [0.0, 0.8],
           ),
         ),
-        padding: const EdgeInsets.all(16.0),
         child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            _buildCard(
-              title: "Account Information",
-              children: [
-                _infoRow("Email address", userEmail),
-                _infoRow("Wallet address", "Connect wallet", isButton: true),
-              ],
+            const SizedBox(height: kToolbarHeight + 24),
+            const Padding(
+              padding: EdgeInsets.only(left: 4.0, bottom: 8.0),
+              child: Text(
+                "Account Information",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildCard(
-              title: "Security Settings",
-              children: [
-                _infoRow("Two-factor authentication", "", isSwitch: true),
-                _infoRow(
-                  "Password",
-                  "Reset password",
-                  isButton: true,
-                  onButtonPressed: _onSetPasswordPressed,
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildEmailTile(maskedEmail, isVerified, user),
+                    const Divider(height: 24),
+                    _buildActionTile(
+                      icon: Icons.lock_reset,
+                      label: "Reset Password",
+                      onTap: _onSetPasswordPressed,
+                    ),
+                    const Divider(height: 24),
+                    _buildActionTile(
+                      icon: Icons.logout,
+                      label: "Sign Out",
+                      onTap: _onSignOutPressed,
+                    ),
+                    const Divider(height: 24),
+                    _buildActionTile(
+                      icon: Icons.delete_forever,
+                      label: "Delete Account",
+                      onTap: _onDeleteAccountPressed,
+                      iconColor: Colors.red,
+                      textColor: Colors.red,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.switch_account, color: Colors.blueAccent, size: 22),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Switch Account',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Switch Account'),
+                                content: const Text('Switch account feature coming soon!'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.switch_account, size: 18),
+                          label: const Text('Switch Account'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF8FD4E8),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCard({
-    required String title,
-    required List<Widget> children,
-    Color color = Colors.white,
-  }) {
-    return Card(
-      color: color,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ...children,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _infoRow(String label, String value,
-      {bool isButton = false, bool isSwitch = false, VoidCallback? onButtonPressed}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+  Widget _buildEmailTile(String maskedEmail, bool isVerified, User? user) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () async {
+        if (user == null) return;
+        await user.reload();
+        if (user.emailVerified) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Your email is already verified.'), backgroundColor: Colors.green),
+          );
+        } else {
+          await user.sendEmailVerification();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Verification email sent!'), backgroundColor: Colors.blue),
+          );
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Icon(Icons.email, color: isVerified ? Colors.green : Colors.red, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                maskedEmail,
+                style: const TextStyle(fontSize: 15, color: Colors.black),
+              ),
+            ),
+            if (!isVerified)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Verify',
+                  style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+            if (isVerified)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Verified',
+                  style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+            const Icon(Icons.chevron_right, color: Colors.black38),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? iconColor,
+    Color? textColor,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor ?? Colors.black54, size: 22),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(fontSize: 15, color: textColor ?? Colors.black),
               ),
             ),
-            if (isSwitch)
-              Switch(
-                value: _is2FAEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    _is2FAEnabled = value;
-                  });
-                },
-                activeColor: Colors.white,                // thumb when ON
-                activeTrackColor: Colors.lightGreenAccent,     // track when ON
-                inactiveThumbColor: Colors.grey.shade700, // thumb when OFF
-                inactiveTrackColor: Colors.grey.shade300, // track when OFF
-              )
-            else if (isButton)
-              ElevatedButton(
-                onPressed: onButtonPressed ?? () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 185, 227, 245),
-                  foregroundColor: Colors.black,
-                ),
-                child: Text(value),
-              )
-            else
-              Text(
-                value,
-                style: const TextStyle(color: Colors.black),
-              ),
+            const Icon(Icons.chevron_right, color: Colors.black38),
           ],
         ),
       ),
@@ -226,6 +332,47 @@ class _PrivacySettingsState extends State<PrivacySettings> with SingleTickerProv
         if (mounted) {
           _showToast('Failed to send reset email:\n$e');
         }
+      }
+    }
+  }
+
+  void _onSignOutPressed() async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
+  void _onDeleteAccountPressed() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      try {
+        await user.delete();
+        if (mounted) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete account: $e'), backgroundColor: Colors.red),
+        );
       }
     }
   }

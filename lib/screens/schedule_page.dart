@@ -25,6 +25,7 @@ class _SearchCourseState extends State<SearchCourse> {
   @override
   void initState() {
     super.initState();
+    Schedulecourse.updateAllDatesAndTimes(_allCourse);
     _foundCourse = _allCourse;
     _loadUserSchedule();
   }

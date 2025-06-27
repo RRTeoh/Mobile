@@ -1,4 +1,4 @@
-
+import 'dart:math';
 
 class Schedulecourse{
   String time;
@@ -164,5 +164,54 @@ class Schedulecourse{
     
 
     return scourse;
+  }
+
+  static void updateAllDatesAndTimes(List<Schedulecourse> courses) {
+    final now = DateTime.now();
+    final rand = Random();
+    for (var course in courses) {
+      // Random day within next 14 days
+      final daysToAdd = rand.nextInt(14);
+      final newDate = now.add(Duration(days: daysToAdd));
+      course.date = _formatDate(newDate);
+      // Random time between 8:00 and 20:00
+      final hour = 8 + rand.nextInt(13); // 8 to 20
+      final minuteOptions = [0, 10, 15, 20, 30, 40, 45, 50];
+      final minute = minuteOptions[rand.nextInt(minuteOptions.length)];
+      final end = DateTime(newDate.year, newDate.month, newDate.day, hour, minute)
+        .add(_parseDuration(course.duration));
+      course.time = _formatTime(hour, minute);
+      course.subtitle = '${_formatTime(hour, minute, ampm: true)} - ${_formatTime(end.hour, end.minute, ampm: true)}';
+    }
+  }
+
+  static String _formatDate(DateTime date) {
+    final months = [
+      '', 'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return '${date.day.toString().padLeft(2, '0')} ${months[date.month]} ${date.year}';
+  }
+
+  static String _formatTime(int hour, int minute, {bool ampm = false}) {
+    if (ampm) {
+      final h = hour > 12 ? hour - 12 : hour;
+      final period = hour >= 12 ? 'pm' : 'am';
+      return '${h.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}$period';
+    } else {
+      return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    }
+  }
+
+  static Duration _parseDuration(String duration) {
+    // Supports '1hr', '45m', '30m', etc.
+    if (duration.contains('hr')) {
+      final h = int.tryParse(duration.split('hr')[0].trim()) ?? 1;
+      return Duration(hours: h);
+    } else if (duration.contains('m')) {
+      final m = int.tryParse(duration.split('m')[0].trim()) ?? 30;
+      return Duration(minutes: m);
+    }
+    return Duration(hours: 1);
   }
 }

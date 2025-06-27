@@ -64,7 +64,7 @@ class SettingsPanel extends StatelessWidget {
                   }
                 },
               ),
-              _buildItem(Icons.notifications,
+              _buildItem(Icons.notifications_outlined,
                "Notifications",
                   onTap: () {
                     Navigator.push(
@@ -92,7 +92,7 @@ class SettingsPanel extends StatelessWidget {
                   },                
               ),
               _buildItem(
-                  Icons.warning_rounded,
+                  Icons.info_outline,
                   "About Us",
                   onTap: () {
                     Navigator.push(
