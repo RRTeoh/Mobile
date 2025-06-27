@@ -52,7 +52,9 @@ class _SignUpPageState extends State<SignUpPage> {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'email': _emailController.text.trim(),
         'firstName': user.uid,
-        'secondName':'',            
+        'secondName':'',
+        'dob': '',
+        'phone': '',
         'createdAt': FieldValue.serverTimestamp(),
       });
     }

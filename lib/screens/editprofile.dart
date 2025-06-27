@@ -7,16 +7,16 @@ class EditProfile extends StatefulWidget {
   final String initialFirstName;
   final String initialSecondName;
   final String initialEmail;
-  //final String initialDob;
-  //final String initialPhone;
+  final String initialDob;
+  final String initialPhone;
 
   const EditProfile({
     super.key,
     required this.initialFirstName,
     required this.initialSecondName,
     required this.initialEmail,
-    //required this.initialDob,
-    //required this.initialPhone,
+    required this.initialDob,   
+    required this.initialPhone,
   });
 
   @override
@@ -33,13 +33,13 @@ class _EditProfileState extends State<EditProfile> {
   bool _isSaved = false;
 
   @override
-
   void initState() {
-  super.initState();
-  firstNameController.text = widget.initialFirstName;
-  secondNameController.text = widget.initialSecondName;
-  emailController.text = widget.initialEmail;
-
+    super.initState();
+    firstNameController.text = widget.initialFirstName;
+    secondNameController.text = widget.initialSecondName;
+    emailController.text = widget.initialEmail;
+    dobController.text = widget.initialDob;
+    phoneController.text = widget.initialPhone;
   }
 
   void dispose() {
@@ -59,6 +59,8 @@ class _EditProfileState extends State<EditProfile> {
         'firstName': firstNameController.text.trim(),
         'secondName': secondNameController.text.trim(),
         'email': emailController.text.trim(),
+        'dob': dobController.text.trim(),
+        'phone': phoneController.text.trim(),
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,6 +79,8 @@ class _EditProfileState extends State<EditProfile> {
       Navigator.pop(context, {
         'firstName': firstNameController.text.trim(),
         'secondName': secondNameController.text.trim(),
+        'dob': dobController.text.trim(),
+        'phone': phoneController.text.trim(),
       });
     }
   }

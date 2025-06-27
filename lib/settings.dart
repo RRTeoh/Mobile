@@ -39,7 +39,7 @@ class SettingsPanel extends StatelessWidget {
               ),
               const Divider(),
               _buildItem(
-                Icons.account_circle,
+                Icons.account_circle_outlined,
                 "Manage Account",
                 onTap: () async {
                   final user = FirebaseAuth.instance.currentUser;
@@ -58,6 +58,8 @@ class SettingsPanel extends StatelessWidget {
                           initialFirstName: data?['firstName'] ?? '',
                           initialSecondName: data?['secondName'] ?? '',
                           initialEmail: data?['email'] ?? user.email ?? '',
+                          initialDob: data?['dob'] ?? '', 
+                          initialPhone: data?['phone'] ?? '', 
                         ),
                       ),
                     );

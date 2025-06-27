@@ -140,6 +140,8 @@ final List<String> answers = [
                               initialFirstName: data['firstName'] ?? '',
                               initialSecondName: data['secondName'] ?? '',
                               initialEmail: data['email'] ?? user.email ?? '',
+                              initialDob: data?['dob'] ?? '', 
+                              initialPhone: data?['phone'] ?? '', 
                             ),
                           ),
                         );

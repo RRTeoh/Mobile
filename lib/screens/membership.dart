@@ -119,6 +119,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       initialFirstName: data?['firstName'] ?? user.uid, // fallback to UID
                                       initialSecondName: data?['secondName'] ?? '',
                                       initialEmail: data?['email'] ?? user.email ?? '',
+                                      initialDob: data?['dob'] ?? '', 
+                                      initialPhone: data?['phone'] ?? '', 
                                     ),
                                   ),
                                 );
