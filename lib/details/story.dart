@@ -117,7 +117,7 @@ Widget storySection({required String currentUserId}) {
                           onTap: () {
                             if (hasStory) {
                               FirebaseFirestore.instance.collection('stories').doc(currentUserId).update({'hasUnread': false});
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => StoryViewScreen(userId: currentUserId)));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => StoryViewScreen(userId: currentUserId, currentUserId: currentUserId,)));
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You have no story yet")));
                             }
@@ -176,7 +176,7 @@ Widget storySection({required String currentUserId}) {
                             GestureDetector(
                               onTap: () {
                                 FirebaseFirestore.instance.collection('stories').doc(doc.id).update({'hasUnread': false});
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => StoryViewScreen(userId: doc.id)));
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => StoryViewScreen(userId: doc.id, currentUserId: currentUserId,)));
                               },
                               child: hasUnread
                                   ? StoryNonRead(imagePath: userImage, username: username)
