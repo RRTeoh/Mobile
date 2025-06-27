@@ -35,25 +35,17 @@ class Course{
         coursename: 'Strength',
         )
     );
-
-    courses.add(
-      Course(
-        courseimage:'assets/images/courses/Pilates.jpg',
-        coursename: 'Adventure',
-        )
-    );
-
     courses.add(
       Course(
         courseimage:'assets/images/courses/HIIT.jpg',
-        coursename: 'Combat',
+        coursename: 'Muay Thai',
         )
     );
 
     courses.add(
       Course(
         courseimage:'assets/images/courses/Kickboxing.jpg',
-        coursename: 'Kickboxing',
+        coursename: 'Ariel Yoga',
         )
     );
 

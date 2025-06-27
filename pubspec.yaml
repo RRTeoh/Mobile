@@ -136,6 +136,9 @@ flutter:
    - assets/images/services/nutritionconsult.jpg
    - assets/images/services/personaltraining.jpg
    - assets/videos/yoga.mp4
+   - assets/videos/intro.mp4
+   - assets/videos/Cardio.mp4
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
