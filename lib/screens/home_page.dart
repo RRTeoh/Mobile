@@ -9,10 +9,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/Course_page.dart';
 import 'package:asgm1/screens/course_details.dart';
+import 'package:asgm1/nutrition_widgets/calorie_service.dart';
 
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(VoidCallback)? onRefreshCalories;
+  final Function(int)? onTabChanged;
+  final VoidCallback? onNavigateToNutrition;
+  const HomePage({super.key, this.onRefreshCalories, this.onTabChanged, this.onNavigateToNutrition});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -33,11 +37,42 @@ class _HomePageState extends State<HomePage> {
   bool isSettingsOpen = false;
   Map<String, dynamic>? _nextEvent;
   bool _loadingEvent = true;
+  
+  // Calorie-related status
+  int _remainingCalories = 2000;
+  bool _isLoadingCalories = true;
 
   @override
   void initState() {
     super.initState();
     _fetchNextEvent();
+    _loadCalories();
+    // Setting the Refresh Callback
+    widget.onRefreshCalories?.call(refreshCalories);
+  }
+
+  Future<void> _loadCalories() async {
+    try {
+      final remainingCalories = await CalorieService.getRemainingCalories();
+      if (mounted) {
+        setState(() {
+          _remainingCalories = remainingCalories;
+          _isLoadingCalories = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _remainingCalories = 2000;
+          _isLoadingCalories = false;
+        });
+      }
+    }
+  }
+
+  // Method to refresh calorie data, for external use
+  void refreshCalories() {
+    _loadCalories();
   }
 
   Future<void> _fetchNextEvent() async {
@@ -63,6 +98,73 @@ class _HomePageState extends State<HomePage> {
         _loadingEvent = false;
       });
     }
+  }
+
+  // Build calorie display component
+  Widget _buildCalorieDisplay() {
+    final isNegative = _remainingCalories < 0;
+    final backgroundColor = isNegative 
+        ? Colors.green 
+        : const Color.fromARGB(255, 214, 233, 249);
+    
+    return GestureDetector(
+      onTap: () {
+        // Navigate to nutrition page within tracking page
+        widget.onNavigateToNutrition?.call();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 15),
+        height: 60,
+        width: 60,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: _isLoadingCalories
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                  ),
+                )
+              : isNegative
+                  ? const Text(
+                      '✓',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        const SizedBox(height: 18),
+                        Text(
+                          "${_remainingCalories}kcal",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Text(
+                          "Remaining",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 7,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -230,111 +332,79 @@ class _HomePageState extends State<HomePage> {
                       );
                     }).toList(),
                   ),
-                      Row(
-                        children: [
-                          //25%,calories,reminder
-                          Container(
-                            margin:EdgeInsets.only(left: 10,top:15),
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              image: DecorationImage(
-                                image: AssetImage("assets/images/25%.png"),
-                                fit: BoxFit.cover
-                                )
-                            ),
-                          ),
-                          SizedBox(width:10),
-                          Container(
-                            margin:EdgeInsets.only(top:15),
-                            height:60,
-                            width:60,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 214,233,249),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 18),
-                                  Text(
-                                    "160kcal ",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  ),
-                                  Text(
-                                    "Remaining",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 7,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black
-                                    )
-                                  ),
-                                ],
-                              )
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //25%,calories,reminder
+                      Container(
+                        margin:EdgeInsets.only(left: 10,top:15),
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/25%.png"),
+                            fit: BoxFit.cover
                             )
+                        ),
+                      ),
+                      SizedBox(width:10),
+                      _buildCalorieDisplay(),
+                      SizedBox(width:10),
+                      GestureDetector(
+                        onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MySchedulePage()),
+                        );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(top: 15),
+                          height: 60,
+                          width: 160,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 214, 233, 249),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          SizedBox(width:10),
-                          GestureDetector(
-                            onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const MySchedulePage()),
-                            );
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(top: 15),
-                              height: 60,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 214, 233, 249),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const Text(
-                                      "Tomorrow",
-                                      style: TextStyle(fontSize: 12, color: Colors.black),
-                                    ),
-                                    _loadingEvent
-                                      ? const CircularProgressIndicator()
-                                      : _nextEvent != null
-                                          ? Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  _nextEvent!['subtitle'] ?? '',
-                                                  style: const TextStyle(fontSize: 10, color: Colors.black),
-                                                ),
-                                                Text(
-                                                  _nextEvent!['title'] ?? '',
-                                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
-                                                ),
-                                              ],
-                                            )
-                                          : const Text(
-                                              'No upcoming events',
-                                              style: TextStyle(fontSize: 12, color: Colors.black),
-                                            ),
-                                  ],
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 5),
+                                const Text(
+                                  "Tomorrow",
+                                  style: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
-                              ),
+                                _loadingEvent
+                                  ? const CircularProgressIndicator()
+                                  : _nextEvent != null
+                                      ? Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _nextEvent!['subtitle'] ?? '',
+                                              style: const TextStyle(fontSize: 10, color: Colors.black),
+                                            ),
+                                            Text(
+                                              _nextEvent!['title'] ?? '',
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
+                                            ),
+                                          ],
+                                        )
+                                      : const Text(
+                                          'No upcoming events',
+                                          style: TextStyle(fontSize: 12, color: Colors.black),
+                                        ),
+                              ],
                             ),
                           ),
+                        ),
+                      ),
 
-                        ],
-                      )
                     ],
+                  )
+                ],
                 )
                 ),      
                 SizedBox(height:20),

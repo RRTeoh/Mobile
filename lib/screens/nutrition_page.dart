@@ -5,7 +5,8 @@ import 'package:asgm1/nutrition_widgets/nutrition_bottom_sheet.dart';
 class NutritionPage extends StatefulWidget {
   final DateTime? earliestDate;
   final String userId;
-  const NutritionPage({super.key, this.earliestDate, required this.userId});
+  final VoidCallback? onCaloriesUpdated;
+  const NutritionPage({super.key, this.earliestDate, required this.userId, this.onCaloriesUpdated});
   
   @override
   State<NutritionPage> createState() => NutritionPageState();
@@ -62,6 +63,8 @@ class NutritionPageState extends State<NutritionPage> {
       setState(() {
         _foodCalories = calories;
       });
+      // Notification that parent component calorie data has been updated
+      widget.onCaloriesUpdated?.call();
     }
   }
 

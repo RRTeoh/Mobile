@@ -15,20 +15,62 @@ class BottomApp extends StatefulWidget {
 
 class _BottomAppState extends State<BottomApp> {
   int myCurrentIndex = 0;
+  
+  // Using callback functions to refresh calorie data
+  VoidCallback? _refreshCaloriesCallback;
 
-  final List<Widget> pages = [
-    HomePage(),
-    SearchCourse(),
-    FeedPage(),
-    TrackingPage(),
-    ProfilePage(),
-  ];
+  // GlobalKey for TrackingPage to control navigation
+  final GlobalKey<TrackerPageState> _trackingKey = GlobalKey<TrackerPageState>();
+
+  // Methods for setting refresh callbacks
+  void _setRefreshCallback(VoidCallback callback) {
+    _refreshCaloriesCallback = callback;
+  }
+
+  // Method of refreshing calorie data
+  void _refreshCalories() {
+    _refreshCaloriesCallback?.call();
+  }
+
+  // Method to change tabs
+  void _changeTab(int index) {
+    setState(() {
+      myCurrentIndex = index;
+    });
+  }
+
+  // Method to navigate to nutrition page within tracking
+  void _navigateToNutrition() {
+    setState(() {
+      myCurrentIndex = 3; // Switch to tracking tab
+    });
+    // Use a post-frame callback to ensure the page is built before switching tabs
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _trackingKey.currentState?.switchToNutrition();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: pages[myCurrentIndex],
+      body: IndexedStack(
+        index: myCurrentIndex,
+        children: [
+          HomePage(
+            onRefreshCalories: _setRefreshCallback,
+            onTabChanged: _changeTab,
+            onNavigateToNutrition: _navigateToNutrition,
+          ),
+          SearchCourse(),
+          FeedPage(),
+          TrackingPage(
+            key: _trackingKey,
+            onCaloriesUpdated: _refreshCalories,
+          ),
+          ProfilePage(),
+        ],
+      ),
 
       // 🔘 FAB in the center
       floatingActionButton: Container(

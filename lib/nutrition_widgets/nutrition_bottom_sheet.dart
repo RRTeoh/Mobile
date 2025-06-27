@@ -109,10 +109,7 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
       _updateFormDataStatus(mealIndex, foodItems.isNotEmpty);
     }
     
-    // Notify parent component of food calorie updates
-    final totalCalories = _getTotalCalories();
-    widget.onFoodCaloriesUpdate?.call(totalCalories);
-    
+    // To save data to Firestore, the callback function is called in _saveMealDataToFirestore
     _saveMealDataToFirestore(mealType, foodItems);
   }
   
@@ -244,6 +241,10 @@ class NutritionBottomSheetState extends State<NutritionBottomSheet> {
         .collection('mealTypes')
         .doc(mealType)
         .set({'foods': foodItems.map((e) => e.toJson()).toList()});
+    
+    // After data is saved, notify the parent component to update the calorie data
+    final totalCalories = _getTotalCalories();
+    widget.onFoodCaloriesUpdate?.call(totalCalories);
   }
 
   String _dateToStr(DateTime date) {

@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // TrackerPage
 class TrackingPage extends StatefulWidget {
-  const TrackingPage({super.key});
+  final VoidCallback? onCaloriesUpdated;
+  const TrackingPage({super.key, this.onCaloriesUpdated});
 
   @override
-  State<TrackingPage> createState() => _TrackerPageState();
+  State<TrackingPage> createState() => TrackerPageState();
 }
 
-class _TrackerPageState extends State<TrackingPage> {
+class TrackerPageState extends State<TrackingPage> {
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
 
@@ -94,6 +95,15 @@ class _TrackerPageState extends State<TrackingPage> {
     });
   }
 
+  void _handleCaloriesUpdated() {
+    widget.onCaloriesUpdated?.call();
+  }
+
+  // Method to switch to nutrition tab
+  void switchToNutrition() {
+    _onTabTapped(1); // Switch to nutrition tab (index 1)
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -138,6 +148,7 @@ class _TrackerPageState extends State<TrackingPage> {
                     key: _nutritionKey, 
                     earliestDate: _earliestDate,
                     userId: _currentUserId ?? 'anonymous',
+                    onCaloriesUpdated: _handleCaloriesUpdated,
                   ),
                 ],
               ),
