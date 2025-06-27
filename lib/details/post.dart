@@ -36,12 +36,42 @@ class Posts extends StatefulWidget {
 class _PostsState extends State<Posts> {
   int likeCount = 0;
   bool isLiked = false;
+  bool isFavourited = false;
+  bool isHidden = false;
   final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     likeCount = widget.initialLikes;
+    _checkIfFavourited();
+    _checkIfHidden();
+  }
+
+  void _checkIfFavourited() async {
+    final favDoc = await FirebaseFirestore.instance
+        .collection('favourites')
+        .doc('${widget.currentUserId}_${widget.postId}')
+        .get();
+
+    if (favDoc.exists) {
+      setState(() {
+        isFavourited = true;
+      });
+    }
+  }
+
+  void _checkIfHidden() async {
+    final hideDoc = await FirebaseFirestore.instance
+        .collection('hiddenPosts')
+        .doc('${widget.currentUserId}_${widget.postId}')
+        .get();
+
+    if (hideDoc.exists) {
+      setState(() {
+        isHidden = true;
+      });
+    }
   }
 
   void toggleLike() async {
@@ -63,9 +93,11 @@ class _PostsState extends State<Posts> {
     String comment = _commentController.text.trim();
     if (comment.isEmpty) return;
 
-    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
-
-    await postRef.collection('comments').add({
+    await FirebaseFirestore.instance
+        .collection('posts')
+        .doc(widget.postId)
+        .collection('comments')
+        .add({
       'user': widget.currentUserName,
       'avatar': widget.currentUserAvatar,
       'comment': comment,
@@ -146,13 +178,13 @@ class _PostsState extends State<Posts> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(comment['user'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                      Text(comment['user'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                                       const SizedBox(width: 10),
                                       Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
                                     ],
                                   ),
                                   const SizedBox(height: 2),
-                                  Text(comment['comment'] ?? '', style: const TextStyle(fontSize: 12)),
+                                  Text(comment['comment'], style: const TextStyle(fontSize: 12)),
                                 ],
                               ),
                             );
@@ -211,6 +243,37 @@ class _PostsState extends State<Posts> {
 
   @override
   Widget build(BuildContext context) {
+    if (isHidden) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("The post is hidden.", style: TextStyle(fontSize: 13)),
+              TextButton(
+                onPressed: () async {
+                  await FirebaseFirestore.instance
+                      .collection('hiddenPosts')
+                      .doc('${widget.currentUserId}_${widget.postId}')
+                      .delete();
+                  setState(() {
+                    isHidden = false;
+                  });
+                },
+                child: const Text("Unhide"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -251,11 +314,7 @@ class _PostsState extends State<Posts> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              _buildOptionTile(Icons.bookmark_outline, 'Save'),
-                              const SizedBox(height: 10),
                               _buildOptionTile(Icons.star_outline, 'Add to Favourites'),
-                              const SizedBox(height: 10),
-                              _buildOptionTile(Icons.person_outline, 'About this account'),
                               const SizedBox(height: 10),
                               _buildOptionTile(Icons.hide_source, 'Hide'),
                             ],
@@ -301,8 +360,8 @@ class _PostsState extends State<Posts> {
                     .collection('comments')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  int count = snapshot.data?.docs.length ?? 0;
-                  return Text('$count', style: const TextStyle(fontSize: 13));
+                  int commentCount = snapshot.data?.docs.length ?? 0;
+                  return Text('$commentCount', style: const TextStyle(fontSize: 13));
                 },
               ),
             ],
@@ -321,8 +380,45 @@ class _PostsState extends State<Posts> {
       ),
       child: ListTile(
         dense: true,
-        leading: Icon(icon, size: 22, color: Colors.black),
+        leading: Icon(
+          title == 'Add to Favourites' && isFavourited ? Icons.star : Icons.star_outline,
+          size: 22,
+          color: title == 'Add to Favourites' && isFavourited ? Colors.yellow : Colors.black,
+        ),
         title: Text(title, style: const TextStyle(fontSize: 14)),
+        onTap: () async {
+          if (title == 'Add to Favourites') {
+            setState(() {
+              isFavourited = !isFavourited;
+            });
+            if (isFavourited) {
+              await FirebaseFirestore.instance.collection('favourites').doc('${widget.currentUserId}_${widget.postId}').set({
+                'userId': widget.currentUserId,
+                'postId': widget.postId,
+                'time': FieldValue.serverTimestamp(),
+              });
+            } else {
+              await FirebaseFirestore.instance.collection('favourites').doc('${widget.currentUserId}_${widget.postId}').delete();
+            }
+            Navigator.pop(context);
+          }
+
+          if (title == 'Hide') {
+            await FirebaseFirestore.instance
+                .collection('hiddenPosts')
+                .doc('${widget.currentUserId}_${widget.postId}')
+                .set({
+              'userId': widget.currentUserId,
+              'postId': widget.postId,
+              'time': FieldValue.serverTimestamp(),
+            });
+
+            setState(() {
+              isHidden = true;
+            });
+            Navigator.pop(context);
+          }
+        },
       ),
     );
   }
