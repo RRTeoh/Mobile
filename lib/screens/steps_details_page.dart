@@ -7,41 +7,51 @@ class StepsDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB2EBF2),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          'Steps Details',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF8FD4E8), Color(0xFFEAF6FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildStatCard(
-              icon: Icons.directions_walk,
-              label: "Today's Steps",
-              value: "6,240 / 10,000",
-              progress: 0.624,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  iconTheme: const IconThemeData(color: Colors.black),
+                  title: const Text(
+                    'Steps Details',
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                _buildStatCard(
+                  icon: Icons.directions_walk,
+                  label: "Today's Steps",
+                  value: "6,240 / 10,000",
+                  progress: 0.624,
+                ),
+                const SizedBox(height: 12),
+                _buildStatCard(icon: Icons.access_time, label: "Active Time", value: "45 mins"),
+                const SizedBox(height: 12),
+                _buildStatCard(icon: Icons.map, label: "Distance Walked", value: "4.1 km"),
+                const SizedBox(height: 12),
+                _buildStatCard(icon: Icons.local_fire_department, label: "Calories Burned", value: "210 kcal"),
+                const SizedBox(height: 24),
+                const Text(
+                  "Weekly Progress",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                _buildWeeklyChart(),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildStatCard(icon: Icons.access_time, label: "Active Time", value: "45 mins"),
-            const SizedBox(height: 12),
-            _buildStatCard(icon: Icons.map, label: "Distance Walked", value: "4.1 km"),
-            const SizedBox(height: 12),
-            _buildStatCard(icon: Icons.local_fire_department, label: "Calories Burned", value: "210 kcal"),
-            const SizedBox(height: 24),
-            const Text(
-              "Weekly Progress",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            _buildWeeklyChart(),
-          ],
+          ),
         ),
       ),
     );

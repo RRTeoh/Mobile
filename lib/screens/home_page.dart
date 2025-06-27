@@ -13,6 +13,7 @@ import 'package:asgm1/nutrition_widgets/calorie_service.dart';
 import 'package:asgm1/screens/notification_settings.dart';
 import 'package:asgm1/services/notification_service.dart';
 import 'package:asgm1/screens/notification_test.dart';
+import 'package:asgm1/screens/heartbeat_page.dart';
 
 //import 'package:asgm1/details/date.dart';
 class HomePage extends StatefulWidget {
@@ -330,18 +331,40 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       //25%,calories,reminder
-                      Container(
-                        margin:EdgeInsets.only(left: 10,top:15),
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/25%.png"),
-                            fit: BoxFit.cover
-                            )
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HeartbeatPage(bpm: 117)),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 15),
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 214, 233, 249),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.favorite, color: Color(0xFF0A84FF), size: 18),
+                              SizedBox(height: 2),
+                              Text(
+                                '117 bpm',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+
+
                       SizedBox(width:10),
                       _buildCalorieDisplay(),
                       SizedBox(width:10),
