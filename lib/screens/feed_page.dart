@@ -5,15 +5,53 @@ import 'package:asgm1/screens/chat_page.dart';
 import 'package:asgm1/screens/feed_noti.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:asgm1/details/post_a_post.dart';
 
-class FeedPage extends StatelessWidget {
+class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
 
   @override
+  State<FeedPage> createState() => _FeedPageState();
+}
+
+class _FeedPageState extends State<FeedPage> {
+  String currentUserId = '';
+  String currentUserName = '';
+  String currentUserAvatar = 'assets/images/default.jpg';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    currentUserId = user.uid;
+
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+
+    if (userDoc.exists) {
+      final data = userDoc.data() as Map<String, dynamic>;
+      currentUserName = data['username'] ?? 'Unknown';
+      currentUserAvatar = data['userImage'] ?? 'assets/images/default.jpg';
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "yourUserId";
-    String currentUserName = "Jackson Wang";
-    String currentUserAvatar = "assets/images/pic1.jpg";
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -70,7 +108,12 @@ class FeedPage extends StatelessWidget {
             // Chat Badge with Unread Count
             Row(
               children: [
-                const Icon(Icons.add_box_outlined, size: 22),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PostAPost()));
+                  },
+                  child: const Icon(Icons.add_box_outlined, size: 22),
+                ),
                 const SizedBox(width: 10),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance

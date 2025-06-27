@@ -32,14 +32,14 @@ class StoryViewScreen extends StatelessWidget {
           final storyImage = (storyData['storyImage'] ?? 'assets/images/default.jpg').toString();
 
           return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance.collection('stories').doc(userId).get(),
+            future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
             builder: (context, userSnapshot) {
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
                 return const Center(child: CircularProgressIndicator());
               }
 
               final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-              final username = userData['username'] ?? 'Unknown';
+              final username = '${userData['firstName'] ?? ''} ${userData['secondName'] ?? ''}'.trim();
               final userImage = userData['userImage'] ?? 'assets/images/default.jpg';
 
               return Stack(
