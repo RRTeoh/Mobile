@@ -7,7 +7,11 @@ import 'package:asgm1/screens/heartbeat_page.dart';
 import 'package:asgm1/screens/steps_details_page.dart';
 import 'package:asgm1/details/workout_model.dart';
 import 'package:asgm1/details/workout_service.dart';
-import 'package:asgm1/screens/add_workout_page.dart'; // or wherever your AddExercisePage is
+import 'package:asgm1/screens/add_workout_page.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:asgm1/details/caloriesburnedchart.dart'; 
+
+
 
 
 class WorkoutPage extends StatefulWidget {
@@ -220,7 +224,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             const SizedBox(width: 16),
                             StatCard(
                               Icons.directions_walk,
-                              "3680",
+                              "6240",
                               "steps",
                               "assets/images/footsteps.png",
                               onTap: () {
@@ -263,12 +267,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 const SizedBox(height: 12),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    "assets/images/calorieschart.png",
-                                    height: 180,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  child: const CaloriesBurnedChart(),
                                 ),
                               ],
                             ),
