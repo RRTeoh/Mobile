@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'private_chat.dart';
 import 'package:asgm1/screens/search_user.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -16,6 +17,44 @@ class _ChatPageState extends State<ChatPage> {
   
   String _searchQuery = '';
   String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    _listenForNewMessages();
+  }
+
+  void _listenForNewMessages() {
+    FirebaseFirestore.instance
+        .collection('chats')
+        .where('unreadBy', arrayContains: currentUserId)
+        .snapshots()
+        .listen((snapshot) {
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.modified) {
+          final data = change.doc.data() as Map<String, dynamic>;
+          final lastMessage = data['lastMessage'] ?? '';
+          final otherUserName = data['otherUserName'] ?? 'Someone';
+          final timestamp = data['timestamp'] as Timestamp?;
+          
+          // Only show notification if message is recent (within last 5 seconds)
+          if (lastMessage.isNotEmpty && timestamp != null) {
+            final messageTime = timestamp.toDate();
+            final now = DateTime.now();
+            final diff = now.difference(messageTime);
+            
+            if (diff.inSeconds < 5) {
+              NotificationService().sendCustomInstantNotification(
+                title: 'New Message from $otherUserName 💬',
+                body: lastMessage.length > 50 ? '${lastMessage.substring(0, 50)}...' : lastMessage,
+              );
+              print('Chat notification sent for new message from $otherUserName');
+            }
+          }
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

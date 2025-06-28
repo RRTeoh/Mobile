@@ -22,6 +22,11 @@ class _BottomAppState extends State<BottomApp> {
   // GlobalKey for TrackingPage to control navigation
   final GlobalKey<TrackerPageState> _trackingKey = GlobalKey<TrackerPageState>();
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   // Methods for setting refresh callbacks
   void _setRefreshCallback(VoidCallback callback) {
     _refreshCaloriesCallback = callback;

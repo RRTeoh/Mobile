@@ -8,7 +8,6 @@ class FeedNoti extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "yourUserId";
-    print("DEBUG: Current User ID -> $currentUserId");
 
     return Scaffold(
       appBar: AppBar(
@@ -32,19 +31,15 @@ class FeedNoti extends StatelessWidget {
           }
 
           if (snapshot.hasError) {
-            print("DEBUG: Error fetching notifications -> ${snapshot.error}");
             return const Center(child: Text("Error loading notifications"));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            print("DEBUG: No notifications found for this user.");
             return const Center(child: Text("No notifications yet."));
           }
 
           final notifications = snapshot.data!.docs;
-          print("DEBUG: Notifications loaded -> ${notifications.length} found");
 
-          // Mark all as read
           for (var doc in notifications) {
             if (doc['read'] == false) {
               doc.reference.update({'read': true});
@@ -61,14 +56,17 @@ class FeedNoti extends StatelessWidget {
               final preview = data['preview'] ?? 'assets/images/default.jpg';
               final senderName = data['senderName'] ?? 'Unknown';
               final action = data['action'] ?? '';
-
-              print("DEBUG: Notification [$index] -> Sender: $senderName, Action: $action");
+              final Timestamp timeStamp = data['time'] ?? Timestamp.now();
+              final DateTime time = timeStamp.toDate();
+              final String formattedTime = _timeAgo(time);
 
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(vertical: 6),
                 leading: CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(senderAvatar),
+                  backgroundImage: senderAvatar.contains('http')
+                      ? NetworkImage(senderAvatar)
+                      : AssetImage(senderAvatar) as ImageProvider,
                 ),
                 title: RichText(
                   text: TextSpan(
@@ -84,12 +82,15 @@ class FeedNoti extends StatelessWidget {
                     ],
                   ),
                 ),
+                subtitle: Text(formattedTime, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 trailing: SizedBox(
                   width: 40,
                   height: 40,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(preview, fit: BoxFit.cover),
+                    child: preview.contains('http')
+                        ? Image.network(preview, fit: BoxFit.cover)
+                        : Image.asset(preview, fit: BoxFit.cover),
                   ),
                 ),
               );
@@ -98,5 +99,16 @@ class FeedNoti extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _timeAgo(DateTime time) {
+    final diff = DateTime.now().difference(time);
+
+    if (diff.inMinutes < 1) return "just now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
+    if (diff.inHours < 24) return "${diff.inHours}h ago";
+    if (diff.inDays < 7) return "${diff.inDays}d ago";
+
+    return "${time.day}/${time.month}/${time.year}";
   }
 }

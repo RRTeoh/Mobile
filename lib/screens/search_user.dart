@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'private_chat.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 class SearchUsersPage extends StatelessWidget {
   const SearchUsersPage({super.key});

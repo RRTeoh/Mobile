@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 class PrivateChatPage extends StatefulWidget {
   final String chatId;
@@ -32,37 +33,34 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
   }
 
   void _markAsRead() {
-    FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
-      'unread': false,
-    }, SetOptions(merge: true));
-  }
-
-  void _sendMessage() {
-  final text = _controller.text.trim();
-  if (text.isNotEmpty) {
-    FirebaseFirestore.instance.collection('chats').doc(widget.chatId).collection('messages').add({
-      'senderId': widget.currentUserId,
-      'message': text,
-      'timestamp': FieldValue.serverTimestamp(),
+    FirebaseFirestore.instance.collection('chats').doc(widget.chatId).update({
+      'unreadBy': FieldValue.arrayRemove([widget.currentUserId]),
     });
-
-    // Update chat meta for both sender & receiver properly
-    FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
-      'users': [widget.currentUserId, widget.otherUserId],
-      'otherUserId': widget.otherUserId,
-      'otherUserName': widget.otherUserName,
-      'otherUserImage': widget.otherUserImage,
-      'lastMessage': text,
-      'timestamp': FieldValue.serverTimestamp(),
-      'unreadBy': FieldValue.arrayUnion([widget.otherUserId]),
-    }, SetOptions(merge: true));
-
-    _controller.clear();
   }
-}
 
+  void _sendMessage() async {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      await FirebaseFirestore.instance.collection('chats').doc(widget.chatId).collection('messages').add({
+        'senderId': widget.currentUserId,
+        'message': text,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
 
+      // Update chat meta for both sender & receiver properly
+      await FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
+        'users': [widget.currentUserId, widget.otherUserId],
+        'otherUserId': widget.otherUserId,
+        'otherUserName': widget.otherUserName,
+        'otherUserImage': widget.otherUserImage,
+        'lastMessage': text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'unreadBy': FieldValue.arrayUnion([widget.otherUserId]),
+      }, SetOptions(merge: true));
 
+      _controller.clear();
+    }
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {

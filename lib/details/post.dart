@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:asgm1/services/notification_service.dart';
 
 class Posts extends StatefulWidget {
   final String username;
@@ -13,6 +14,7 @@ class Posts extends StatefulWidget {
   final String currentUserAvatar;
   final String postId;
   final String postOwnerId;
+  final Function(String postOwnerId, String actionText) sendPushNotificationCallback;
 
   const Posts({
     super.key,
@@ -27,6 +29,7 @@ class Posts extends StatefulWidget {
     required this.currentUserAvatar,
     required this.postId,
     required this.postOwnerId,
+    required this.sendPushNotificationCallback,
   });
 
   @override
@@ -106,6 +109,12 @@ class _PostsState extends State<Posts> {
   }
 
   void _sendNotification(String action) {
+    print('DEBUG: _sendNotification called');
+    print('DEBUG: currentUserId = ${widget.currentUserId}');
+    print('DEBUG: postOwnerId = ${widget.postOwnerId}');
+    print('DEBUG: currentUserName = ${widget.currentUserName}');
+    print('DEBUG: Are they different? ${widget.currentUserId != widget.postOwnerId}');
+    
     FirebaseFirestore.instance.collection('notifications').add({
       'receiver': widget.postOwnerId,
       'senderName': widget.currentUserName,
@@ -115,6 +124,11 @@ class _PostsState extends State<Posts> {
       'read': false,
       'time': FieldValue.serverTimestamp(),
     });
+    
+    // Send FCM Push to post owner
+    if (widget.currentUserId != widget.postOwnerId) {
+      widget.sendPushNotificationCallback(widget.postOwnerId, action);
+    }
   }
 
   String _timeAgo(DateTime time) {
