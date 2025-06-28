@@ -133,30 +133,6 @@ void _fetchReportStatus() async {
       'time': FieldValue.serverTimestamp(),
     });
     
-    // Send local notification to post owner (who receives the like/comment)
-    if (widget.currentUserId != widget.postOwnerId) {
-      try {
-        String notificationTitle = '';
-        String notificationBody = '';
-        
-        if (action.contains('liked')) {
-          notificationTitle = 'Someone liked your post';
-          notificationBody = '${widget.currentUserName} liked your post!';
-        } else if (action.contains('commented')) {
-          notificationTitle = 'Someone commented on your post';
-          notificationBody = '${widget.currentUserName} commented on your post!';
-        }
-        
-        NotificationService().sendCustomInstantNotification(
-          title: notificationTitle,
-          body: notificationBody,
-        );
-        print('Local notification sent successfully to post owner from post.dart');
-      } catch (e) {
-        print('Failed to send local notification to post owner from post.dart: $e');
-      }
-    }
-    
     // Send FCM Push to post owner
     if (widget.currentUserId != widget.postOwnerId) {
       widget.sendPushNotificationCallback(widget.postOwnerId, action);
