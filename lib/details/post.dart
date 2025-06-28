@@ -39,19 +39,21 @@ class Posts extends StatefulWidget {
 class _PostsState extends State<Posts> {
   int likeCount = 0;
   bool isLiked = false;
-  bool isFavourited = false;
-  bool isHidden = false;
+  //bool isFavourited = false;
+  bool isReported  = false;
+  
   final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     likeCount = widget.initialLikes;
-    _checkIfFavourited();
-    _checkIfHidden();
+    _fetchReportStatus();
+    //_checkIfFavourited();
+    //_checkIfHidden();
   }
 
-  void _checkIfFavourited() async {
+  /*void _checkIfFavourited() async {
     final favDoc = await FirebaseFirestore.instance
         .collection('favourites')
         .doc('${widget.currentUserId}_${widget.postId}')
@@ -59,9 +61,9 @@ class _PostsState extends State<Posts> {
     if (favDoc.exists) {
       setState(() => isFavourited = true);
     }
-  }
+  }*/
 
-  void _checkIfHidden() async {
+  /*void _checkIfHidden() async {
     final hideDoc = await FirebaseFirestore.instance
         .collection('hiddenPosts')
         .doc('${widget.currentUserId}_${widget.postId}')
@@ -69,7 +71,19 @@ class _PostsState extends State<Posts> {
     if (hideDoc.exists) {
       setState(() => isHidden = true);
     }
+  }*/
+
+void _fetchReportStatus() async {
+  final doc = await FirebaseFirestore.instance.collection('posts').doc(widget.postId).get();
+  if (doc.exists) {
+    final data = doc.data();
+    if (data != null && data.containsKey('isReported')) {
+      setState(() {
+        isReported = data['isReported'] ?? false;
+      });
+    }
   }
+}
 
   void toggleLike() async {
     final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
@@ -109,12 +123,6 @@ class _PostsState extends State<Posts> {
   }
 
   void _sendNotification(String action) {
-    print('DEBUG: _sendNotification called');
-    print('DEBUG: currentUserId = ${widget.currentUserId}');
-    print('DEBUG: postOwnerId = ${widget.postOwnerId}');
-    print('DEBUG: currentUserName = ${widget.currentUserName}');
-    print('DEBUG: Are they different? ${widget.currentUserId != widget.postOwnerId}');
-    
     FirebaseFirestore.instance.collection('notifications').add({
       'receiver': widget.postOwnerId,
       'senderName': widget.currentUserName,
@@ -124,6 +132,30 @@ class _PostsState extends State<Posts> {
       'read': false,
       'time': FieldValue.serverTimestamp(),
     });
+    
+    // Send local notification to post owner (who receives the like/comment)
+    if (widget.currentUserId != widget.postOwnerId) {
+      try {
+        String notificationTitle = '';
+        String notificationBody = '';
+        
+        if (action.contains('liked')) {
+          notificationTitle = 'Someone liked your post';
+          notificationBody = '${widget.currentUserName} liked your post!';
+        } else if (action.contains('commented')) {
+          notificationTitle = 'Someone commented on your post';
+          notificationBody = '${widget.currentUserName} commented on your post!';
+        }
+        
+        NotificationService().sendCustomInstantNotification(
+          title: notificationTitle,
+          body: notificationBody,
+        );
+        print('Local notification sent successfully to post owner from post.dart');
+      } catch (e) {
+        print('Failed to send local notification to post owner from post.dart: $e');
+      }
+    }
     
     // Send FCM Push to post owner
     if (widget.currentUserId != widget.postOwnerId) {
@@ -141,7 +173,7 @@ class _PostsState extends State<Posts> {
 
   @override
   Widget build(BuildContext context) {
-    if (isHidden) {
+    /*if (isHidden) {
       return Padding(
         padding: const EdgeInsets.all(15),
         child: Container(
@@ -162,7 +194,7 @@ class _PostsState extends State<Posts> {
           ),
         ),
       );
-    }
+    }*/
 
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -188,13 +220,28 @@ class _PostsState extends State<Posts> {
           const SizedBox(height: 10),
           Text(widget.caption, style: const TextStyle(fontSize: 12.5)),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: widget.postImage.startsWith('http')
-                ? Image.network(widget.postImage, height: 185, width: double.infinity, fit: BoxFit.cover)
-                : Image.asset(widget.postImage, height: 185, width: double.infinity, fit: BoxFit.cover),
-          ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Stack(
+              alignment: Alignment.center,
+                children: [
+                widget.postImage.startsWith('http')
+                  ? Image.network(widget.postImage, height: 185, width: double.infinity, fit: BoxFit.cover)
+                  : Image.asset(widget.postImage, height: 185, width: double.infinity, fit: BoxFit.cover),
+      
+              if (isReported) ...[
+                Positioned.fill(
+                  child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                  ),
+                ),
+                const Icon(Icons.visibility_off, color: Colors.white, size: 50),
+                  ],
+                ],
+              ),
+            ),
           const SizedBox(height: 6),
+
           Row(
             children: [
               GestureDetector(
@@ -242,59 +289,157 @@ class _PostsState extends State<Posts> {
   }
 
   void _showOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: Container(
-            color: Colors.grey[100],
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(width: 40, height: 5, margin: const EdgeInsets.only(bottom: 15), decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
-                _buildOptionTile(Icons.star_outline, 'Add to Favourites'),
-                const SizedBox(height: 10),
-                _buildOptionTile(Icons.hide_source, 'Hide'),
-              ],
-            ),
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        child: Container(
+          color: Colors.grey[100],
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 15),
+                decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+              ),
+              _buildOptionTile(Icons.report_outlined, 'Report'),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
 
   Widget _buildOptionTile(IconData icon, String title) {
-    return ListTile(
-      leading: Icon(title == 'Add to Favourites' && isFavourited ? Icons.star : icon, color: title == 'Add to Favourites' && isFavourited ? Colors.yellow : Colors.black),
-      title: Text(title),
-      onTap: () async {
-        if (title == 'Add to Favourites') {
-          setState(() => isFavourited = !isFavourited);
-          if (isFavourited) {
-            await FirebaseFirestore.instance.collection('favourites').doc('${widget.currentUserId}_${widget.postId}').set({
-              'userId': widget.currentUserId,
-              'postId': widget.postId,
-              'time': FieldValue.serverTimestamp(),
-            });
-          } else {
-            await FirebaseFirestore.instance.collection('favourites').doc('${widget.currentUserId}_${widget.postId}').delete();
-          }
-        }
+  return ListTile(
+    leading: Icon(icon, color: Colors.red),
+    title: Text(title,
+    style: TextStyle(
+      color: title == 'Report' ? Colors.red : Colors.black, // <-- Red text for "Report"
+      ),
+    ),
+    onTap: () {
+      Navigator.pop(context);
+      _showReportReasons();
+    },
+  );
+}
 
-        if (title == 'Hide') {
-          await FirebaseFirestore.instance.collection('hiddenPosts').doc('${widget.currentUserId}_${widget.postId}').set({
-            'userId': widget.currentUserId,
-            'postId': widget.postId,
-            'time': FieldValue.serverTimestamp(),
-          });
-          setState(() => isHidden = true);
-        }
-        Navigator.pop(context);
-      },
-    );
-  }
+void _showReportReasons() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) {
+          return Column(
+            children: [
+              // Handle Bar
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+
+              // Title & Subtitle
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Why are you reporting this post?",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      "Your report is anonymous. If someone is in immediate danger,\ncall the local emergency services – don't wait.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+
+              const Divider(),
+
+              // Scrollable List
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    _buildReportReason("I just don't like it"),
+                    const Divider(height: 1),
+                    _buildReportReason("Bullying or unwanted contact"),
+                    const Divider(height: 1),
+                    _buildReportReason("Suicide, self-injury or eating disorders"),
+                    const Divider(height: 1),
+                    _buildReportReason("Violence, hate or exploitation"),
+                    const Divider(height: 1),
+                    _buildReportReason("Selling or promoting restricted items"),
+                    const Divider(height: 1),
+                    _buildReportReason("Nudity or sexual activity"),
+                    const Divider(height: 1),
+                    _buildReportReason("Scam, fraud or spam"),
+                    const Divider(height: 1),
+                    _buildReportReason("False information"),
+                    const Divider(height: 1),
+                    _buildReportReason("Intellectual property"),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  )
+  .then((reason) async {
+    // After bottom sheet closed, if user selected reason, show message
+    if (reason != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Reported for: $reason")),
+      );
+      // Update Firestore field
+      await FirebaseFirestore.instance.collection('posts').doc(widget.postId).update({
+        'isReported': true,
+    });
+    setState(() {
+    isReported = true;
+
+    });
+    }
+  });
+}
+
+Widget _buildReportReason(String reason) {
+  return ListTile(
+    title: Text(reason, style: const TextStyle(fontSize: 14)),
+    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+    onTap: () {
+      Navigator.pop(context, reason); // Return reason to previous screen
+    },
+  );
+}
+
 
   void _showCommentPanel() {
     showModalBottomSheet(
@@ -390,4 +535,7 @@ class _PostsState extends State<Posts> {
       },
     );
   }
+  
 }
+
+
