@@ -9,6 +9,7 @@ import 'package:asgm1/screens/signup_page.dart';
 class SavedAccount {
   final String email;
   final String password;
+  
 
   SavedAccount({required this.email, required this.password});
 
@@ -51,6 +52,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   static const String _keyLastRememberMe = 'last_remember_me';
   static const String _keyLastLoggedInEmail = 'last_logged_in_email';
   static const String _keyShouldClearFields = 'should_clear_fields';
+
+  
 
   @override
   void initState() {

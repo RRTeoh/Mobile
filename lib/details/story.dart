@@ -21,7 +21,11 @@ class StoryNonRead extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(colors: [Colors.pink, Colors.orange, Colors.yellow]),
               ),
-              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, backgroundImage: AssetImage(imagePath))),
+              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
+              backgroundImage: imagePath.startsWith('http')
+              ? NetworkImage(imagePath)
+              : AssetImage(imagePath) as ImageProvider,
+              )),
             ),
             if (showPlus)
               Positioned(
@@ -57,7 +61,10 @@ class StoryRead extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(colors: [Colors.grey, Colors.grey.shade400]),
               ),
-              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, backgroundImage: AssetImage(imagePath))),
+              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
+              backgroundImage: imagePath.startsWith('http')
+              ? NetworkImage(imagePath)
+              : AssetImage(imagePath) as ImageProvider)),
             ),
             if (showPlus)
               Positioned(

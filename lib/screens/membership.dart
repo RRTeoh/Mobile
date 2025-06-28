@@ -20,6 +20,8 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isSettingsOpen = false;
   String _firstName = 'Loading';
   String _secondName = '';
+  String _avatarUrl = '';
+
   @override
   void initState() {
   super.initState();
@@ -35,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _firstName = data['firstName'] ?? '';
         _secondName = data['secondName'] ?? '';
+        _avatarUrl = data['avatar'] ?? '';
       });
     }
   }
@@ -92,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Stack(
                       children: [
                         ProfileAvatar(
-                          imagePath: 'assets/images/noprofile.png',
+                          imagePath: _avatarUrl.isNotEmpty ? _avatarUrl : 'assets/images/noprofile.png',
                           name: '${_firstName.length > 6 ? _firstName.substring(0, 6) + "***" : _firstName} $_secondName',
                           streak: '145 🔥',
                         ),
@@ -121,6 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       initialEmail: data?['email'] ?? user.email ?? '',
                                       initialDob: data?['dob'] ?? '', 
                                       initialPhone: data?['phone'] ?? '', 
+                                      initialAvatarUrl: data?['avatar'] ?? '',
                                     ),
                                   ),
                                 );
@@ -129,6 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   setState(() {
                                     _firstName = updatedProfile['firstName'] ?? _firstName;
                                     _secondName = updatedProfile['secondName'] ?? _secondName;
+                                    _avatarUrl = updatedProfile['avatar'] ?? _avatarUrl;
                                   });
                                 }
                               }

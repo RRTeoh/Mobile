@@ -4,6 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asgm1/screens/membership.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart'; 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class EditProfile extends StatefulWidget {
   final String initialFirstName;
@@ -11,6 +17,7 @@ class EditProfile extends StatefulWidget {
   final String initialEmail;
   final String initialDob;
   final String initialPhone;
+  final String initialAvatarUrl;
 
   const EditProfile({
     super.key,
@@ -19,6 +26,7 @@ class EditProfile extends StatefulWidget {
     required this.initialEmail,
     required this.initialDob,   
     required this.initialPhone,
+    required this.initialAvatarUrl,
   });
 
   @override
@@ -33,6 +41,13 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   bool _isSaved = false;
+  
+
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+  String? _currentAvatarUrl;
+
+
 
   @override
   void initState() {
@@ -42,6 +57,7 @@ class _EditProfileState extends State<EditProfile> {
     emailController.text = widget.initialEmail;
     dobController.text = widget.initialDob;
     phoneController.text = widget.initialPhone;
+    _currentAvatarUrl = widget.initialAvatarUrl;
   }
 
   void dispose() {
@@ -78,6 +94,25 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+Future<String?> uploadToImgur(File imageFile) async {
+  final bytes = await imageFile.readAsBytes();
+  final base64Image = base64Encode(bytes);
+
+  final response = await http.post(
+    Uri.parse('https://api.imgur.com/3/image'),
+    headers: {'Authorization': 'Client-ID 1c7272900a8c448'},
+    body: {'image': base64Image},
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return data['data']['link'];
+  } else {
+    print('Imgur upload failed: ${response.body}');
+    return null;
+  }
+}
+
   void onSave() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -87,6 +122,7 @@ class _EditProfileState extends State<EditProfile> {
         'email': emailController.text.trim(),
         'dob': dobController.text.trim(),
         'phone': phoneController.text.trim(),
+        //'avatar': _selectedImage != null ? _selectedImage!.path : '',
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,6 +143,7 @@ class _EditProfileState extends State<EditProfile> {
         'secondName': secondNameController.text.trim(),
         'dob': dobController.text.trim(),
         'phone': phoneController.text.trim(),
+        'avatar': _currentAvatarUrl ?? '',
       });
     }
   }
@@ -142,10 +179,30 @@ class _EditProfileState extends State<EditProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/noprofile.png'),
-                //assets/images/Profile.png
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: _selectedImage != null
+                    ? FileImage(_selectedImage!)
+                    : (_currentAvatarUrl != null && _currentAvatarUrl!.isNotEmpty
+                     ? NetworkImage(_currentAvatarUrl!)
+                    : const AssetImage('assets/images/noprofile.png')) as ImageProvider,
+                  ),
+                Positioned(
+                   right: 4,
+                   bottom: 4,
+                   child: GestureDetector(
+                    onTap: _pickImage,
+                    child: const CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.blue,
+                      child: Icon(Icons.edit, color: Colors.white, size: 14),
+                    ),
+                   ),
+                ),
+                ],
               ),
               const SizedBox(height: 20),
 
@@ -275,4 +332,38 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+
+Future<void> _pickImage() async {
+  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    setState(() {
+      _selectedImage = File(pickedFile.path);
+    });
+
+    final link = await uploadToImgur(_selectedImage!);
+    if (link != null) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'avatar': link,
+        });
+        setState(() {
+          _currentAvatarUrl = link;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile picture updated!')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image upload failed')),
+      );
+    }
+  }
+}
+
+
+
+
+
 }

@@ -60,6 +60,7 @@ class SettingsPanel extends StatelessWidget {
                           initialEmail: data?['email'] ?? user.email ?? '',
                           initialDob: data?['dob'] ?? '', 
                           initialPhone: data?['phone'] ?? '', 
+                          initialAvatarUrl: data?['avatar'] ?? '',
                         ),
                       ),
                     );
