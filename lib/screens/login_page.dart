@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:asgm1/screens/forgotpassword_page.dart';
 import 'package:asgm1/screens/signup_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // User Credentials Model
 class SavedAccount {
@@ -266,9 +267,25 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         password: _passwordController.text,
       );
       
-      await _saveAccount(_emailController.text.trim(), _passwordController.text);
+      User? user = userCredential.user;
       
-      print('Successfully login: ${userCredential.user?.email}');
+      if (user != null) {
+        // Check if user exists in Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+            
+        if (!userDoc.exists) {
+          // User doesn't exist in Firestore, sign out
+          await _auth.signOut();
+          _showErrorDialog('Account not found. Please complete your registration first.');
+          return;
+        }
+        
+        await _saveAccount(_emailController.text.trim(), _passwordController.text);
+        print('Successfully login: ${user.email}');
+      }
       
     } on FirebaseAuthException catch (e) {
       String errorMessage;
