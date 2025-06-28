@@ -32,22 +32,27 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> _checkIfSubmitted() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _submitted = prefs.getBool('feedback_submitted') ?? false;
-    });
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final userSpecificKey = 'feedback_submitted_${user.uid}';
+      setState(() {
+        _submitted = prefs.getBool(userSpecificKey) ?? false;
+      });
+    }
   }
 
   Future<void> _submitFeedback() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('feedback_submitted', true);
-    setState(() {
-      _submitted = true;
-      buttonText = "Submitted";
-    });
-    // Update Firebase (optional, placeholder)
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final userSpecificKey = 'feedback_submitted_${user.uid}';
+      await prefs.setBool(userSpecificKey, true);
+      setState(() {
+        _submitted = true;
+        buttonText = "Submitted";
+      });
+      // Update Firebase
       await FirebaseFirestore.instance.collection('feedback').add({
         'userId': user.uid,
         'stars': selectedStars,

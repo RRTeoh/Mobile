@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:asgm1/screens/membership.dart'; 
+import 'package:asgm1/screens/membership.dart';
+import 'package:intl/intl.dart';
 
 class EditProfile extends StatefulWidget {
   final String initialFirstName;
@@ -50,6 +52,30 @@ class _EditProfileState extends State<EditProfile> {
     dobController.dispose();
     phoneController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 6570)), // 18 years ago
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xff8fd4e8),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        dobController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
   }
 
   void onSave() async {
@@ -157,7 +183,6 @@ class _EditProfileState extends State<EditProfile> {
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.email),
                   labelText: 'Email',
-                  //hintText: widget.initialEmail,
                   labelStyle: const TextStyle(fontSize: 15),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   border: OutlineInputBorder(
@@ -169,16 +194,19 @@ class _EditProfileState extends State<EditProfile> {
 
               TextField(
                 controller: dobController,
-                keyboardType: TextInputType.datetime,
+                readOnly: true,
+                onTap: _selectDate,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.cake),
                   labelText: 'Date of Birth',
-                  //hintText: widget.initialDob,
+                  hintText: 'DD/MM/YYYY',
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                   labelStyle: const TextStyle(fontSize: 15),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
+                  suffixIcon: const Icon(Icons.calendar_today, color: Color(0xff8fd4e8)),
                 ),
               ),
               const SizedBox(height: 15),
@@ -186,10 +214,34 @@ class _EditProfileState extends State<EditProfile> {
               TextField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(11),
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    final text = newValue.text;
+                    if (text.isEmpty) {
+                      return newValue;
+                    }
+                    if (text.length <= 3) {
+                      return newValue;
+                    } else if (text.length <= 7) {
+                      return TextEditingValue(
+                        text: '${text.substring(0, 3)}-${text.substring(3)}',
+                        selection: TextSelection.collapsed(offset: text.length + 1),
+                      );
+                    } else {
+                      return TextEditingValue(
+                        text: '${text.substring(0, 3)}-${text.substring(3, 7)}-${text.substring(7)}',
+                        selection: TextSelection.collapsed(offset: text.length + 2),
+                      );
+                    }
+                  }),
+                ],
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.phone),
                   labelText: 'Phone Number',
-                  //hintText: widget.initialDob,
+                  hintText: 'XXX-XXX-XXXX',
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                   labelStyle: const TextStyle(fontSize: 15),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   border: OutlineInputBorder(

@@ -243,32 +243,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             
             ElevatedButton(
               onPressed: () async {
-                await _notificationService.requestPermissions();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Notification permissions requested!'),
-                    backgroundColor: Color(0xFF8FD4E8),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 129, 192, 209),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Request Notification Permissions',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            ElevatedButton(
-              onPressed: () async {
                 await _notificationService.cancelAllNotifications();
                 setState(() {
                   _dailyNotificationsEnabled = false;
