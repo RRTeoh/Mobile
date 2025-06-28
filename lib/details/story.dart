@@ -1,13 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/storyview.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class StoryNonRead extends StatelessWidget {
   final String imagePath;
   final String username;
   final bool showPlus;
+  final VoidCallback? onPlusTap;
 
-  const StoryNonRead({required this.imagePath, required this.username, this.showPlus = false, super.key});
+  const StoryNonRead({
+    required this.imagePath, 
+    required this.username, 
+    this.showPlus = false, 
+    this.onPlusTap,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +42,10 @@ class StoryNonRead extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 right: 0,
-                child: CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: const Icon(Icons.add, size: 19, color: Colors.white)),
+                child: GestureDetector(
+                  onTap: onPlusTap,
+                  child: CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: const Icon(Icons.add, size: 19, color: Colors.white)),
+                ),
               ),
           ],
         ),
@@ -46,8 +60,15 @@ class StoryRead extends StatelessWidget {
   final String imagePath;
   final String username;
   final bool showPlus;
+  final VoidCallback? onPlusTap;
 
-  const StoryRead({required this.imagePath, required this.username, this.showPlus = false, super.key});
+  const StoryRead({
+    required this.imagePath, 
+    required this.username, 
+    this.showPlus = false, 
+    this.onPlusTap,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +91,222 @@ class StoryRead extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 right: 0,
-                child: CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: const Icon(Icons.add, size: 19, color: Colors.white)),
+                child: GestureDetector(
+                  onTap: onPlusTap,
+                  child: CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: const Icon(Icons.add, size: 19, color: Colors.white)),
+                ),
               ),
           ],
         ),
         const SizedBox(height: 5),
         Text(username, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
       ],
+    );
+  }
+}
+
+Future<void> _createNewStory(BuildContext context, String currentUserId, String username, String userImage) async {
+  try {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    
+    if (pickedFile != null) {
+      // Show preview screen with Post button
+      final bool? shouldPost = await showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return StoryPreviewDialog(
+            imagePath: pickedFile.path,
+            username: username,
+            userImage: userImage,
+          );
+        },
+      );
+
+      if (shouldPost == true) {
+        // Show loading dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+
+        // Always use Imgur for story owner
+        String imageUrl = await _uploadToImgur(File(pickedFile.path));
+
+        // Create or update the story document
+        await FirebaseFirestore.instance.collection('stories').doc(currentUserId).set({
+          'username': username,
+          'userImage': userImage,
+          'hasUnread': true,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        // Add the story image to the user's stories collection
+        await FirebaseFirestore.instance
+            .collection('stories')
+            .doc(currentUserId)
+            .collection('userStories')
+            .add({
+          'imageUrl': imageUrl,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        // Close loading dialog
+        Navigator.of(context).pop();
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Story posted successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+  } catch (e) {
+    // Close loading dialog if it's still open
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Error posting story: $e"),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<String> _uploadToImgur(File imageFile) async {
+  final imageBytes = await imageFile.readAsBytes();
+  final base64Image = base64Encode(imageBytes);
+
+  final response = await http.post(
+    Uri.parse('https://api.imgur.com/3/image'),
+    headers: {'Authorization': 'Client-ID 1c7272900a8c448'}, // Using the same Client-ID as in other files
+    body: {'image': base64Image},
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['data']['link'];
+  } else {
+    throw Exception('Failed to upload to Imgur: ${response.body}');
+  }
+}
+
+class StoryPreviewDialog extends StatelessWidget {
+  final String imagePath;
+  final String username;
+  final String userImage;
+
+  const StoryPreviewDialog({
+    required this.imagePath,
+    required this.username,
+    required this.userImage,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            // Header with user info and close button
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: userImage.startsWith('http')
+                        ? NetworkImage(userImage)
+                        : AssetImage(userImage) as ImageProvider,
+                    radius: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Story preview
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(13),
+                  child: Image.file(
+                    File(imagePath),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
+            ),
+            
+            // Post button
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff8fd4e8),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: const Text(
+                        "Post Story",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -130,8 +360,22 @@ Widget storySection({required String currentUserId}) {
                             }
                           },
                           child: hasUnread
-                              ? StoryNonRead(imagePath: userImage, username: username, showPlus: true)
-                              : StoryRead(imagePath: userImage, username: username, showPlus: true),
+                              ? StoryNonRead(
+                                  imagePath: userImage, 
+                                  username: username, 
+                                  showPlus: true,
+                                  onPlusTap: () async {
+                                    await _createNewStory(context, currentUserId, username, userImage);
+                                  },
+                                )
+                              : StoryRead(
+                                  imagePath: userImage, 
+                                  username: username, 
+                                  showPlus: true,
+                                  onPlusTap: () async {
+                                    await _createNewStory(context, currentUserId, username, userImage);
+                                  },
+                                ),
                         );
                       },
                     );
