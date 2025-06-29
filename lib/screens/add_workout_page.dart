@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/workout_model.dart';
 import 'package:asgm1/details/workout_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
 
 class Exercise {
   final String name;
@@ -64,6 +68,8 @@ class _AddExercisePageState extends State<AddExercisePage> {
     super.dispose();
   }
 
+  
+
   void _showInputDialog(Exercise exercise) {
     final repsController = TextEditingController();
     final minutesController = TextEditingController();
@@ -104,24 +110,44 @@ class _AddExercisePageState extends State<AddExercisePage> {
                   TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final reps = int.tryParse(repsController.text) ?? 0;
                       final minutes = int.tryParse(minutesController.text) ?? 0;
 
-                      Navigator.pop(context); // close dialog
                       final service = WorkoutService();
                       final calories = service.calculateCaloriesBurned(exercise.name, reps, minutes);
 
-                        Navigator.pop(context, {
-                          'exercise': Exercise(
-                            name: exercise.name,
-                            imagePath: exercise.imagePath,
-                            exercises: reps,
-                            minutes: minutes,
-                          ),
-                          'calories': calories,
-                        });
+                      // ✅ Get current user and today's date
+                      final user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        final userId = user.uid;
+                        final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                        // ✅ Save to Firestore
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .collection('calorie_logs')
+                            .doc(today)
+                            .set({
+                              'exerciseCalories': FieldValue.increment(calories),
+                              'date': today,
+                            }, SetOptions(merge: true));
+                      }
+
+                      Navigator.pop(context); // close dialog
+
+                      Navigator.pop(context, {
+                        'exercise': Exercise(
+                          name: exercise.name,
+                          imagePath: exercise.imagePath,
+                          exercises: reps,
+                          minutes: minutes,
+                        ),
+                        'calories': calories,
+                      });
                     },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0A84FF),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

@@ -65,8 +65,22 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   TextButton(
                     onPressed: () async {
                       Navigator.pop(context); // close dialog
+
+                      // Calculate calories before deleting
+                      final label = w.label;
+                      final reps = int.tryParse(w.reps.replaceAll(' reps', '')) ?? 0;
+                      final minutes = int.tryParse(w.time.replaceAll(':00', '')) ?? 0;
+                      final caloriesToSubtract = _service.calculateCaloriesBurned(label, reps, minutes);
+
+                      // Delete workout
                       await _service.deleteWorkout(w.id);
+
+                      // Subtract from NutritionPage
+                      if (mounted) {
+                        widget.nutritionPageKey.currentState?.subtractExerciseCalories(caloriesToSubtract);
+                      }
                     },
+
                     child: const Text("Delete", style: TextStyle(color: Colors.red)),
                   ),
                   Row(
@@ -180,8 +194,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
       await _service.addWorkout(newWorkout);
 
-      // ✅ Update NutritionPage with new calories
-      widget.nutritionPageKey.currentState?.updateExerciseCalories(calories);
+      if (mounted) {
+        widget.nutritionPageKey.currentState?.updateExerciseCalories(calories);
+      }
+
     }
   },
 ),
