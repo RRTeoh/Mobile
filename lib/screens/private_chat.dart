@@ -90,7 +90,12 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
         backgroundColor: Colors.blue[100],
         title: Row(
           children: [
-            CircleAvatar(radius: 16, backgroundImage: AssetImage(widget.otherUserImage)),
+            CircleAvatar(
+              radius: 16, 
+              backgroundImage: widget.otherUserImage.startsWith('http') 
+                  ? NetworkImage(widget.otherUserImage) 
+                  : AssetImage(widget.otherUserImage) as ImageProvider,
+            ),
             const SizedBox(width: 8),
             Text(
               widget.otherUserName,
@@ -125,7 +130,27 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                   itemBuilder: (context, index) {
                     final msg = messages[index].data() as Map<String, dynamic>;
                     final isMe = msg['senderId'] == widget.currentUserId;
-                    final time = msg['timestamp'] != null ? _formatTime(msg['timestamp']) : '';
+                    final currentTime = msg['timestamp'] as Timestamp?;
+                    
+                    // Check if we should show timestamp for this message
+                    bool shouldShowTime = false;
+                    if (currentTime != null) {
+                      if (index == 0) {
+                        // Always show time for first message
+                        shouldShowTime = true;
+                      } else {
+                        // Check if previous message was more than 5 minutes ago
+                        final previousMsg = messages[index - 1].data() as Map<String, dynamic>;
+                        final previousTime = previousMsg['timestamp'] as Timestamp?;
+                        
+                        if (previousTime != null) {
+                          final timeDiff = currentTime.toDate().difference(previousTime.toDate());
+                          shouldShowTime = timeDiff.inMinutes >= 5;
+                        }
+                      }
+                    }
+                    
+                    final time = shouldShowTime && currentTime != null ? _formatTime(currentTime) : '';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
