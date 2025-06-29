@@ -120,8 +120,11 @@ class _ChatPageState extends State<ChatPage> {
 
                   final chats = snapshot.data!.docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
+                    final users = List<String>.from(data['users'] ?? []);
                     final name = data['otherUserName']?.toString().toLowerCase() ?? '';
-                    return name.contains(_searchQuery);
+                    
+                    // Only show chats where current user is a participant
+                    return users.contains(currentUserId) && name.contains(_searchQuery);
                   }).toList();
 
                   return ListView.builder(

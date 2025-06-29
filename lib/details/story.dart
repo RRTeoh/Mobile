@@ -12,12 +12,14 @@ class StoryNonRead extends StatelessWidget {
   final String username;
   final bool showPlus;
   final VoidCallback? onPlusTap;
+  final bool hasStory;
 
   const StoryNonRead({
     required this.imagePath, 
     required this.username, 
     this.showPlus = false, 
     this.onPlusTap,
+    this.hasStory = true,
     super.key
   });
 
@@ -27,18 +29,26 @@ class StoryNonRead extends StatelessWidget {
       children: [
         Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Colors.pink, Colors.orange, Colors.yellow]),
+            if (hasStory)
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [Colors.pink, Colors.orange, Colors.yellow]),
+                ),
+                child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
+                backgroundImage: imagePath.startsWith('http')
+                ? NetworkImage(imagePath)
+                : AssetImage(imagePath) as ImageProvider,
+                )),
+              )
+            else
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: imagePath.startsWith('http')
+                ? NetworkImage(imagePath)
+                : AssetImage(imagePath) as ImageProvider,
               ),
-              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
-              backgroundImage: imagePath.startsWith('http')
-              ? NetworkImage(imagePath)
-              : AssetImage(imagePath) as ImageProvider,
-              )),
-            ),
             if (showPlus)
               Positioned(
                 bottom: 0,
@@ -62,8 +72,67 @@ class StoryRead extends StatelessWidget {
   final String username;
   final bool showPlus;
   final VoidCallback? onPlusTap;
+  final bool hasStory;
 
   const StoryRead({
+    required this.imagePath, 
+    required this.username, 
+    this.showPlus = false, 
+    this.onPlusTap,
+    this.hasStory = true,
+    super.key
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Stack(
+          children: [
+            if (hasStory)
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [Colors.grey, Colors.grey.shade400]),
+                ),
+                child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
+                backgroundImage: imagePath.startsWith('http')
+                ? NetworkImage(imagePath)
+                : AssetImage(imagePath) as ImageProvider)),
+              )
+            else
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: imagePath.startsWith('http')
+                ? NetworkImage(imagePath)
+                : AssetImage(imagePath) as ImageProvider,
+              ),
+            if (showPlus)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: onPlusTap,
+                  child: CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: const Icon(Icons.add, size: 19, color: Colors.white)),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(username, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
+      ],
+    );
+  }
+}
+
+class StoryNoStory extends StatelessWidget {
+  final String imagePath;
+  final String username;
+  final bool showPlus;
+  final VoidCallback? onPlusTap;
+
+  const StoryNoStory({
     required this.imagePath, 
     required this.username, 
     this.showPlus = false, 
@@ -77,16 +146,11 @@ class StoryRead extends StatelessWidget {
       children: [
         Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Colors.grey, Colors.grey.shade400]),
-              ),
-              child: CircleAvatar(radius: 30, backgroundColor: Colors.white, child: CircleAvatar(radius: 29, 
+            CircleAvatar(
+              radius: 30,
               backgroundImage: imagePath.startsWith('http')
               ? NetworkImage(imagePath)
-              : AssetImage(imagePath) as ImageProvider)),
+              : AssetImage(imagePath) as ImageProvider,
             ),
             if (showPlus)
               Positioned(
@@ -379,6 +443,7 @@ Widget storySection({required String currentUserId}) {
                                   onPlusTap: () async {
                                     await _createNewStory(context, currentUserId, username, userImage);
                                   },
+                                  hasStory: hasStory,
                                 )
                               : StoryRead(
                                   imagePath: userImage, 
@@ -387,6 +452,7 @@ Widget storySection({required String currentUserId}) {
                                   onPlusTap: () async {
                                     await _createNewStory(context, currentUserId, username, userImage);
                                   },
+                                  hasStory: hasStory,
                                 ),
                         );
                       },
@@ -433,6 +499,7 @@ Widget storySection({required String currentUserId}) {
                         final username = data['username'] ?? '';
                         final userImage = data['userImage'] ?? 'assets/images/default.jpg';
                         final hasUnread = data['hasUnread'] ?? true;
+                        final hasStory = true; // Other users in the list have stories
 
                         return Row(
                           children: [
@@ -442,8 +509,8 @@ Widget storySection({required String currentUserId}) {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => StoryViewScreen(userId: doc.id, currentUserId: currentUserId,)));
                               },
                               child: hasUnread
-                                  ? StoryNonRead(imagePath: userImage, username: username)
-                                  : StoryRead(imagePath: userImage, username: username),
+                                  ? StoryNonRead(imagePath: userImage, username: username, hasStory: hasStory)
+                                  : StoryRead(imagePath: userImage, username: username, hasStory: hasStory),
                             ),
                             const SizedBox(width: 15),
                           ],

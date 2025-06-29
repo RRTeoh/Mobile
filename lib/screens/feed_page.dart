@@ -37,8 +37,8 @@ class _FeedPageState extends State<FeedPage> {
 
     if (userDoc.exists) {
       final data = userDoc.data() as Map<String, dynamic>;
-      currentUserName = data['username'] ?? 'Unknown';
-      currentUserAvatar = data['userImage'] ?? 'assets/images/default.jpg';
+      currentUserName = data['firstName'] ?? 'Unknown';
+      currentUserAvatar = data['avatar'] ?? 'assets/images/default.jpg';
     }
 
     setState(() {
