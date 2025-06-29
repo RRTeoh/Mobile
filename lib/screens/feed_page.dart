@@ -52,10 +52,10 @@ class _FeedPageState extends State<FeedPage> {
   }
 
 Future<void> sendPushNotification(String receiverFcmToken, String senderName, String actionText) async {
-  const String serverKey = 'YOUR_SERVER_KEY_HERE'; // Replace with your Firebase Project Server Key
+  const String serverKey = 'YOUR_FCM_SERVER_KEY'; // Replace with your actual FCM server key
 
   try {
-    await http.post(
+    final response = await http.post(
       Uri.parse('https://fcm.googleapis.com/fcm/send'),
       headers: {
         'Content-Type': 'application/json',
@@ -70,9 +70,16 @@ Future<void> sendPushNotification(String receiverFcmToken, String senderName, St
         'data': {
           'senderName': senderName,
           'action': actionText,
+          'type': 'feed',
         },
       }),
     );
+
+    if (response.statusCode == 200) {
+      print('Feed push notification sent successfully');
+    } else {
+      print('Failed to send feed push notification: ${response.body}');
+    }
   } catch (e) {
     print('Push Notification Error: $e');
   }

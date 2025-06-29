@@ -112,6 +112,7 @@ class _ChatPageState extends State<ChatPage> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                 .collection('chats')
+                .where('users', arrayContains: currentUserId)
                 .orderBy('timestamp', descending: true) // Sort by latest timestamp
                 .snapshots(),
                 builder: (context, snapshot) {
