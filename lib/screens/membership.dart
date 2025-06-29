@@ -7,6 +7,7 @@ import 'package:asgm1/screens/editprofile.dart';
 import 'package:asgm1/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:asgm1/services/streak_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -21,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _firstName = 'Loading';
   String _secondName = '';
   String _avatarUrl = '';
+  String _streak = '0 🔥';
 
   @override
   void initState() {
@@ -40,8 +42,26 @@ class _ProfilePageState extends State<ProfilePage> {
         _avatarUrl = data['avatar'] ?? '';
       });
     }
+    
+    // Load streak data
+    _loadStreakData();
   }
 }
+
+void _loadStreakData() async {
+  final streakDisplay = await StreakService.getStreakDisplay();
+  setState(() {
+    _streak = streakDisplay;
+  });
+}
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  // Refresh streak data when page is focused
+  _loadStreakData();
+}
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -97,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ProfileAvatar(
                           imagePath: _avatarUrl.isNotEmpty ? _avatarUrl : 'assets/images/noprofile.png',
                           name: '${_firstName.length > 6 ? _firstName.substring(0, 6) + "***" : _firstName} $_secondName',
-                          streak: '145 🔥',
+                          streak: _streak,
                         ),
                         Positioned(
                           top: 2,
@@ -278,3 +298,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+

@@ -183,10 +183,10 @@ class _HomePageState extends State<HomePage> {
     final DateTime monday = today.subtract(Duration(days: weekday - 1));
 
     final List<Map<String, String>> instructors = [
-    {"name": "Ava Chen", "image": "assets/images/trainers/Trainer1.jpg"},
-    {"name": "Liam Wong", "image": "assets/images/trainers/Trainer2.jpg"},
-    {"name": "Sophia Lim", "image": "assets/images/trainers/Trainer3.jpg"},
-    {"name": "Noah Tan", "image": "assets/images/trainers/Trainer4.jpg"},
+    {"name": "Oliva Mitchell", "image": "assets/images/trainers/Trainer6.jpg"},
+    {"name": "Lin Xiny", "image": "assets/images/trainers/Trainer2.jpg"},
+    {"name": "Zoe Blake", "image": "assets/images/trainers/Trainer4.jpg"},
+    {"name": "Mark", "image": "assets/images/trainers/Trainer8.jpg"},
   ];
       final List<Map<String, dynamic>> weekDates = List.generate(7, (index) {
     DateTime day = monday.add(Duration(days: index));
@@ -222,9 +222,30 @@ class _HomePageState extends State<HomePage> {
       actions:[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child: CircleAvatar(
-              radius: 23,
-              backgroundImage: AssetImage("assets/images/noprofile.png"),
+            child: FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  final userData = snapshot.data!.data() as Map<String, dynamic>;
+                  final avatar = userData['avatar'] ?? 'assets/images/noprofile.png';
+                  
+                  return CircleAvatar(
+                    radius: 23,
+                    backgroundImage: avatar.startsWith('http') 
+                        ? NetworkImage(avatar) 
+                        : AssetImage(avatar) as ImageProvider,
+                  );
+                }
+                
+                // Default profile picture while loading or if no data
+                return const CircleAvatar(
+                  radius: 23,
+                  backgroundImage: AssetImage("assets/images/noprofile.png"),
+                );
+              },
             ),
           ),
           ]

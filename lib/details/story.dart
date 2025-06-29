@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:asgm1/services/streak_service.dart';
 
 class StoryNonRead extends StatelessWidget {
   final String imagePath;
@@ -107,42 +108,50 @@ class StoryRead extends StatelessWidget {
 
 Future<void> _createNewStory(BuildContext context, String currentUserId, String username, String userImage) async {
   try {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Fetch latest user data from Firestore
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+    if (!userDoc.exists) {
+      Navigator.of(context).pop(); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User data not found"), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final userData = userDoc.data() as Map<String, dynamic>;
+    final currentUserName = userData['firstName'] ?? 'Unknown';
+    final currentUserAvatar = userData['avatar'] ?? 'assets/images/default.jpg';
+
+    // Pick image
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (pickedFile != null) {
-      // Show preview screen with Post button
+      // Show preview dialog
       final bool? shouldPost = await showDialog<bool>(
         context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return StoryPreviewDialog(
-            imagePath: pickedFile.path,
-            username: username,
-            userImage: userImage,
-          );
-        },
+        builder: (context) => StoryPreviewDialog(
+          imagePath: pickedFile.path,
+          username: currentUserName,
+          userImage: currentUserAvatar,
+        ),
       );
 
       if (shouldPost == true) {
-        // Show loading dialog
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
-
         // Always use Imgur for story owner
         String imageUrl = await _uploadToImgur(File(pickedFile.path));
 
-        // Create or update the story document
+        // Create or update the story document with current user data
         await FirebaseFirestore.instance.collection('stories').doc(currentUserId).set({
-          'username': username,
-          'userImage': userImage,
+          'username': currentUserName,
+          'userImage': currentUserAvatar,
           'hasUnread': true,
           'timestamp': FieldValue.serverTimestamp(),
         });
@@ -156,6 +165,9 @@ Future<void> _createNewStory(BuildContext context, String currentUserId, String 
           'imageUrl': imageUrl,
           'timestamp': FieldValue.serverTimestamp(),
         });
+
+        // Increment streak after successful story post
+        await StreakService.incrementStreak();
 
         // Close loading dialog
         Navigator.of(context).pop();

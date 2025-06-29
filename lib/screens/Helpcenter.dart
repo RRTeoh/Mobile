@@ -62,7 +62,7 @@ final List<String> answers = [
     _showChatBadge = true;
     Future.delayed(Duration(milliseconds: 300), () async {
       try {
-        await _audioPlayer.play(AssetSource('assets/audios/bubblepop.mp3'));
+        await _audioPlayer.play(AssetSource('audios/newbubbleSFX.MP3'));
         print("sucess");
       } catch (e) {
         print("Audio failed: $e");
@@ -286,41 +286,146 @@ class _ChatBotPageState extends State<ChatBotPage> {
   final List<_ChatMessage> _messages = [];
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Automatically send a greeting message from the bot
-    Future.delayed(Duration(milliseconds: 300), () {
+    _loadChatHistory();
+  }
+
+  Future<void> _loadChatHistory() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final chatDoc = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('chatbot')
+            .doc('messages')
+            .get();
+
+        if (chatDoc.exists && chatDoc.data() != null) {
+          final List<dynamic> messagesData = chatDoc.data()!['messages'] ?? [];
+          setState(() {
+            _messages.clear();
+            for (var msgData in messagesData) {
+              _messages.add(_ChatMessage(
+                text: msgData['text'],
+                isBot: msgData['isBot'],
+                timestamp: msgData['timestamp'] != null 
+                    ? DateTime.parse(msgData['timestamp'])
+                    : DateTime.now(),
+              ));
+            }
+          });
+        } else {
+          // If no chat history exists, add the initial greeting
+          _addBotMessage("Hello! How can I help you today? 😊");
+        }
+      }
+    } catch (e) {
+      print("Error loading chat history: $e");
+      // Add initial greeting if loading fails
+      _addBotMessage("Hello! How can I help you today? 😊");
+    } finally {
       setState(() {
-        _messages.add(_ChatMessage(
-          text: "Hello! How can I help you today? 😊",
-          isBot: true,
-        ));
+        _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _saveChatHistory() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final messagesData = _messages.map((msg) => {
+          'text': msg.text,
+          'isBot': msg.isBot,
+          'timestamp': msg.timestamp.toIso8601String(),
+        }).toList();
+
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('chatbot')
+            .doc('messages')
+            .set({
+          'messages': messagesData,
+          'lastUpdated': DateTime.now().toIso8601String(),
+        });
+      }
+    } catch (e) {
+      print("Error saving chat history: $e");
+    }
+  }
+
+  void _addBotMessage(String text) {
+    setState(() {
+      _messages.add(_ChatMessage(
+        text: text,
+        isBot: true,
+        timestamp: DateTime.now(),
+      ));
+    });
+  }
+
+  void _addUserMessage(String text) {
+    setState(() {
+      _messages.add(_ChatMessage(
+        text: text,
+        isBot: false,
+        timestamp: DateTime.now(),
+      ));
     });
   }
 
   void _sendMessage(String text) {
     if (text.trim().isEmpty) return;
-    setState(() {
-      _messages.add(_ChatMessage(text: text, isBot: false));
-    });
+    
+    _addUserMessage(text);
     _controller.clear();
+    
+    // Generate intelligent bot response based on user input
+    String botResponse = _generateBotResponse(text.toLowerCase());
+    
     // Simulate bot response
     Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        _messages.add(_ChatMessage(
-          text: "You said: $text",
-          isBot: true,
-        ));
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 60,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
+      _addBotMessage(botResponse);
+      _saveChatHistory(); // Save after each message exchange
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent + 60,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
+  }
+
+  String _generateBotResponse(String userMessage) {
+    if (userMessage.contains('password') && (userMessage.contains('forgot') || userMessage.contains('remember') || userMessage.contains('reset'))) {
+      return "You can reset your password at Privacy Settings. Go to Settings > Privacy Settings and tap on 'Reset Password' to get started! 🔐";
+    }
+    
+    if (userMessage.contains('member') || userMessage.contains('membership') || userMessage.contains('join')) {
+      return "You can visit our physical store that's nearby your location! Contact us: 019-2939-2939 📞\n\nOur team will be happy to help you with membership options and guide you through the sign-up process! 💪";
+    }
+    
+    if (userMessage.contains('hello') || userMessage.contains('hi') || userMessage.contains('hey')) {
+      return "Hello! How can I help you today? 😊\n\nI can assist you with:\n• Password reset\n• Membership information\n• General questions about Boostify";
+    }
+    
+    if (userMessage.contains('help') || userMessage.contains('support')) {
+      return "I'm here to help! What specific issue are you facing? You can ask me about:\n• Password problems\n• Membership questions\n• App features\n• Account settings";
+    }
+    
+    if (userMessage.contains('thank') || userMessage.contains('thanks')) {
+      return "Glad to help you! 😊 For specific assistance, please contact our support team: 019-2939-2939 📞";
+    }
+    
+    // Default response for unrecognized queries
+    return "I understand you're asking about '$userMessage'. For specific assistance, please contact our support team at support@boostify.app or call us at 019-2939-2939. Our team will be happy to help! 📧";
   }
 
   @override
@@ -332,61 +437,72 @@ class _ChatBotPageState extends State<ChatBotPage> {
         iconTheme: IconThemeData(color: Colors.black),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                return Align(
-                  alignment: msg.isBot ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 4),
-                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: msg.isBot ? Color(0xFF8FD4E8).withOpacity(0.7) : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      msg.text,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Divider(height: 1),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
+      body: _isLoading 
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: Color(0xFF8FD4E8)),
+                  SizedBox(height: 16),
+                  Text('Loading chat history...', style: TextStyle(color: Colors.grey[600])),
+                ],
+              ),
+            )
+          : Column(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      border: InputBorder.none,
-                    ),
-                    onSubmitted: _sendMessage,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.all(16),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = _messages[index];
+                      return Align(
+                        alignment: msg.isBot ? Alignment.centerLeft : Alignment.centerRight,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: msg.isBot ? Color(0xFF8FD4E8).withOpacity(0.7) : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            msg.text,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send, color: Color(0xFF8FD4E8)),
-                  onPressed: () => _sendMessage(_controller.text),
+                Divider(height: 1),
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: 'Type your message...',
+                            border: InputBorder.none,
+                          ),
+                          onSubmitted: _sendMessage,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.send, color: Color(0xFF8FD4E8)),
+                        onPressed: () => _sendMessage(_controller.text),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -394,5 +510,6 @@ class _ChatBotPageState extends State<ChatBotPage> {
 class _ChatMessage {
   final String text;
   final bool isBot;
-  _ChatMessage({required this.text, required this.isBot});
+  final DateTime timestamp;
+  _ChatMessage({required this.text, required this.isBot, required this.timestamp});
 }

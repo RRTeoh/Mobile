@@ -52,10 +52,23 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
           print('Current story data: $storyData');
           
           final storyImage = _getStoryImageUrl(storyData);
-          final storedUsername = (storyData['username'] ?? 'User').toString();
-          final storedUserImage = (storyData['userImage'] ?? 'assets/images/default.jpg').toString();
+          
+          // Fetch current user data dynamically
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
+            builder: (context, userSnapshot) {
+              String displayName = storyData['username'] ?? 'User';
+              String displayImage = storyData['userImage'] ?? 'assets/images/default.jpg';
+              
+              if (userSnapshot.hasData && userSnapshot.data!.exists) {
+                final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                displayName = userData['firstName'] ?? storyData['username'] ?? 'User';
+                displayImage = userData['avatar'] ?? storyData['userImage'] ?? 'assets/images/default.jpg';
+              }
 
-          return _buildStoryView(storyImage, storedUsername, storedUserImage);
+              return _buildStoryView(storyImage, displayName, displayImage);
+            },
+          );
         },
       ),
     );
@@ -82,10 +95,23 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
         print('Alternative story data: $storyData');
         
         final storyImage = _getStoryImageUrl(storyData);
-        final storedUsername = (storyData['username'] ?? 'User').toString();
-        final storedUserImage = (storyData['userImage'] ?? 'assets/images/default.jpg').toString();
+        
+        // Fetch current user data dynamically
+        return FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
+          builder: (context, userSnapshot) {
+            String displayName = storyData['username'] ?? 'User';
+            String displayImage = storyData['userImage'] ?? 'assets/images/default.jpg';
+            
+            if (userSnapshot.hasData && userSnapshot.data!.exists) {
+              final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+              displayName = userData['firstName'] ?? storyData['username'] ?? 'User';
+              displayImage = userData['avatar'] ?? storyData['userImage'] ?? 'assets/images/default.jpg';
+            }
 
-        return _buildStoryView(storyImage, storedUsername, storedUserImage);
+            return _buildStoryView(storyImage, displayName, displayImage);
+          },
+        );
       },
     );
   }

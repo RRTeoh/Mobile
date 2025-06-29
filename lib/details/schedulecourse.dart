@@ -160,7 +160,6 @@ class Schedulecourse{
       )
 
     );
-
     
 
     return scourse;

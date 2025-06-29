@@ -20,7 +20,7 @@ class CourseDetails {
       CourseDetails(
         courseimage: 'assets/images/courses/Yoga.png',
         coursename: 'Mind-Body',
-        videoUrl: 'assets/videos/yoga.mp4',
+        videoUrl: 'assets/videos/YogaNew.mp4',
         duration: '18 min',
         difficulty: 'Medium',
         description: 'A balanced workout focusing on flexibility, breathing, and core strength.',
@@ -28,7 +28,7 @@ class CourseDetails {
       CourseDetails(
       courseimage: 'assets/images/courses/Cardio.png',
       coursename: 'Cardio',
-      videoUrl: 'assets/videos/Cardio.mp4',
+      videoUrl: 'assets/videos/CardioNew.mp4',
       duration: '25 min',
       difficulty: 'High',
       description:
@@ -37,7 +37,7 @@ class CourseDetails {
     CourseDetails(
       courseimage: 'assets/images/courses/Yoga.jpg',
       coursename: 'Strength',
-      videoUrl: 'assets/videos/yoga.mp4',
+      videoUrl: 'assets/videos/YogaNew.mp4',
       duration: '30 min',
       difficulty: 'Medium',
       description:
@@ -46,7 +46,7 @@ class CourseDetails {
     CourseDetails(
       courseimage: 'assets/images/courses/Yoga.jpg',
       coursename: 'Muay Thai',
-      videoUrl: 'assets/videos/yoga.mp4',
+      videoUrl: 'assets/videos/YogaNew.mp4',
       duration: '20 min',
       difficulty: 'Low',
       description:
@@ -55,7 +55,7 @@ class CourseDetails {
     CourseDetails(
       courseimage: 'assets/images/courses/Yoga.jpg',
       coursename: 'Ariel Yoga',
-      videoUrl: 'assets/videos/yoga.mp4',
+      videoUrl: 'assets/videos/YogaNew.mp4',
       duration: '20 min',
       difficulty: 'Low',
       description:

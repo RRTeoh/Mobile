@@ -34,21 +34,32 @@ class _ChatPageState extends State<ChatPage> {
         if (change.type == DocumentChangeType.modified) {
           final data = change.doc.data() as Map<String, dynamic>;
           final lastMessage = data['lastMessage'] ?? '';
-          final otherUserName = data['otherUserName'] ?? 'Someone';
           final timestamp = data['timestamp'] as Timestamp?;
+          final users = List<String>.from(data['users'] ?? []);
+          
+          // Find the other user's ID
+          final otherUserId = users.firstWhere((id) => id != currentUserId, orElse: () => '');
           
           // Only show notification if message is recent (within last 5 seconds)
-          if (lastMessage.isNotEmpty && timestamp != null) {
+          if (lastMessage.isNotEmpty && timestamp != null && otherUserId.isNotEmpty) {
             final messageTime = timestamp.toDate();
             final now = DateTime.now();
             final diff = now.difference(messageTime);
             
             if (diff.inSeconds < 5) {
-              NotificationService().sendCustomInstantNotification(
-                title: 'New Message from $otherUserName 💬',
-                body: lastMessage.length > 50 ? '${lastMessage.substring(0, 50)}...' : lastMessage,
-              );
-              print('Chat notification sent for new message from $otherUserName');
+              // Get the other user's name dynamically
+              FirebaseFirestore.instance.collection('users').doc(otherUserId).get().then((userDoc) {
+                if (userDoc.exists) {
+                  final userData = userDoc.data() as Map<String, dynamic>;
+                  final otherUserName = userData['firstName'] ?? 'Someone';
+                  
+                  NotificationService().sendChatNotification(
+                    title: 'New Message from $otherUserName 💬',
+                    body: lastMessage.length > 50 ? '${lastMessage.substring(0, 50)}...' : lastMessage,
+                  );
+                  print('Chat notification sent for new message from $otherUserName');
+                }
+              });
             }
           }
         }
@@ -101,6 +112,7 @@ class _ChatPageState extends State<ChatPage> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                 .collection('chats')
+                .where('users', arrayContains: currentUserId)
                 .orderBy('timestamp', descending: true) // Sort by latest timestamp
                 .snapshots(),
                 builder: (context, snapshot) {
@@ -117,75 +129,100 @@ class _ChatPageState extends State<ChatPage> {
                     itemBuilder: (context, index) {
                       final chatData = chats[index].data() as Map<String, dynamic>;
                       final chatId = chats[index].id;
-                      final otherUserId = chatData['otherUserId'] ?? '';
-                      final otherUserName = chatData['otherUserName'] ?? 'Unknown';
-                      final otherUserImage = chatData['otherUserImage'] ?? 'assets/images/default.jpg';
-                      final unreadList = chatData['unreadBy'] is List ? chatData['unreadBy'] : [];
-                      final bool hasUnread = unreadList.contains(currentUserId);
-                      final lastMessage = chatData['lastMessage'] ?? '';
-                      final time = chatData['timestamp'] != null ? _formatTime(chatData['timestamp']) : '';
+                      final users = List<String>.from(chatData['users'] ?? []);
+                      
+                      // Find the other user's ID (not the current user)
+                      final otherUserId = users.firstWhere((id) => id != currentUserId, orElse: () => '');
+                      
+                      // Get other user's data from Firestore
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance.collection('users').doc(otherUserId).get(),
+                        builder: (context, userSnapshot) {
+                          if (!userSnapshot.hasData) {
+                            return const SizedBox.shrink();
+                          }
+                          
+                          final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
+                          final otherUserName = userData?['firstName'] ?? 'Unknown';
+                          final otherUserImage = userData?['avatar'] ?? 'assets/images/default.jpg';
+                          
+                          final unreadList = chatData['unreadBy'] is List ? chatData['unreadBy'] : [];
+                          final bool hasUnread = unreadList.contains(currentUserId);
+                          final lastMessage = chatData['lastMessage'] ?? '';
+                          final time = chatData['timestamp'] != null ? _formatTime(chatData['timestamp']) : '';
 
-                      return Column(
-                        children: [
-                          ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                            leading: Padding(
-                              padding: const EdgeInsets.only(left: 15),
-                              child: CircleAvatar(radius: 25, backgroundImage: AssetImage(otherUserImage)),
-                            ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(otherUserName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                const SizedBox(height: 6),
-                                Text(
-                                  lastMessage,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: hasUnread  ? FontWeight.bold : FontWeight.normal,
+                          return Column(
+                            children: [
+                              ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                                leading: Padding(
+                                  padding: const EdgeInsets.only(left: 15),
+                                  child: CircleAvatar(
+                                    radius: 25, 
+                                    backgroundImage: otherUserImage.startsWith('http') 
+                                        ? NetworkImage(otherUserImage) 
+                                        : AssetImage(otherUserImage) as ImageProvider
                                   ),
                                 ),
-                              ],
-                            ),
-                            trailing: SizedBox(
-                              width: 40,
-                              height: 30,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: Text(time, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                                  ),
-                                  if (hasUnread)
-                                    const Positioned(
-                                      top: -2,
-                                      right: -2,
-                                      child: Icon(Icons.circle, color: Colors.red, size: 10),
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(otherUserName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      lastMessage,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: hasUnread  ? FontWeight.bold : FontWeight.normal,
+                                      ),
                                     ),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              FirebaseFirestore.instance.collection('chats').doc(chatId).update({'unreadBy': false});
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => PrivateChatPage(
-                                    chatId: chatId,
-                                    currentUserId: currentUserId,
-                                    otherUserId: otherUserId,
-                                    otherUserName: otherUserName,
-                                    otherUserImage: otherUserImage,
+                                  ],
+                                ),
+                                trailing: SizedBox(
+                                  width: 40,
+                                  height: 30,
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: Text(time, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                      ),
+                                      if (hasUnread)
+                                        const Positioned(
+                                          top: -2,
+                                          right: -2,
+                                          child: Icon(Icons.circle, color: Colors.red, size: 10),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                          const Divider(indent: 70, endIndent: 10, height: 1),
-                        ],
+                                onTap: () {
+                                  // Mark as read by removing current user from unreadBy array
+                                  FirebaseFirestore.instance.collection('chats').doc(chatId).update({
+                                    'unreadBy': FieldValue.arrayRemove([currentUserId])
+                                  });
+                                  
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => PrivateChatPage(
+                                        chatId: chatId,
+                                        currentUserId: currentUserId,
+                                        otherUserId: otherUserId,
+                                        otherUserName: otherUserName,
+                                        otherUserImage: otherUserImage,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const Divider(indent: 70, endIndent: 10, height: 1),
+                            ],
+                          );
+                        },
                       );
                     },
                   );

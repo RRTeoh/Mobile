@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:asgm1/services/notification_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PrivateChatPage extends StatefulWidget {
   final String chatId;
@@ -58,7 +60,70 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
         'unreadBy': FieldValue.arrayUnion([widget.otherUserId]),
       }, SetOptions(merge: true));
 
+      // Send FCM push notification to the other user
+      await _sendChatPushNotification(text);
+
       _controller.clear();
+    }
+  }
+
+  Future<void> _sendChatPushNotification(String message) async {
+    try {
+      // Get the receiver's FCM token
+      final receiverDoc = await FirebaseFirestore.instance.collection('users').doc(widget.otherUserId).get();
+      if (!receiverDoc.exists) return;
+      
+      final receiverData = receiverDoc.data() as Map<String, dynamic>;
+      final receiverFcmToken = receiverData['fcmToken'];
+      
+      if (receiverFcmToken != null && receiverFcmToken.isNotEmpty) {
+        // Get current user's name
+        final currentUserDoc = await FirebaseFirestore.instance.collection('users').doc(widget.currentUserId).get();
+        String senderName = 'Someone';
+        if (currentUserDoc.exists) {
+          final currentUserData = currentUserDoc.data() as Map<String, dynamic>;
+          senderName = currentUserData['firstName'] ?? 'Someone';
+        }
+
+        // Send FCM push notification
+        await _sendPushNotification(receiverFcmToken, senderName, message);
+      }
+    } catch (e) {
+      print('Error sending chat push notification: $e');
+    }
+  }
+
+  Future<void> _sendPushNotification(String receiverFcmToken, String senderName, String message) async {
+    try {
+      const String serverKey = 'YOUR_FCM_SERVER_KEY'; // Replace with your actual FCM server key
+      
+      final response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'key=$serverKey',
+        },
+        body: jsonEncode({
+          'to': receiverFcmToken,
+          'notification': {
+            'title': 'New Message from $senderName 💬',
+            'body': message.length > 50 ? '${message.substring(0, 50)}...' : message,
+          },
+          'data': {
+            'senderName': senderName,
+            'action': 'sent you a message',
+            'type': 'chat',
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Chat push notification sent successfully');
+      } else {
+        print('Failed to send chat push notification: ${response.body}');
+      }
+    } catch (e) {
+      print('Error sending push notification: $e');
     }
   }
 
@@ -90,7 +155,12 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
         backgroundColor: Colors.blue[100],
         title: Row(
           children: [
-            CircleAvatar(radius: 16, backgroundImage: AssetImage(widget.otherUserImage)),
+            CircleAvatar(
+              radius: 16, 
+              backgroundImage: widget.otherUserImage.startsWith('http') 
+                  ? NetworkImage(widget.otherUserImage) 
+                  : AssetImage(widget.otherUserImage) as ImageProvider,
+            ),
             const SizedBox(width: 8),
             Text(
               widget.otherUserName,
@@ -125,7 +195,27 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
                   itemBuilder: (context, index) {
                     final msg = messages[index].data() as Map<String, dynamic>;
                     final isMe = msg['senderId'] == widget.currentUserId;
-                    final time = msg['timestamp'] != null ? _formatTime(msg['timestamp']) : '';
+                    final currentTime = msg['timestamp'] as Timestamp?;
+                    
+                    // Check if we should show timestamp for this message
+                    bool shouldShowTime = false;
+                    if (currentTime != null) {
+                      if (index == 0) {
+                        // Always show time for first message
+                        shouldShowTime = true;
+                      } else {
+                        // Check if previous message was more than 5 minutes ago
+                        final previousMsg = messages[index - 1].data() as Map<String, dynamic>;
+                        final previousTime = previousMsg['timestamp'] as Timestamp?;
+                        
+                        if (previousTime != null) {
+                          final timeDiff = currentTime.toDate().difference(previousTime.toDate());
+                          shouldShowTime = timeDiff.inMinutes >= 5;
+                        }
+                      }
+                    }
+                    
+                    final time = shouldShowTime && currentTime != null ? _formatTime(currentTime) : '';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
