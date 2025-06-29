@@ -53,6 +53,7 @@ class _ChatPageState extends State<ChatPage> {
                   final userData = userDoc.data() as Map<String, dynamic>;
                   final otherUserName = userData['firstName'] ?? 'Someone';
                   
+                  // Use local notification instead of FCM
                   NotificationService().sendChatNotification(
                     title: 'New Message from $otherUserName 💬',
                     body: lastMessage.length > 50 ? '${lastMessage.substring(0, 50)}...' : lastMessage,
@@ -112,7 +113,6 @@ class _ChatPageState extends State<ChatPage> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                 .collection('chats')
-                .where('users', arrayContains: currentUserId)
                 .orderBy('timestamp', descending: true) // Sort by latest timestamp
                 .snapshots(),
                 builder: (context, snapshot) {

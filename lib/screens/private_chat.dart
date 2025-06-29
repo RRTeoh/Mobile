@@ -60,70 +60,7 @@ class _PrivateChatPageState extends State<PrivateChatPage> {
         'unreadBy': FieldValue.arrayUnion([widget.otherUserId]),
       }, SetOptions(merge: true));
 
-      // Send FCM push notification to the other user
-      await _sendChatPushNotification(text);
-
       _controller.clear();
-    }
-  }
-
-  Future<void> _sendChatPushNotification(String message) async {
-    try {
-      // Get the receiver's FCM token
-      final receiverDoc = await FirebaseFirestore.instance.collection('users').doc(widget.otherUserId).get();
-      if (!receiverDoc.exists) return;
-      
-      final receiverData = receiverDoc.data() as Map<String, dynamic>;
-      final receiverFcmToken = receiverData['fcmToken'];
-      
-      if (receiverFcmToken != null && receiverFcmToken.isNotEmpty) {
-        // Get current user's name
-        final currentUserDoc = await FirebaseFirestore.instance.collection('users').doc(widget.currentUserId).get();
-        String senderName = 'Someone';
-        if (currentUserDoc.exists) {
-          final currentUserData = currentUserDoc.data() as Map<String, dynamic>;
-          senderName = currentUserData['firstName'] ?? 'Someone';
-        }
-
-        // Send FCM push notification
-        await _sendPushNotification(receiverFcmToken, senderName, message);
-      }
-    } catch (e) {
-      print('Error sending chat push notification: $e');
-    }
-  }
-
-  Future<void> _sendPushNotification(String receiverFcmToken, String senderName, String message) async {
-    try {
-      const String serverKey = 'YOUR_FCM_SERVER_KEY'; // Replace with your actual FCM server key
-      
-      final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'key=$serverKey',
-        },
-        body: jsonEncode({
-          'to': receiverFcmToken,
-          'notification': {
-            'title': 'New Message from $senderName 💬',
-            'body': message.length > 50 ? '${message.substring(0, 50)}...' : message,
-          },
-          'data': {
-            'senderName': senderName,
-            'action': 'sent you a message',
-            'type': 'chat',
-          },
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        print('Chat push notification sent successfully');
-      } else {
-        print('Failed to send chat push notification: ${response.body}');
-      }
-    } catch (e) {
-      print('Error sending push notification: $e');
     }
   }
 

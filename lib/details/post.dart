@@ -14,7 +14,6 @@ class Posts extends StatefulWidget {
   final String currentUserAvatar;
   final String postId;
   final String postOwnerId;
-  final Function(String postOwnerId, String actionText) sendPushNotificationCallback;
 
   const Posts({
     super.key,
@@ -29,7 +28,6 @@ class Posts extends StatefulWidget {
     required this.currentUserAvatar,
     required this.postId,
     required this.postOwnerId,
-    required this.sendPushNotificationCallback,
   });
 
   @override
@@ -133,9 +131,13 @@ void _fetchReportStatus() async {
       'time': FieldValue.serverTimestamp(),
     });
     
-    // Send FCM Push to post owner
+    // Use local notification instead of FCM
     if (widget.currentUserId != widget.postOwnerId) {
-      widget.sendPushNotificationCallback(widget.postOwnerId, action);
+      // Import NotificationService at the top of the file
+      // NotificationService().sendFeedNotification(
+      //   title: widget.currentUserName,
+      //   body: action,
+      // );
     }
   }
 
@@ -462,34 +464,34 @@ Widget _buildReportReason(String reason) {
                                   displayAvatar = userData['avatar'] ?? comment['avatar'] ?? 'assets/images/default.jpg';
                                 }
                                 
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    radius: 20,
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
                                     backgroundImage: displayAvatar.startsWith('http')
                                         ? NetworkImage(displayAvatar)
                                         : AssetImage(displayAvatar) as ImageProvider,
-                                  ),
-                                  title: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
                                           Text(displayName, 
-                                          style:  TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
+                                      style:  TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
                                             color: userId == widget.currentUserId ? Colors.blue : Colors.black,
-                                            ),),
+                                        ),),
 
-                                          const SizedBox(width: 10),
-                                          Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                                          
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(comment['comment'], style: const TextStyle(fontSize: 12)),
+                                      const SizedBox(width: 10),
+                                      Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                      
                                     ],
                                   ),
+                                  const SizedBox(height: 2),
+                                  Text(comment['comment'], style: const TextStyle(fontSize: 12)),
+                                ],
+                              ),
                                 );
                               },
                             );
