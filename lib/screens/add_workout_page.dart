@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/workout_model.dart';
+import 'package:asgm1/details/workout_service.dart';
 
 class Exercise {
   final String name;
@@ -108,14 +109,18 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       final minutes = int.tryParse(minutesController.text) ?? 0;
 
                       Navigator.pop(context); // close dialog
-                      Navigator.pop(context, [
-                        Exercise(
-                          name: exercise.name,
-                          imagePath: exercise.imagePath,
-                          exercises: reps,
-                          minutes: minutes,
-                        )
-                      ]);
+                      final service = WorkoutService();
+                      final calories = service.calculateCaloriesBurned(exercise.name, reps, minutes);
+
+                        Navigator.pop(context, {
+                          'exercise': Exercise(
+                            name: exercise.name,
+                            imagePath: exercise.imagePath,
+                            exercises: reps,
+                            minutes: minutes,
+                          ),
+                          'calories': calories,
+                        });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0A84FF),

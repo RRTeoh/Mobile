@@ -10,18 +10,26 @@ import 'package:asgm1/details/workout_service.dart';
 import 'package:asgm1/screens/add_workout_page.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:asgm1/details/caloriesburnedchart.dart'; 
+import 'package:asgm1/screens/nutrition_page.dart';
 
 
 
 
 class WorkoutPage extends StatefulWidget {
-  const WorkoutPage({super.key});
+  final GlobalKey<NutritionPageState> nutritionPageKey;
+
+  const WorkoutPage({super.key, required this.nutritionPageKey});
+  //const WorkoutPage({super.key});
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
+  
 }
 
 class _WorkoutPageState extends State<WorkoutPage> {
   final WorkoutService _service = WorkoutService();
+
+  //final GlobalKey<NutritionPageState> nutritionPageKey = GlobalKey();
+
 
   void showEditWorkoutDialog(Workout w) {
     final timeCtrl = TextEditingController(text: w.time.replaceAll(":00", ""));
@@ -152,26 +160,31 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                     onTap: () => showEditWorkoutDialog(w),
                                   ),
                                 AddCard(
-                                  onTap: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const AddExercisePage()),
-                                    );
+  onTap: () async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddExercisePage()),
+    );
 
-                                    if (result != null && result is List<Exercise>) {
-                                      for (final exercise in result) {
-                                        final newWorkout = Workout(
-                                          id: '', // Firestore will generate
-                                          time: "${exercise.minutes}:00",
-                                          label: exercise.name,
-                                          reps: "${exercise.exercises} reps",
-                                          imagePath: exercise.imagePath,
-                                        );
-                                        await _service.addWorkout(newWorkout);
-                                      }
-                                    }
-                                  },
-                                ),
+    if (result != null && result['exercise'] != null) {
+      final exercise = result['exercise'] as Exercise;
+      final calories = result['calories'] as int;
+
+      final newWorkout = Workout(
+        id: '', // Let Firestore generate
+        time: "${exercise.minutes}:00",
+        label: exercise.name,
+        reps: "${exercise.exercises} reps",
+        imagePath: exercise.imagePath,
+      );
+
+      await _service.addWorkout(newWorkout);
+
+      // ✅ Update NutritionPage with new calories
+      widget.nutritionPageKey.currentState?.updateExerciseCalories(calories);
+    }
+  },
+),
 
                                 const SizedBox(width: 8),
                               ],

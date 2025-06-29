@@ -8,6 +8,7 @@ import 'package:asgm1/screens/login_page.dart';
 import 'package:asgm1/screens/IntroVideoPage.dart';
 import 'package:asgm1/services/notification_service.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

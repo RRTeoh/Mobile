@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'nutrition_page.dart';
-import 'workout_page.dart';
+import 'package:asgm1/screens/workout_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // TrackerPage
@@ -143,9 +143,9 @@ class TrackerPageState extends State<TrackingPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: _onPageChanged,
                 children: [
-                  const WorkoutPage(),
+                  WorkoutPage(nutritionPageKey: _nutritionKey),
                   NutritionPage(
-                    key: _nutritionKey, 
+                    key: _nutritionKey,
                     earliestDate: _earliestDate,
                     userId: _currentUserId ?? 'anonymous',
                     onCaloriesUpdated: _handleCaloriesUpdated,
