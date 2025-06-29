@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:asgm1/services/streak_service.dart';
 
 class PostAPost extends StatefulWidget {
   const PostAPost({super.key});
@@ -64,6 +65,9 @@ class _PostAPostState extends State<PostAPost> {
       'likes': 0,
       'ownerId': currentUserId,
     });
+
+    // Increment streak after successful post
+    await StreakService.incrementStreak();
 
     setState(() => _isPosting = false);
     Navigator.pop(context);

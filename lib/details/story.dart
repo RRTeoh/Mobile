@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:asgm1/services/streak_service.dart';
 
 class StoryNonRead extends StatelessWidget {
   final String imagePath;
@@ -156,6 +157,9 @@ Future<void> _createNewStory(BuildContext context, String currentUserId, String 
           'imageUrl': imageUrl,
           'timestamp': FieldValue.serverTimestamp(),
         });
+
+        // Increment streak after successful story post
+        await StreakService.incrementStreak();
 
         // Close loading dialog
         Navigator.of(context).pop();
