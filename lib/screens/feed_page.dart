@@ -164,7 +164,7 @@ Future<void> commentOnPost(String postOwnerId, String postImageUrl, String comme
         String senderName = message.data['senderName'] ?? 'Someone';
         String action = message.data['action'] ?? '';
 
-        NotificationService().sendCustomInstantNotification(
+        NotificationService().sendFeedNotification(
            title: "$senderName",
            body: "$action",
         );
@@ -175,7 +175,7 @@ Future<void> commentOnPost(String postOwnerId, String postImageUrl, String comme
           String title = message.notification!.title ?? "Notification";
           String body = message.notification!.body ?? "";
 
-          NotificationService().sendCustomInstantNotification(
+          NotificationService().sendFeedNotification(
             title: title,
             body: body,
         );

@@ -222,9 +222,30 @@ class _HomePageState extends State<HomePage> {
       actions:[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child: CircleAvatar(
-              radius: 23,
-              backgroundImage: AssetImage("assets/images/noprofile.png"),
+            child: FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  final userData = snapshot.data!.data() as Map<String, dynamic>;
+                  final avatar = userData['avatar'] ?? 'assets/images/noprofile.png';
+                  
+                  return CircleAvatar(
+                    radius: 23,
+                    backgroundImage: avatar.startsWith('http') 
+                        ? NetworkImage(avatar) 
+                        : AssetImage(avatar) as ImageProvider,
+                  );
+                }
+                
+                // Default profile picture while loading or if no data
+                return const CircleAvatar(
+                  radius: 23,
+                  backgroundImage: AssetImage("assets/images/noprofile.png"),
+                );
+              },
             ),
           ),
           ]

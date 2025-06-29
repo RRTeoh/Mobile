@@ -448,34 +448,50 @@ Widget _buildReportReason(String reason) {
                           itemBuilder: (context, index) {
                             final comment = comments[index].data() as Map<String, dynamic>;
                             final time = (comment['time'] as Timestamp).toDate();
-                            return ListTile(
-                              leading: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: comment['avatar'].toString().startsWith('http')
-                                    ? NetworkImage(comment['avatar'])
-                                    : AssetImage(comment['avatar']) as ImageProvider,
-                              ),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                            final userId = comment['userId'] ?? '';
+                            
+                            return FutureBuilder<DocumentSnapshot>(
+                              future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+                              builder: (context, userSnapshot) {
+                                String displayName = comment['user'] ?? 'Unknown';
+                                String displayAvatar = comment['avatar'] ?? 'assets/images/default.jpg';
+                                
+                                if (userSnapshot.hasData && userSnapshot.data!.exists) {
+                                  final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                                  displayName = userData['firstName'] ?? comment['user'] ?? 'Unknown';
+                                  displayAvatar = userData['avatar'] ?? comment['avatar'] ?? 'assets/images/default.jpg';
+                                }
+                                
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: displayAvatar.startsWith('http')
+                                        ? NetworkImage(displayAvatar)
+                                        : AssetImage(displayAvatar) as ImageProvider,
+                                  ),
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(comment['user'], 
-                                      style:  TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: comment['userId'] == widget.currentUserId ? Colors.blue : Colors.black,
-                                        ),),
+                                      Row(
+                                        children: [
+                                          Text(displayName, 
+                                          style:  TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            color: userId == widget.currentUserId ? Colors.blue : Colors.black,
+                                            ),),
 
-                                      const SizedBox(width: 10),
-                                      Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                                      
+                                          const SizedBox(width: 10),
+                                          Text(_timeAgo(time), style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                          
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(comment['comment'], style: const TextStyle(fontSize: 12)),
                                     ],
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(comment['comment'], style: const TextStyle(fontSize: 12)),
-                                ],
-                              ),
+                                );
+                              },
                             );
                           },
                         );

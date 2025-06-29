@@ -322,4 +322,56 @@ class NotificationService {
       ),
     );
   }
+
+  Future<void> sendChatNotification({required String title, required String body}) async {
+    await _notifications.show(
+      100, // Unique ID for chat notification
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'chat_channel',
+          'Chat Notifications',
+          channelDescription: 'Chat message notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          color: Color(0xFF8FD4E8),
+          enableVibration: true,
+          playSound: true,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> sendFeedNotification({required String title, required String body}) async {
+    await _notifications.show(
+      101, // Unique ID for feed notification
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'feed_channel',
+          'Feed Notifications',
+          channelDescription: 'Feed activity notifications (likes, comments)',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          color: Color(0xFF8FD4E8),
+          enableVibration: true,
+          playSound: true,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
 } 
