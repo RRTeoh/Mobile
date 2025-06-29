@@ -24,5 +24,27 @@ class WorkoutService {
   Future<void> deleteWorkout(String id) async {
     await _workoutsCollection.doc(id).delete();
   }
+
+  int calculateCaloriesBurned(String workoutName, int reps, int minutes) {
+  // Example multipliers — you can customize these based on real MET values
+  final baseRate = {
+    'Push-ups': 8,
+    'Sit-ups': 6,
+    'Jumping Jacks': 7,
+    'Plank': 5,
+    'Squats': 6,
+    'Lunges': 6,
+    'Mountain Climbers': 7,
+    'High Knees': 7,
+    'Run': 12,
+    'Swim': 10,
+    'Rowing': 9,
+    'Cycling': 8,
+  };
+
+  int rate = baseRate[workoutName] ?? 5;
+  return ((rate * minutes) + (reps * 0.1)).toInt(); // Simple formula
+}
+
   
 }

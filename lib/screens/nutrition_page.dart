@@ -19,7 +19,7 @@ class NutritionPageState extends State<NutritionPage> {
   // Shared Nutrition Data Status
   final int _baseGoal = 2000;
   int _foodCalories = 0; // Get the actual data from the bottom sheet
-  final int _exerciseCalories = 100;
+  int _exerciseCalories = 0;
   bool _isLoading = false;
 
   void _goToPreviousDay() {
@@ -67,6 +67,14 @@ class NutritionPageState extends State<NutritionPage> {
       widget.onCaloriesUpdated?.call();
     }
   }
+
+  void updateExerciseCalories(int newCalories) {
+    setState(() {
+      _exerciseCalories = newCalories;
+    });
+    widget.onCaloriesUpdated?.call();
+  }
+
 
   @override
   Widget build(BuildContext context) {
