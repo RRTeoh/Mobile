@@ -28,7 +28,7 @@ class CourseDetails {
       CourseDetails(
       courseimage: 'assets/images/courses/Cardio.png',
       coursename: 'Cardio',
-      videoUrl: 'assets/videos/Cardio.mp4',
+      videoUrl: 'assets/videos/CardioNew.mp4',
       duration: '25 min',
       difficulty: 'High',
       description:
