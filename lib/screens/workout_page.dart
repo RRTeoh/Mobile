@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:asgm1/details/add_card.dart';
 import 'package:asgm1/details/stat_card.dart';
@@ -73,7 +74,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       final caloriesToSubtract = _service.calculateCaloriesBurned(label, reps, minutes);
 
                       // Delete workout
-                      await _service.deleteWorkout(w.id);
+                      await _service.deleteWorkout(w.id!);
 
                       // Subtract from NutritionPage
                       if (mounted) {
@@ -185,7 +186,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
       final calories = result['calories'] as int;
 
       final newWorkout = Workout(
-        id: '', // Let Firestore generate
+        id: null,
         time: "${exercise.minutes}:00",
         label: exercise.name,
         reps: "${exercise.exercises} reps",

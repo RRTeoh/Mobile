@@ -3,10 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'workout_model.dart';
 
 class WorkoutService {
-  final String userId = FirebaseAuth.instance.currentUser!.uid;
+  CollectionReference get _workoutsCollection {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    throw Exception("No authenticated user");
+  }
 
-  CollectionReference get _workoutsCollection => 
-      FirebaseFirestore.instance.collection('users').doc(userId).collection('workouts');
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('workouts');
+}
+
 
   Stream<List<Workout>> streamWorkouts() {
     return _workoutsCollection.snapshots().map((snapshot) {
@@ -20,9 +28,22 @@ class WorkoutService {
     return _workoutsCollection.doc(workout.id).update(workout.toMap());
   }
 
-  Future<void> addWorkout(Workout workout) {
-    return _workoutsCollection.add(workout.toMap());
-  }
+Future<void> addWorkout(Workout workout) async {
+  final docRef = await _workoutsCollection.add(workout.toMap());
+
+  // Optional: Store the ID inside the document in Firestore
+  await docRef.update({'id': docRef.id});
+
+  // ✅ Important: Update the local model instance with the Firestore-generated ID
+  workout.id = docRef.id;
+
+  // Optional: print debug info
+  print("Firestore path: users/${FirebaseAuth.instance.currentUser?.uid}/workouts");
+
+}
+
+
+
 
   Future<void> deleteWorkout(String id) async {
     await _workoutsCollection.doc(id).delete();

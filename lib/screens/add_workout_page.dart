@@ -114,7 +114,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       final reps = int.tryParse(repsController.text) ?? 0;
                       final minutes = int.tryParse(minutesController.text) ?? 0;
 
-                      final service = WorkoutService(user.uid);
+                      final service = WorkoutService();
                       final calories = service.calculateCaloriesBurned(exercise.name, reps, minutes);
 
                       // ✅ Get current user and today's date

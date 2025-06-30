@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Workout {
-  final String id;
+  String? id; // <== nullable now
   String time;
   String label;
   String reps;
   String imagePath;
 
   Workout({
-    required this.id,
+    this.id,
     required this.time,
     required this.label,
     required this.reps,
@@ -30,7 +30,8 @@ class Workout {
       time: data['time'],
       label: data['label'],
       reps: data['reps'],
-      imagePath: data['imagePath'] ?? '', // fallback to empty string if missing
+      imagePath: data['imagePath'] ?? '',
     );
   }
 }
+
