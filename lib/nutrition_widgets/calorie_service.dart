@@ -17,8 +17,17 @@ class CalorieService {
       // Get food calories
       final foodCalories = await _getFoodCalories(user.uid, dateString);
       
-      // Use default exercise value
-      final exerciseCalories = _defaultExercise;
+      // Get actual exercise calories from Firestore
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('calorie_logs')
+          .doc(dateString)
+          .get();
+      int exerciseCalories = 0;
+      if (doc.exists) {
+        exerciseCalories = doc['exerciseCalories'] ?? 0;
+      }
       
       // Calculate remaining calories: baseGoal - food + exercise
       final remainingCalories = _baseGoal - foodCalories + exerciseCalories;
