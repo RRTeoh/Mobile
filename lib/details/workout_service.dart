@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'workout_model.dart';
 
 class WorkoutService {
-  final CollectionReference _workoutsCollection =
-      FirebaseFirestore.instance.collection('workouts');
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
+
+  CollectionReference get _workoutsCollection => 
+      FirebaseFirestore.instance.collection('users').doc(userId).collection('workouts');
 
   Stream<List<Workout>> streamWorkouts() {
     return _workoutsCollection.snapshots().map((snapshot) {
